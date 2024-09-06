@@ -3,8 +3,8 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AdMobService {
-  //배너광고
-  //앱 개발시 테스트광고 ID로 입력
+  // 배너광고
+  // 앱 개발시 테스트광고 ID로 입력
   static String? get bannerAdUnitId {
     String? id;
     if (Platform.isAndroid) {
