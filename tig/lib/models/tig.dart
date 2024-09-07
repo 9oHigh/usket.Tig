@@ -33,7 +33,7 @@ class Tig {
   List<String> dayTopPriorites;
 
   @HiveField(4)
-  String brainDump;
+  String? brainDump;
 
   @HiveField(5)
   List<TimeEntry> timeTable;
@@ -52,7 +52,7 @@ class Tig {
     this.monthTopPriorites = const [],
     this.weekTopPriorites = const [],
     this.dayTopPriorites = const [],
-    this.brainDump = "",
+    this.brainDump,
     this.timeTable = const [],
     this.timeTableSuccessed = const [],
     this.startHour = 7.0, // sharedpreferences 로 기본값 수정

@@ -29,7 +29,7 @@ class TigApp extends StatelessWidget {
       theme: ThemeData(
         brightness: Brightness.light,
         primaryColor: Colors.black,
-        scaffoldBackgroundColor: Colors.grey[200],
+        scaffoldBackgroundColor: Colors.white,
         appBarTheme: const AppBarTheme(
           color: Colors.white,
           titleTextStyle: TextStyle(
