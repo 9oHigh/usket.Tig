@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:tig/screens/home/home_arrange_screen.dart';
 import 'package:tig/screens/home/home_screen.dart';
 import 'package:tig/utils/remove_scroll_animation.dart';
 import 'package:tig/services/admob_service.dart';
+import 'package:flutter/cupertino.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,7 +24,7 @@ class TigApp extends StatefulWidget {
 
 class TigAppState extends State<TigApp> {
   BannerAd? _bannerAd;
-  Widget _currentScreen = const HomeScreen();
+  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   void initState() {
@@ -73,6 +75,20 @@ class TigAppState extends State<TigApp> {
       ),
       themeMode: ThemeMode.system,
       home: Scaffold(
+        body: Navigator(
+          key: _navigatorKey,
+          onGenerateRoute: (RouteSettings settings) {
+            Widget page = const HomeScreen();
+            if (settings.name == '/arrange') {
+              page = const HomeArrangeScreen();
+            }
+
+            return CupertinoPageRoute(
+              builder: (_) => page,
+              settings: settings,
+            );
+          },
+        ),
         bottomNavigationBar: _bannerAd == null
             ? null
             : Container(
@@ -80,15 +96,12 @@ class TigAppState extends State<TigApp> {
                 height: 75,
                 child: AdWidget(ad: _bannerAd!),
               ),
-        body: _currentScreen,
       ),
     );
   }
 
-  void switchScreen(Widget newScreen) {
-    setState(() {
-      _currentScreen = newScreen;
-    });
+  void switchScreen(String routeName) {
+    _navigatorKey.currentState?.pushNamed(routeName);
   }
 
   Future<InitializationStatus> _initGoogleMobileAds() {
