@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tig/models/tig.dart';
+import 'package:tig/main.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -150,9 +151,11 @@ class _HomeScreenState extends State<HomeScreen>
             const SizedBox(height: 16.0),
             _buildTimeTable(),
             const SizedBox(height: 16.0),
-            ElevatedButton(onPressed: () {
-              // 회고 화면 이동
-            }, child: const Text('회고 하기'))
+            ElevatedButton(
+                onPressed: () {
+                  // 회고 화면 이동
+                },
+                child: const Text('회고 하기'))
           ],
         ),
       ),
@@ -175,7 +178,10 @@ class _HomeScreenState extends State<HomeScreen>
           ),
         ),
         IconButton(
-          onPressed: () {},
+          onPressed: () {
+            (context.findAncestorStateOfType<TigAppState>())
+                ?.switchScreen('/arrange');
+          },
           icon: const Icon(Icons.sort),
         ),
       ],
