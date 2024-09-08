@@ -149,6 +149,10 @@ class _HomeScreenState extends State<HomeScreen>
             _buildBrainDump(),
             const SizedBox(height: 16.0),
             _buildTimeTable(),
+            const SizedBox(height: 16.0),
+            ElevatedButton(onPressed: () {
+              // 회고 화면 이동
+            }, child: const Text('회고 하기'))
           ],
         ),
       ),
