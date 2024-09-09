@@ -8,6 +8,8 @@ import 'package:tig/utils/remove_scroll_animation.dart';
 import 'package:tig/services/admob_service.dart';
 import 'package:flutter/cupertino.dart';
 
+import 'utils/app_route.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
@@ -28,9 +30,9 @@ class TigAppState extends State<TigApp> {
 
   @override
   void initState() {
+    super.initState();
     _initGoogleMobileAds();
     _createBannerAd();
-    super.initState();
   }
 
   @override
@@ -43,69 +45,18 @@ class TigAppState extends State<TigApp> {
         );
       },
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        brightness: Brightness.light,
-        primaryColor: Colors.black,
-        scaffoldBackgroundColor: Colors.white,
-        appBarTheme: const AppBarTheme(
-          color: Colors.white,
-          titleTextStyle: TextStyle(
-            color: Colors.black,
-            fontSize: 20,
-          ),
-        ),
-        textTheme: const TextTheme(
-          bodyLarge: TextStyle(color: Colors.black),
-        ),
-      ),
-      darkTheme: ThemeData(
-        brightness: Brightness.dark,
-        primaryColor: Colors.red,
-        scaffoldBackgroundColor: Colors.black,
-        appBarTheme: const AppBarTheme(
-          color: Colors.black,
-          titleTextStyle: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-          ),
-        ),
-        textTheme: const TextTheme(
-          bodyLarge: TextStyle(color: Colors.white),
-        ),
-      ),
+      theme: _buildLightTheme(),
+      darkTheme: _buildDarkTheme(),
       themeMode: ThemeMode.system,
-      home: Scaffold(
-        body: Navigator(
-          key: _navigatorKey,
-          onGenerateRoute: (RouteSettings settings) {
-            Widget page = const HomeScreen();
-            if (settings.name == '/arrange') {
-              page = const HomeArrangeScreen();
-            }
-
-            return CupertinoPageRoute(
-              builder: (_) => page,
-              settings: settings,
-            );
-          },
-        ),
-        bottomNavigationBar: _bannerAd == null
-            ? null
-            : Container(
-                margin: const EdgeInsets.only(bottom: 12),
-                height: 75,
-                child: AdWidget(ad: _bannerAd!),
-              ),
+      home: _HomeScreenNavigator(
+        navigatorKey: _navigatorKey,
+        bannerAd: _bannerAd,
       ),
     );
   }
 
-  void switchScreen(String routeName) {
-    _navigatorKey.currentState?.pushNamed(routeName);
-  }
-
-  Future<InitializationStatus> _initGoogleMobileAds() {
-    return MobileAds.instance.initialize();
+  Future<void> _initGoogleMobileAds() async {
+    await MobileAds.instance.initialize();
   }
 
   void _createBannerAd() {
@@ -115,5 +66,86 @@ class TigAppState extends State<TigApp> {
       listener: AdMobService.bannerAdListener,
       request: const AdRequest(),
     )..load();
+  }
+
+  ThemeData _buildLightTheme() {
+    return ThemeData(
+      brightness: Brightness.light,
+      primaryColor: Colors.black,
+      scaffoldBackgroundColor: Colors.white,
+      appBarTheme: const AppBarTheme(
+        color: Colors.white,
+        titleTextStyle: TextStyle(
+          color: Colors.black,
+          fontSize: 20,
+        ),
+      ),
+      textTheme: const TextTheme(
+        bodyLarge: TextStyle(color: Colors.black),
+      ),
+    );
+  }
+
+  ThemeData _buildDarkTheme() {
+    return ThemeData(
+      brightness: Brightness.dark,
+      primaryColor: Colors.red,
+      scaffoldBackgroundColor: Colors.black,
+      appBarTheme: const AppBarTheme(
+        color: Colors.black,
+        titleTextStyle: TextStyle(
+          color: Colors.white,
+          fontSize: 20,
+        ),
+      ),
+      textTheme: const TextTheme(
+        bodyLarge: TextStyle(color: Colors.white),
+      ),
+    );
+  }
+}
+
+class _HomeScreenNavigator extends StatelessWidget {
+  const _HomeScreenNavigator({
+    super.key,
+    required GlobalKey<NavigatorState> navigatorKey,
+    required BannerAd? bannerAd,
+  })  : _navigatorKey = navigatorKey,
+        _bannerAd = bannerAd;
+
+  final GlobalKey<NavigatorState> _navigatorKey;
+  final BannerAd? _bannerAd;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Navigator(
+        key: _navigatorKey,
+        onGenerateRoute: (RouteSettings settings) {
+          final route = AppRoute.getRoute(settings.name!);
+
+          switch (route) {
+            case AppRoute.arrange:
+              return CupertinoPageRoute(
+                builder: (_) => const HomeArrangeScreen(),
+                settings: settings,
+              );
+            case AppRoute.home:
+            default:
+              return CupertinoPageRoute(
+                builder: (_) => const HomeScreen(),
+                settings: settings,
+              );
+          }
+        },
+      ),
+      bottomNavigationBar: _bannerAd == null
+          ? null
+          : Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              height: 75,
+              child: AdWidget(ad: _bannerAd!),
+            ),
+    );
   }
 }
