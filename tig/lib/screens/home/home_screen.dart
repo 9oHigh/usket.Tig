@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tig/models/tig.dart';
-import 'package:tig/main.dart';
+import 'package:tig/utils/app_route.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -21,6 +21,7 @@ class _HomeScreenState extends State<HomeScreen>
   late Tig tigData;
   late ScrollController _scrollController;
   late AnimationController _animationController;
+  late TextEditingController _brainDumpController;
 
   @override
   void initState() {
@@ -42,7 +43,6 @@ class _HomeScreenState extends State<HomeScreen>
       ..addListener(() {
         final isAtBottom = _scrollController.position.pixels ==
             _scrollController.position.maxScrollExtent;
-
         if (isAtBottom != _isAtBottom) {
           setState(() => _isAtBottom = isAtBottom);
         }
@@ -52,12 +52,15 @@ class _HomeScreenState extends State<HomeScreen>
       vsync: this,
       duration: const Duration(milliseconds: 300),
     );
+
+    _brainDumpController = TextEditingController(text: tigData.brainDump);
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
     _animationController.dispose();
+    _brainDumpController.dispose();
     super.dispose();
   }
 
@@ -90,18 +93,8 @@ class _HomeScreenState extends State<HomeScreen>
             alignment: Alignment.bottomRight,
             children: [
               if (_isFabExpanded) ...[
-                _buildFloatingActionButton(
-                  onPressed: () {},
-                  backgroundColor: Colors.red,
-                  icon: Icons.calendar_today,
-                  bottomPosition: 80,
-                ),
-                _buildFloatingActionButton(
-                  onPressed: () {},
-                  backgroundColor: Colors.blue,
-                  icon: Icons.add,
-                  bottomPosition: 150,
-                ),
+                _buildFloatingActionButton(),
+                _buildFloatingActionButton(),
               ],
               FloatingActionButton(
                 onPressed: () {
@@ -152,10 +145,13 @@ class _HomeScreenState extends State<HomeScreen>
             _buildTimeTable(),
             const SizedBox(height: 16.0),
             ElevatedButton(
-                onPressed: () {
-                  // 회고 화면 이동
-                },
-                child: const Text('회고 하기'))
+              onPressed: () {
+                Navigator.of(context).pushNamed(
+                  AppRoute.arrange,
+                );
+              },
+              child: const Text('회고 하기'),
+            ),
           ],
         ),
       ),
@@ -170,18 +166,12 @@ class _HomeScreenState extends State<HomeScreen>
           iconAlignment: IconAlignment.end,
           icon: const Icon(Icons.arrow_drop_down),
           onPressed: _showDatePicker,
-          label: Text(
-            DateFormat('yyyy-MM-dd').format(tigData.date),
-          ),
+          label: Text(DateFormat('yyyy-MM-dd').format(tigData.date)),
           style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.only(left: 12, right: 6),
-          ),
+              padding: const EdgeInsets.symmetric(horizontal: 12)),
         ),
         IconButton(
-          onPressed: () {
-            (context.findAncestorStateOfType<TigAppState>())
-                ?.switchScreen('/arrange');
-          },
+          onPressed: () => Navigator.of(context).pushNamed('/arrange'),
           icon: const Icon(Icons.sort),
         ),
       ],
@@ -195,8 +185,7 @@ class _HomeScreenState extends State<HomeScreen>
         const Text("Brain dump"),
         const SizedBox(height: 8),
         TextField(
-          maxLines: null,
-          controller: TextEditingController(text: tigData.brainDump),
+          controller: _brainDumpController,
           onChanged: (text) => setState(() => tigData.brainDump = text),
           decoration: const InputDecoration(
             hintText: "Spill out whatever comes to your mind!",
@@ -207,7 +196,48 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  Widget _buildFloatingActionButton({
+  Widget _buildFloatingActionButton() {
+    return AnimatedOpacity(
+      opacity: _isAtBottom ? 0 : 1,
+      duration: const Duration(milliseconds: 300),
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.bottomRight,
+        children: [
+          if (_isFabExpanded) ...[
+            _buildFloatingActionButtonItem(
+              onPressed: () {},
+              backgroundColor: Colors.red,
+              icon: Icons.calendar_today,
+              bottomPosition: 80,
+            ),
+            _buildFloatingActionButtonItem(
+              onPressed: () {},
+              backgroundColor: Colors.blue,
+              icon: Icons.add,
+              bottomPosition: 150,
+            ),
+          ],
+          FloatingActionButton(
+            onPressed: () {
+              setState(() {
+                _isFabExpanded = !_isFabExpanded;
+                _isFabExpanded
+                    ? _animationController.forward()
+                    : _animationController.reverse();
+              });
+            },
+            child: AnimatedIcon(
+              icon: AnimatedIcons.menu_close,
+              progress: _animationController,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFloatingActionButtonItem({
     required VoidCallback onPressed,
     required Color backgroundColor,
     required IconData icon,
@@ -249,10 +279,9 @@ class _HomeScreenState extends State<HomeScreen>
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              title,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
+            Text(title,
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             IconButton(
               icon: Icon(isExpanded ? Icons.expand_less : Icons.expand_more),
               onPressed: onToggle,
@@ -275,9 +304,8 @@ class _HomeScreenState extends State<HomeScreen>
                             priorities[index] = text;
                           });
                         },
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                        ),
+                        decoration:
+                            const InputDecoration(border: OutlineInputBorder()),
                       ),
                     );
                   }).toList()
@@ -311,23 +339,19 @@ class _HomeScreenState extends State<HomeScreen>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              "${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}",
-            ),
+                "${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}"),
             const SizedBox(width: 12),
             Expanded(
-              child: Container(
-                // padding: const EdgeInsets.only(bottom: 4),
-                child: TextField(
-                  controller: TextEditingController(text: timeEntry.activity),
-                  onChanged: (text) {
-                    setState(() {
-                      timeEntry.activity = text;
-                    });
-                  },
-                  decoration: const InputDecoration(
-                    hintText: "Enter activity",
-                    border: UnderlineInputBorder(),
-                  ),
+              child: TextField(
+                controller: TextEditingController(text: timeEntry.activity),
+                onChanged: (text) {
+                  setState(() {
+                    timeEntry.activity = text;
+                  });
+                },
+                decoration: const InputDecoration(
+                  hintText: "Enter activity",
+                  border: UnderlineInputBorder(),
                 ),
               ),
             ),
