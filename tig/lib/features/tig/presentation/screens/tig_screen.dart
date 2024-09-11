@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:tig/models/tig.dart';
-import 'package:tig/utils/app_route.dart';
+import 'package:tig/core/routes/app_route.dart';
+import 'package:tig/features/tig/data/models/tig.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class TigScreen extends StatefulWidget {
+  const TigScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<TigScreen> createState() => _TigScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>
+class _TigScreenState extends State<TigScreen>
     with SingleTickerProviderStateMixin {
   bool _isMonthExpanded = false;
   bool _isWeekExpanded = false;

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class HomeArrangeScreen extends StatefulWidget {
-  const HomeArrangeScreen({super.key});
+class TigArrangeScreen extends StatefulWidget {
+  const TigArrangeScreen({super.key});
 
   @override
-  State<StatefulWidget> createState() => _HomeArrangeScreenState();
+  State<StatefulWidget> createState() => _TigArrangeScreenState();
 }
 
-class _HomeArrangeScreenState extends State<HomeArrangeScreen> {
+class _TigArrangeScreenState extends State<TigArrangeScreen> {
   @override
   Widget build(BuildContext context) {
     return Container(

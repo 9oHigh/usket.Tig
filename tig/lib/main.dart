@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:tig/screens/home/home_arrange_screen.dart';
-import 'package:tig/screens/home/home_screen.dart';
-import 'package:tig/utils/remove_scroll_animation.dart';
-import 'package:tig/services/admob_service.dart';
+import 'package:tig/features/tig/presentation/widgets/tig_arrange_screen.dart';
+import 'package:tig/features/tig/presentation/screens/tig_screen.dart';
+import 'package:tig/core/utils/remove_scroll_animation.dart';
+import 'package:tig/features/ads/data/datasource/admob_service.dart';
 import 'package:flutter/cupertino.dart';
-
-import 'utils/app_route.dart';
+import 'package:tig/core/routes/app_route.dart';
+import 'package:tig/core/theme/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Hive.initFlutter();
   await dotenv.load(fileName: ".env");
   runApp(const TigApp());
 }
@@ -45,10 +43,10 @@ class TigAppState extends State<TigApp> {
         );
       },
       debugShowCheckedModeBanner: false,
-      theme: _buildLightTheme(),
-      darkTheme: _buildDarkTheme(),
+      theme: buildLightTheme(),
+      darkTheme: buildDarkTheme(),
       themeMode: ThemeMode.system,
-      home: _HomeScreenNavigator(
+      home: _TigScreenNavigator(
         navigatorKey: _navigatorKey,
         bannerAd: _bannerAd,
       ),
@@ -67,46 +65,10 @@ class TigAppState extends State<TigApp> {
       request: const AdRequest(),
     )..load();
   }
-
-  ThemeData _buildLightTheme() {
-    return ThemeData(
-      brightness: Brightness.light,
-      primaryColor: Colors.black,
-      scaffoldBackgroundColor: Colors.white,
-      appBarTheme: const AppBarTheme(
-        color: Colors.white,
-        titleTextStyle: TextStyle(
-          color: Colors.black,
-          fontSize: 20,
-        ),
-      ),
-      textTheme: const TextTheme(
-        bodyLarge: TextStyle(color: Colors.black),
-      ),
-    );
-  }
-
-  ThemeData _buildDarkTheme() {
-    return ThemeData(
-      brightness: Brightness.dark,
-      primaryColor: Colors.red,
-      scaffoldBackgroundColor: Colors.black,
-      appBarTheme: const AppBarTheme(
-        color: Colors.black,
-        titleTextStyle: TextStyle(
-          color: Colors.white,
-          fontSize: 20,
-        ),
-      ),
-      textTheme: const TextTheme(
-        bodyLarge: TextStyle(color: Colors.white),
-      ),
-    );
-  }
 }
 
-class _HomeScreenNavigator extends StatelessWidget {
-  const _HomeScreenNavigator({
+class _TigScreenNavigator extends StatelessWidget {
+  const _TigScreenNavigator({
     super.key,
     required GlobalKey<NavigatorState> navigatorKey,
     required BannerAd? bannerAd,
@@ -127,13 +89,13 @@ class _HomeScreenNavigator extends StatelessWidget {
           switch (route) {
             case AppRoute.arrange:
               return CupertinoPageRoute(
-                builder: (_) => const HomeArrangeScreen(),
+                builder: (_) => const TigArrangeScreen(),
                 settings: settings,
               );
             case AppRoute.home:
             default:
               return CupertinoPageRoute(
-                builder: (_) => const HomeScreen(),
+                builder: (_) => const TigScreen(),
                 settings: settings,
               );
           }
