@@ -43,28 +43,24 @@ class Tig {
     this.brainDump,
     this.timeTable = const [],
     this.timeTableSuccessed = const [],
-    this.startHour = 7.0, // 기본값
-    this.endHour = 23.0, // 기본값
+    this.startHour = 7.0,
+    this.endHour = 23.0,
   });
 
-  // Firestore에 저장하기 위한 Map 변환 메서드
   Map<String, dynamic> toMap() {
     return {
-      'date': date.toIso8601String(), // DateTime을 문자열로 변환
+      'date': date.toIso8601String(),
       'monthTopPriorites': monthTopPriorites,
       'weekTopPriorites': weekTopPriorites,
       'dayTopPriorites': dayTopPriorites,
       'brainDump': brainDump,
-      'timeTable': timeTable
-          .map((entry) => entry.toMap())
-          .toList(), // TimeEntry 리스트를 Map으로 변환
+      'timeTable': timeTable.map((entry) => entry.toMap()).toList(),
       'timeTableSuccessed': timeTableSuccessed,
       'startHour': startHour,
       'endHour': endHour,
     };
   }
 
-  // Firestore에서 가져온 데이터를 Tig 객체로 변환하는 메서드
   factory Tig.fromMap(Map<String, dynamic> map) {
     return Tig(
       date: DateTime.parse(map['date']),
