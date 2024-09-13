@@ -46,6 +46,7 @@ dependencies:
   cloud_firestore: ^5.4.1
   riverpod: ^2.5.1
   flutter_riverpod: ^2.5.1
+  shared_preferences: ^2.3.2
 
 dev_dependencies:
   flutter_test:
