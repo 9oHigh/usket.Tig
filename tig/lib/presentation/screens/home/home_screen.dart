@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tig/data/models/tig.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tig/presentation/providers/tig/tig_provider.dart';
@@ -19,6 +20,10 @@ class _HomeScreen extends ConsumerState<HomeScreen>
   bool _isDayExpanded = false;
   bool _isFabExpanded = false;
   bool _isAtBottom = false;
+  bool _isOnMonthly = true;
+  bool _isOnWeekly = true;
+  bool _isOnDaily = true;
+  bool _isOnBraindump = true;
 
   late Tig tigData = Tig(date: DateTime.now());
   late DateTime _dateTime;
@@ -52,6 +57,16 @@ class _HomeScreen extends ConsumerState<HomeScreen>
     _dateTime = DateTime.now();
 
     _loadTigData();
+
+    _loadPreferences();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _animationController.dispose();
+    _brainDumpController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadTigData() async {
@@ -70,12 +85,14 @@ class _HomeScreen extends ConsumerState<HomeScreen>
     // MARK: - 티그 모드 화면으로 이동
   }
 
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    _animationController.dispose();
-    _brainDumpController.dispose();
-    super.dispose();
+  Future<void> _loadPreferences() async {
+    final SharedPreferences pref = await SharedPreferences.getInstance();
+    setState(() {
+      _isOnMonthly = pref.getBool('isOnMonthly') ?? true;
+      _isOnWeekly = pref.getBool('isOnWeekly') ?? true;
+      _isOnDaily = pref.getBool('isOnDaily') ?? true;
+      _isOnBraindump = pref.getBool('isOnBraindump') ?? true;
+    });
   }
 
   @override
@@ -113,44 +130,48 @@ class _HomeScreen extends ConsumerState<HomeScreen>
                   children: [
                     _buildDateSelector(),
                     const SizedBox(height: 16.0),
-                    _buildExpandableSection(
-                      "Monthly priority top3",
-                      _isMonthExpanded,
-                      () =>
-                          setState(() => _isMonthExpanded = !_isMonthExpanded),
-                      tigData.monthTopPriorities,
-                      (index, value) {
-                        setState(() {
-                          tigData.monthTopPriorities[index] = value;
-                        });
-                      },
-                    ),
+                    if (_isOnMonthly)
+                      _buildExpandableSection(
+                        "Monthly priority top3",
+                        _isMonthExpanded,
+                        () => setState(
+                            () => _isMonthExpanded = !_isMonthExpanded),
+                        tigData.monthTopPriorities,
+                        (index, value) {
+                          setState(() {
+                            tigData.monthTopPriorities[index] = value;
+                          });
+                        },
+                      ),
                     const SizedBox(height: 16.0),
-                    _buildExpandableSection(
-                      "Weekly priority top3",
-                      _isWeekExpanded,
-                      () => setState(() => _isWeekExpanded = !_isWeekExpanded),
-                      tigData.weekTopPriorities,
-                      (index, value) {
-                        setState(() {
-                          tigData.weekTopPriorities[index] = value;
-                        });
-                      },
-                    ),
+                    if (_isOnWeekly)
+                      _buildExpandableSection(
+                        "Weekly priority top3",
+                        _isWeekExpanded,
+                        () =>
+                            setState(() => _isWeekExpanded = !_isWeekExpanded),
+                        tigData.weekTopPriorities,
+                        (index, value) {
+                          setState(() {
+                            tigData.weekTopPriorities[index] = value;
+                          });
+                        },
+                      ),
                     const SizedBox(height: 16.0),
-                    _buildExpandableSection(
-                      "Daily priority top3",
-                      _isDayExpanded,
-                      () => setState(() => _isDayExpanded = !_isDayExpanded),
-                      tigData.dayTopPriorities,
-                      (index, value) {
-                        setState(() {
-                          tigData.dayTopPriorities[index] = value;
-                        });
-                      },
-                    ),
+                    if (_isOnDaily)
+                      _buildExpandableSection(
+                        "Daily priority top3",
+                        _isDayExpanded,
+                        () => setState(() => _isDayExpanded = !_isDayExpanded),
+                        tigData.dayTopPriorities,
+                        (index, value) {
+                          setState(() {
+                            tigData.dayTopPriorities[index] = value;
+                          });
+                        },
+                      ),
                     const SizedBox(height: 16.0),
-                    _buildBrainDump(),
+                    if (_isOnBraindump) _buildBrainDump(),
                     const SizedBox(height: 16.0),
                     _buildTimeTable(),
                     const SizedBox(height: 16.0),
@@ -189,7 +210,11 @@ class _HomeScreen extends ConsumerState<HomeScreen>
               padding: const EdgeInsets.symmetric(horizontal: 12)),
         ),
         IconButton(
-          onPressed: () => Navigator.of(context).pushNamed('/arrange'),
+          onPressed: () {
+            Navigator.of(context).pushNamed('/arrange').then((_) {
+              _loadPreferences();
+            });
+          },
           icon: const Icon(Icons.sort),
         ),
       ],
