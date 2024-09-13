@@ -40,14 +40,17 @@ class Tig {
 
   Tig({
     required this.date,
-    this.monthTopPriorities = const ['', '', ''],
-    this.weekTopPriorities = const ['', '', ''],
-    this.dayTopPriorities = const ['', '', ''],
+    List<String>? monthTopPriorities,
+    List<String>? weekTopPriorities,
+    List<String>? dayTopPriorities,
     this.brainDump = "",
     List<TimeEntry>? timeTable,
     this.startHour = 7.0,
     this.endHour = 23.0,
-  }) : timeTable = timeTable ?? _generateTimeTable(startHour, endHour);
+  })  : monthTopPriorities = monthTopPriorities ?? ['', '', ''],
+        weekTopPriorities = weekTopPriorities ?? ['', '', ''],
+        dayTopPriorities = dayTopPriorities ?? ['', '', ''],
+        timeTable = timeTable ?? _generateTimeTable(startHour, endHour);
 
   static List<TimeEntry> _generateTimeTable(double startHour, double endHour) {
     List<TimeEntry> timeEntries = [];
@@ -77,10 +80,13 @@ class Tig {
   factory Tig.fromMap(Map<String, dynamic> map) {
     return Tig(
       date: (map['date'] as Timestamp).toDate(),
-      monthTopPriorities: List<String>.from(map['monthTopPriorities'] ?? []),
-      weekTopPriorities: List<String>.from(map['weekTopPriorities'] ?? []),
-      dayTopPriorities: List<String>.from(map['dayTopPriorities'] ?? []),
-      brainDump: map['brainDump'],
+      monthTopPriorities:
+          List<String>.from(map['monthTopPriorities'] ?? ['', '', '']),
+      weekTopPriorities:
+          List<String>.from(map['weekTopPriorities'] ?? ['', '', '']),
+      dayTopPriorities:
+          List<String>.from(map['dayTopPriorities'] ?? ['', '', '']),
+      brainDump: map['brainDump'] ?? "",
       timeTable: (map['timeTable'] as List<dynamic>?)
               ?.map((entry) => TimeEntry.fromMap(entry))
               .toList() ??
