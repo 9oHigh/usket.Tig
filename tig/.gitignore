@@ -45,6 +45,9 @@ app.*.map.json
 # Enviroment variables
 *.env
 
-#Ignore the 'android and ios' folder
+# Ignore the 'android and ios' folder
 android/
 ios/
+
+# Ignore the firebase_options file
+lib/firebase_options.dart
