@@ -2,7 +2,35 @@
 <module type="JAVA_MODULE" version="4">
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
-    <content url="file://$MODULE_DIR$" />
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/tig/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/tig/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/tig/build" />
+      <excludeFolder url="file://$MODULE_DIR$/tig/ios/.symlinks/plugins/google_mobile_ads/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/tig/ios/.symlinks/plugins/google_mobile_ads/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/tig/ios/.symlinks/plugins/google_mobile_ads/build" />
+      <excludeFolder url="file://$MODULE_DIR$/tig/ios/.symlinks/plugins/google_mobile_ads/example/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/tig/ios/.symlinks/plugins/google_mobile_ads/example/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/tig/ios/.symlinks/plugins/google_mobile_ads/example/build" />
+      <excludeFolder url="file://$MODULE_DIR$/tig/ios/.symlinks/plugins/path_provider_foundation/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/tig/ios/.symlinks/plugins/path_provider_foundation/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/tig/ios/.symlinks/plugins/path_provider_foundation/build" />
+      <excludeFolder url="file://$MODULE_DIR$/tig/ios/.symlinks/plugins/path_provider_foundation/example/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/tig/ios/.symlinks/plugins/path_provider_foundation/example/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/tig/ios/.symlinks/plugins/path_provider_foundation/example/build" />
+      <excludeFolder url="file://$MODULE_DIR$/tig/ios/.symlinks/plugins/webview_flutter_wkwebview/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/tig/ios/.symlinks/plugins/webview_flutter_wkwebview/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/tig/ios/.symlinks/plugins/webview_flutter_wkwebview/build" />
+      <excludeFolder url="file://$MODULE_DIR$/tig/ios/.symlinks/plugins/webview_flutter_wkwebview/example/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/tig/ios/.symlinks/plugins/webview_flutter_wkwebview/example/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/tig/ios/.symlinks/plugins/webview_flutter_wkwebview/example/build" />
+      <excludeFolder url="file://$MODULE_DIR$/tig/windows/flutter/ephemeral/.plugin_symlinks/firebase_core/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/tig/windows/flutter/ephemeral/.plugin_symlinks/firebase_core/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/tig/windows/flutter/ephemeral/.plugin_symlinks/firebase_core/build" />
+      <excludeFolder url="file://$MODULE_DIR$/tig/windows/flutter/ephemeral/.plugin_symlinks/firebase_core/example/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/tig/windows/flutter/ephemeral/.plugin_symlinks/firebase_core/example/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/tig/windows/flutter/ephemeral/.plugin_symlinks/firebase_core/example/build" />
+    </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
