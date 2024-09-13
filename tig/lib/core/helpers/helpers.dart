@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
-class RemoveScrollAnimation extends ScrollBehavior {
+class Helpers {
+  static FixedScrollBehavior get fixedScrollBehavior => FixedScrollBehavior();
+}
+
+class FixedScrollBehavior extends ScrollBehavior {
   @override
   ScrollPhysics getScrollPhysics(BuildContext context) =>
       const ClampingScrollPhysics();

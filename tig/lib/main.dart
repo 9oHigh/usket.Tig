@@ -1,39 +1,54 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:tig/features/tig/presentation/widgets/tig_arrange_screen.dart';
-import 'package:tig/features/tig/presentation/screens/tig_screen.dart';
-import 'package:tig/core/utils/remove_scroll_animation.dart';
-import 'package:tig/features/ads/data/datasource/admob_service.dart';
+import 'package:tig/ads/admob_banner.dart';
+import 'package:tig/core/helpers/helpers.dart';
+import 'package:tig/presentation/screens/auth/auth_screen.dart';
+import 'package:tig/presentation/screens/home/home_arrange_screen.dart';
+import 'package:tig/presentation/screens/home/home_screen.dart';
+import 'package:tig/ads/admob_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:tig/core/routes/app_route.dart';
-import 'package:tig/core/theme/theme.dart';
+import 'package:tig/core/theme/app_theme.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(const TigApp());
+  runApp(
+    const ProviderScope(
+      child: TigApp(),
+    ),
+  );
 }
 
 class TigApp extends StatefulWidget {
   const TigApp({super.key});
 
   @override
-  TigAppState createState() => TigAppState();
+  State<TigApp> createState() => _TigApp();
 }
 
-class TigAppState extends State<TigApp> {
+class _TigApp extends State<TigApp> {
   BannerAd? _bannerAd;
   final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
+  late bool _isLoggedIn;
 
   @override
   void initState() {
     super.initState();
+    _checkLoginStatus();
     _initGoogleMobileAds();
     _createBannerAd();
+  }
+
+  void _checkLoginStatus() async {
+    final user = FirebaseAuth.instance.currentUser;
+    _isLoggedIn = user != null;
   }
 
   @override
@@ -41,7 +56,7 @@ class TigAppState extends State<TigApp> {
     return MaterialApp(
       builder: (context, child) {
         return ScrollConfiguration(
-          behavior: RemoveScrollAnimation(),
+          behavior: Helpers.fixedScrollBehavior,
           child: child!,
         );
       },
@@ -52,6 +67,7 @@ class TigAppState extends State<TigApp> {
       home: _TigScreenNavigator(
         navigatorKey: _navigatorKey,
         bannerAd: _bannerAd,
+        isLoggedIn: _isLoggedIn,
       ),
     );
   }
@@ -72,45 +88,49 @@ class TigAppState extends State<TigApp> {
 
 class _TigScreenNavigator extends StatelessWidget {
   const _TigScreenNavigator({
-    super.key,
     required GlobalKey<NavigatorState> navigatorKey,
     required BannerAd? bannerAd,
+    required bool isLoggedIn,
   })  : _navigatorKey = navigatorKey,
-        _bannerAd = bannerAd;
+        _bannerAd = bannerAd,
+        _isLoggedIn = isLoggedIn;
 
   final GlobalKey<NavigatorState> _navigatorKey;
   final BannerAd? _bannerAd;
+  final bool _isLoggedIn;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Navigator(
         key: _navigatorKey,
+        initialRoute: _isLoggedIn ? AppRoute.home : AppRoute.auth,
         onGenerateRoute: (RouteSettings settings) {
-          final route = AppRoute.getRoute(settings.name!);
-
+          var route = AppRoute.getRoute(settings.name!);
           switch (route) {
-            case AppRoute.arrange:
+            case AppRoute.auth:
               return CupertinoPageRoute(
-                builder: (_) => const TigArrangeScreen(),
+                builder: (_) => const AuthScreen(),
                 settings: settings,
               );
             case AppRoute.home:
-            default:
               return CupertinoPageRoute(
-                builder: (_) => const TigScreen(),
+                builder: (_) => const HomeScreen(),
                 settings: settings,
               );
+            case AppRoute.arrange:
+              return CupertinoPageRoute(
+                builder: (_) => const HomeArrangeScreen(),
+                settings: settings,
+              );
+            default:
+              return null;
           }
         },
       ),
-      bottomNavigationBar: _bannerAd == null
-          ? null
-          : Container(
-              margin: const EdgeInsets.only(bottom: 12),
-              height: 75,
-              child: AdWidget(ad: _bannerAd!),
-            ),
+      bottomNavigationBar: AdmobBanner(
+        bannerAd: _bannerAd,
+      ),
     );
   }
 }

@@ -1,0 +1,93 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+class TimeEntry {
+  String activity;
+  double time;
+  bool isSucceed;
+
+  TimeEntry({
+    required this.activity,
+    required this.time,
+    required this.isSucceed,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'activity': activity,
+      'time': time,
+      'isSucceed': isSucceed,
+    };
+  }
+
+  factory TimeEntry.fromMap(Map<String, dynamic> map) {
+    return TimeEntry(
+      activity: map['activity'] ?? '',
+      time: map['time']?.toDouble() ?? 0.0,
+      isSucceed: map['isSucceed'] ?? false,
+    );
+  }
+}
+
+class Tig {
+  DateTime date;
+  List<String> monthTopPriorities;
+  List<String> weekTopPriorities;
+  List<String> dayTopPriorities;
+  String brainDump;
+  List<TimeEntry> timeTable;
+  double startHour;
+  double endHour;
+
+  Tig({
+    required this.date,
+    this.monthTopPriorities = const ['', '', ''],
+    this.weekTopPriorities = const ['', '', ''],
+    this.dayTopPriorities = const ['', '', ''],
+    this.brainDump = "",
+    List<TimeEntry>? timeTable,
+    this.startHour = 7.0,
+    this.endHour = 23.0,
+  }) : timeTable = timeTable ?? _generateTimeTable(startHour, endHour);
+
+  static List<TimeEntry> _generateTimeTable(double startHour, double endHour) {
+    List<TimeEntry> timeEntries = [];
+    for (double time = startHour; time <= endHour; time += 0.5) {
+      timeEntries.add(TimeEntry(
+        activity: '',
+        time: time,
+        isSucceed: false,
+      ));
+    }
+    return timeEntries;
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'date': Timestamp.fromDate(date),
+      'monthTopPriorities': monthTopPriorities,
+      'weekTopPriorities': weekTopPriorities,
+      'dayTopPriorities': dayTopPriorities,
+      'brainDump': brainDump,
+      'timeTable': timeTable.map((entry) => entry.toMap()).toList(),
+      'startHour': startHour,
+      'endHour': endHour,
+    };
+  }
+
+  factory Tig.fromMap(Map<String, dynamic> map) {
+    return Tig(
+      date: (map['date'] as Timestamp).toDate(),
+      monthTopPriorities: List<String>.from(map['monthTopPriorities'] ?? []),
+      weekTopPriorities: List<String>.from(map['weekTopPriorities'] ?? []),
+      dayTopPriorities: List<String>.from(map['dayTopPriorities'] ?? []),
+      brainDump: map['brainDump'],
+      timeTable: (map['timeTable'] as List<dynamic>?)
+              ?.map((entry) => TimeEntry.fromMap(entry))
+              .toList() ??
+          _generateTimeTable(map['startHour']?.toDouble() ?? 7.0,
+              map['endHour']?.toDouble() ?? 23.0),
+      startHour: map['startHour']?.toDouble() ?? 7.0,
+      endHour: map['endHour']?.toDouble() ?? 23.0,
+    );
+  }
+}
