@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tig/ads/admob_banner.dart';
 import 'package:tig/core/helpers/helpers.dart';
+import 'package:tig/data/models/tig.dart';
 import 'package:tig/presentation/screens/auth/auth_screen.dart';
 import 'package:tig/presentation/screens/home/home_arrange_screen.dart';
 import 'package:tig/presentation/screens/home/home_screen.dart';
@@ -13,6 +15,7 @@ import 'package:tig/core/routes/app_route.dart';
 import 'package:tig/core/theme/app_theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:tig/presentation/screens/tig_mode/tig_mode_screen.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -46,9 +49,19 @@ class _TigApp extends State<TigApp> {
     _createBannerAd();
   }
 
+  @override
+  void dispose() {
+    _bannerAd?.dispose();
+    super.dispose();
+  }
+
   void _checkLoginStatus() async {
     final user = FirebaseAuth.instance.currentUser;
     _isLoggedIn = user != null;
+    if (user != null) {
+      SharedPreferences pref = await SharedPreferences.getInstance();
+      pref.setString('userId', user.uid);
+    }
   }
 
   @override
@@ -107,6 +120,7 @@ class _TigScreenNavigator extends StatelessWidget {
         initialRoute: _isLoggedIn ? AppRoute.home : AppRoute.auth,
         onGenerateRoute: (RouteSettings settings) {
           var route = AppRoute.getRoute(settings.name!);
+          final arguments = settings.arguments;
           switch (route) {
             case AppRoute.auth:
               return CupertinoPageRoute(
@@ -123,9 +137,19 @@ class _TigScreenNavigator extends StatelessWidget {
                 builder: (_) => const HomeArrangeScreen(),
                 settings: settings,
               );
+            case AppRoute.tigMode:
+              if (arguments is Tig) {
+                return CupertinoPageRoute(
+                  builder: (_) => TigModeScreen(
+                    tig: arguments,
+                  ),
+                  settings: settings,
+                );
+              }
             default:
               return null;
           }
+          return null;
         },
       ),
       bottomNavigationBar: AdmobBanner(

@@ -45,8 +45,8 @@ class Tig {
     List<String>? dayTopPriorities,
     this.brainDump = "",
     List<TimeEntry>? timeTable,
-    this.startHour = 7.0,
-    this.endHour = 23.0,
+    this.startHour = 0.0,
+    this.endHour = 24.0,
   })  : monthTopPriorities = monthTopPriorities ?? ['', '', ''],
         weekTopPriorities = weekTopPriorities ?? ['', '', ''],
         dayTopPriorities = dayTopPriorities ?? ['', '', ''],
@@ -90,10 +90,10 @@ class Tig {
       timeTable: (map['timeTable'] as List<dynamic>?)
               ?.map((entry) => TimeEntry.fromMap(entry))
               .toList() ??
-          _generateTimeTable(map['startHour']?.toDouble() ?? 7.0,
-              map['endHour']?.toDouble() ?? 23.0),
-      startHour: map['startHour']?.toDouble() ?? 7.0,
-      endHour: map['endHour']?.toDouble() ?? 23.0,
+          _generateTimeTable(map['startHour']?.toDouble() ?? 0.0,
+              map['endHour']?.toDouble() ?? 24.0),
+      startHour: map['startHour']?.toDouble() ?? 0.0,
+      endHour: map['endHour']?.toDouble() ?? 24.0,
     );
   }
 }

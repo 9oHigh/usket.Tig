@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tig/core/routes/app_route.dart';
 import 'package:tig/data/models/tig.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tig/presentation/providers/tig/tig_provider.dart';
@@ -82,7 +83,6 @@ class _HomeScreen extends ConsumerState<HomeScreen>
   Future<void> _saveTigData() async {
     final tigUsecase = ref.read(tigUseCaseProvider);
     await tigUsecase.saveTigData(_userId, tigData);
-    // MARK: - 티그 모드 화면으로 이동
   }
 
   Future<void> _loadPreferences() async {
@@ -93,6 +93,13 @@ class _HomeScreen extends ConsumerState<HomeScreen>
       _isOnDaily = pref.getBool('isOnDaily') ?? true;
       _isOnBraindump = pref.getBool('isOnBraindump') ?? true;
     });
+  }
+
+  void pushTigModeScreen(BuildContext context) {
+    Navigator.of(context).pushNamed(
+      AppRoute.tigMode,
+      arguments: tigData,
+    );
   }
 
   @override
@@ -117,75 +124,74 @@ class _HomeScreen extends ConsumerState<HomeScreen>
           ],
         ),
         floatingActionButton: _buildFloatingActionButton(),
-        body: PageStorage(
-          bucket: PageStorageBucket(),
-          child: Column(
-            children: [
-              Expanded(
-                child: ListView(
-                  keyboardDismissBehavior:
-                      ScrollViewKeyboardDismissBehavior.onDrag,
-                  controller: _scrollController,
-                  padding: const EdgeInsets.all(16.0),
-                  children: [
-                    _buildDateSelector(),
-                    const SizedBox(height: 16.0),
-                    if (_isOnMonthly)
-                      _buildExpandableSection(
-                        "Monthly priority top3",
-                        _isMonthExpanded,
-                        () => setState(
-                            () => _isMonthExpanded = !_isMonthExpanded),
-                        tigData.monthTopPriorities,
-                        (index, value) {
-                          setState(() {
-                            tigData.monthTopPriorities[index] = value;
-                          });
-                        },
-                      ),
-                    const SizedBox(height: 16.0),
-                    if (_isOnWeekly)
-                      _buildExpandableSection(
-                        "Weekly priority top3",
-                        _isWeekExpanded,
-                        () =>
-                            setState(() => _isWeekExpanded = !_isWeekExpanded),
-                        tigData.weekTopPriorities,
-                        (index, value) {
-                          setState(() {
-                            tigData.weekTopPriorities[index] = value;
-                          });
-                        },
-                      ),
-                    const SizedBox(height: 16.0),
-                    if (_isOnDaily)
-                      _buildExpandableSection(
-                        "Daily priority top3",
-                        _isDayExpanded,
-                        () => setState(() => _isDayExpanded = !_isDayExpanded),
-                        tigData.dayTopPriorities,
-                        (index, value) {
-                          setState(() {
-                            tigData.dayTopPriorities[index] = value;
-                          });
-                        },
-                      ),
-                    const SizedBox(height: 16.0),
-                    if (_isOnBraindump) _buildBrainDump(),
-                    const SizedBox(height: 16.0),
-                    _buildTimeTable(),
-                    const SizedBox(height: 16.0),
-                    SizedBox(
-                      child: ElevatedButton(
-                        onPressed: _saveTigData,
-                        child: const Text('시작 하기'),
-                      ),
+        body: Column(
+          children: [
+            Expanded(
+              child: ListView(
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
+                controller: _scrollController,
+                padding: const EdgeInsets.all(16.0),
+                children: [
+                  _buildDateSelector(),
+                  const SizedBox(height: 16.0),
+                  if (_isOnMonthly)
+                    _buildExpandableSection(
+                      "Monthly priority top3",
+                      _isMonthExpanded,
+                      () =>
+                          setState(() => _isMonthExpanded = !_isMonthExpanded),
+                      tigData.monthTopPriorities,
+                      (index, value) {
+                        setState(() {
+                          tigData.monthTopPriorities[index] = value;
+                        });
+                      },
                     ),
-                  ],
-                ),
+                  const SizedBox(height: 16.0),
+                  if (_isOnWeekly)
+                    _buildExpandableSection(
+                      "Weekly priority top3",
+                      _isWeekExpanded,
+                      () => setState(() => _isWeekExpanded = !_isWeekExpanded),
+                      tigData.weekTopPriorities,
+                      (index, value) {
+                        setState(() {
+                          tigData.weekTopPriorities[index] = value;
+                        });
+                      },
+                    ),
+                  const SizedBox(height: 16.0),
+                  if (_isOnDaily)
+                    _buildExpandableSection(
+                      "Daily priority top3",
+                      _isDayExpanded,
+                      () => setState(() => _isDayExpanded = !_isDayExpanded),
+                      tigData.dayTopPriorities,
+                      (index, value) {
+                        setState(() {
+                          tigData.dayTopPriorities[index] = value;
+                        });
+                      },
+                    ),
+                  const SizedBox(height: 16.0),
+                  if (_isOnBraindump) _buildBrainDump(),
+                  const SizedBox(height: 16.0),
+                  _buildTimeTable(),
+                  const SizedBox(height: 16.0),
+                  SizedBox(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        _saveTigData();
+                        pushTigModeScreen(context);
+                      },
+                      child: const Text('시작 하기'),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -205,7 +211,7 @@ class _HomeScreen extends ConsumerState<HomeScreen>
         ),
         IconButton(
           onPressed: () {
-            Navigator.of(context).pushNamed('/arrange').then((_) {
+            Navigator.of(context).pushNamed(AppRoute.arrange).then((_) {
               _loadPreferences();
             });
           },
@@ -356,8 +362,7 @@ class _HomeScreen extends ConsumerState<HomeScreen>
   }
 
   Widget _buildTimeTable() {
-    final List<double> timeSlots =
-        List.generate(33, (index) => 7 + index * 0.5);
+    final List<double> timeSlots = List.generate(48, (index) => index * 0.5);
 
     return Column(
       children: timeSlots.map((timeSlot) {
@@ -385,20 +390,24 @@ class _HomeScreen extends ConsumerState<HomeScreen>
               child: TextField(
                 controller: TextEditingController(text: timeEntry.activity),
                 onChanged: (text) {
-                  setState(() {
-                    final index = tigData.timeTable.indexWhere(
-                      (entry) => entry.time == timeSlot,
-                    );
-                    if (index != -1) {
-                      tigData.timeTable[index].activity = text;
-                    } else {
-                      tigData.timeTable.add(TimeEntry(
-                        activity: text,
-                        time: timeSlot,
-                        isSucceed: false,
-                      ));
-                    }
-                  });
+                  setState(
+                    () {
+                      final index = tigData.timeTable.indexWhere(
+                        (entry) => entry.time == timeSlot,
+                      );
+                      if (index != -1) {
+                        tigData.timeTable[index].activity = text;
+                      } else {
+                        tigData.timeTable.add(
+                          TimeEntry(
+                            activity: text,
+                            time: timeSlot,
+                            isSucceed: false,
+                          ),
+                        );
+                      }
+                    },
+                  );
                 },
                 decoration: const InputDecoration(
                   hintText: "Enter activity",
