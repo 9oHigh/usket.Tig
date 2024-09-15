@@ -175,12 +175,6 @@ class _HomeScreen extends ConsumerState<HomeScreen>
                     const SizedBox(height: 16.0),
                     _buildTimeTable(),
                     const SizedBox(height: 16.0),
-                    ElevatedButton(
-                      onPressed: () {
-                        // MARK: - 회고 화면으로 이동
-                      },
-                      child: const Text('회고 하기'),
-                    ),
                     SizedBox(
                       child: ElevatedButton(
                         onPressed: _saveTigData,
