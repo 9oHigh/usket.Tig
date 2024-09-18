@@ -15,6 +15,7 @@ import 'package:tig/core/routes/app_route.dart';
 import 'package:tig/core/theme/app_theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:tig/presentation/screens/menu/menu_screen.dart';
 import 'package:tig/presentation/screens/tig_mode/tig_mode_screen.dart';
 import 'firebase_options.dart';
 
@@ -146,6 +147,11 @@ class _TigScreenNavigator extends StatelessWidget {
                   settings: settings,
                 );
               }
+            case AppRoute.menu:
+              return CupertinoPageRoute(
+                builder: (_) => const MenuScreen(),
+                settings: settings,
+              );
             default:
               return null;
           }
