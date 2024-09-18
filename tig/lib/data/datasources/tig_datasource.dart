@@ -29,6 +29,28 @@ class TigDatasource {
     }
   }
 
+  Future<List<Tig>> getTigsForMonth(String userId, int year, int month) async {
+    try {
+      final userDoc = await _firestore.collection('users').doc(userId).get();
+
+      if (userDoc.exists && userDoc.data() != null) {
+        final userData = userDoc.data()!;
+        if (userData.containsKey('tigs')) {
+          final List<dynamic> tigsData = userData['tigs'];
+          final List<Tig> matchedTigs = tigsData
+              .map((tigData) => Tig.fromMap(tigData))
+              .where((tig) => tig.date.year == year && tig.date.month == month)
+              .toList();
+
+          return matchedTigs;
+        }
+      }
+      return [];
+    } catch (e) {
+      return [];
+    }
+  }
+
   Future<void> saveTigData(String userId, Tig tig) async {
     try {
       final userDoc = await _firestore.collection('users').doc(userId).get();
@@ -44,6 +66,8 @@ class TigDatasource {
               existingTig.date.day == tig.date.day;
         });
 
+        tig.grade = _getGrade(tig);
+        
         if (existingTigIndex != -1) {
           tigsData[existingTigIndex] = tig.toMap();
         } else {
@@ -59,5 +83,15 @@ class TigDatasource {
     } catch (e) {
       return;
     }
+  }
+
+  int _getGrade(Tig tig) {
+    int successCount = tig.timeTable.where((time) => time.isSucceed).length;
+
+    if (successCount == 0) return 0;
+    if (successCount < 6) return 1;
+    if (successCount < 11) return 2;
+    if (successCount < 16) return 3;
+    return 4;
   }
 }

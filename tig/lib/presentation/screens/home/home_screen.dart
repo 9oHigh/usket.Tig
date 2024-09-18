@@ -16,13 +16,9 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreen extends ConsumerState<HomeScreen>
     with SingleTickerProviderStateMixin {
-  bool _isMonthExpanded = false;
-  bool _isWeekExpanded = false;
   bool _isDayExpanded = false;
   bool _isFabExpanded = false;
   bool _isAtBottom = false;
-  bool _isOnMonthly = true;
-  bool _isOnWeekly = true;
   bool _isOnDaily = true;
   bool _isOnBraindump = true;
 
@@ -88,14 +84,12 @@ class _HomeScreen extends ConsumerState<HomeScreen>
   Future<void> _loadPreferences() async {
     final SharedPreferences pref = await SharedPreferences.getInstance();
     setState(() {
-      _isOnMonthly = pref.getBool('isOnMonthly') ?? true;
-      _isOnWeekly = pref.getBool('isOnWeekly') ?? true;
       _isOnDaily = pref.getBool('isOnDaily') ?? true;
       _isOnBraindump = pref.getBool('isOnBraindump') ?? true;
     });
   }
 
-  void pushTigModeScreen(BuildContext context) {
+  pushTigModeScreen(BuildContext context) {
     Navigator.of(context).pushNamed(
       AppRoute.tigMode,
       arguments: tigData,
@@ -118,7 +112,9 @@ class _HomeScreen extends ConsumerState<HomeScreen>
           ),
           actions: [
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushNamed(context, AppRoute.menu);
+              },
               icon: const Icon(Icons.menu),
             ),
           ],
@@ -134,35 +130,8 @@ class _HomeScreen extends ConsumerState<HomeScreen>
                 padding: const EdgeInsets.all(16.0),
                 children: [
                   _buildDateSelector(),
-                  const SizedBox(height: 16.0),
-                  if (_isOnMonthly)
-                    _buildExpandableSection(
-                      "Monthly priority top3",
-                      _isMonthExpanded,
-                      () =>
-                          setState(() => _isMonthExpanded = !_isMonthExpanded),
-                      tigData.monthTopPriorities,
-                      (index, value) {
-                        setState(() {
-                          tigData.monthTopPriorities[index] = value;
-                        });
-                      },
-                    ),
-                  const SizedBox(height: 16.0),
-                  if (_isOnWeekly)
-                    _buildExpandableSection(
-                      "Weekly priority top3",
-                      _isWeekExpanded,
-                      () => setState(() => _isWeekExpanded = !_isWeekExpanded),
-                      tigData.weekTopPriorities,
-                      (index, value) {
-                        setState(() {
-                          tigData.weekTopPriorities[index] = value;
-                        });
-                      },
-                    ),
-                  const SizedBox(height: 16.0),
-                  if (_isOnDaily)
+                  if (_isOnDaily) ...{
+                    const SizedBox(height: 16.0),
                     _buildExpandableSection(
                       "Daily priority top3",
                       _isDayExpanded,
@@ -174,9 +143,20 @@ class _HomeScreen extends ConsumerState<HomeScreen>
                         });
                       },
                     ),
+                  },
+                  if (_isOnBraindump) ...{
+                    const SizedBox(height: 16.0),
+                    _buildBrainDump(),
+                  },
                   const SizedBox(height: 16.0),
-                  if (_isOnBraindump) _buildBrainDump(),
-                  const SizedBox(height: 16.0),
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('End Time'),
+                      Text('Success'),
+                    ],
+                  ),
+                  const SizedBox(height: 8.0),
                   _buildTimeTable(),
                   const SizedBox(height: 16.0),
                   SizedBox(
@@ -362,13 +342,13 @@ class _HomeScreen extends ConsumerState<HomeScreen>
   }
 
   Widget _buildTimeTable() {
-    final List<double> timeSlots = List.generate(48, (index) => index * 0.5);
+    final List<double> timeSlots =
+        List.generate(39, (index) => 5.0 + index * 0.5);
 
     return Column(
       children: timeSlots.map((timeSlot) {
         final int hour = timeSlot.floor();
         final int minute = (timeSlot - hour) == 0.5 ? 30 : 0;
-
         TimeEntry? timeEntry = tigData.timeTable.firstWhere(
           (entry) => entry.time == timeSlot,
           orElse: () =>

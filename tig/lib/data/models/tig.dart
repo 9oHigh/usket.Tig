@@ -30,13 +30,12 @@ class TimeEntry {
 
 class Tig {
   DateTime date;
-  List<String> monthTopPriorities;
-  List<String> weekTopPriorities;
   List<String> dayTopPriorities;
   String brainDump;
   List<TimeEntry> timeTable;
   double startHour;
   double endHour;
+  int grade;
 
   Tig({
     required this.date,
@@ -45,11 +44,10 @@ class Tig {
     List<String>? dayTopPriorities,
     this.brainDump = "",
     List<TimeEntry>? timeTable,
-    this.startHour = 0.0,
+    this.startHour = 5.0,
     this.endHour = 24.0,
-  })  : monthTopPriorities = monthTopPriorities ?? ['', '', ''],
-        weekTopPriorities = weekTopPriorities ?? ['', '', ''],
-        dayTopPriorities = dayTopPriorities ?? ['', '', ''],
+    this.grade = 0,
+  })  : dayTopPriorities = dayTopPriorities ?? ['', '', ''],
         timeTable = timeTable ?? _generateTimeTable(startHour, endHour);
 
   static List<TimeEntry> _generateTimeTable(double startHour, double endHour) {
@@ -67,23 +65,18 @@ class Tig {
   Map<String, dynamic> toMap() {
     return {
       'date': Timestamp.fromDate(date),
-      'monthTopPriorities': monthTopPriorities,
-      'weekTopPriorities': weekTopPriorities,
       'dayTopPriorities': dayTopPriorities,
       'brainDump': brainDump,
       'timeTable': timeTable.map((entry) => entry.toMap()).toList(),
       'startHour': startHour,
       'endHour': endHour,
+      'grade': grade
     };
   }
 
   factory Tig.fromMap(Map<String, dynamic> map) {
     return Tig(
       date: (map['date'] as Timestamp).toDate(),
-      monthTopPriorities:
-          List<String>.from(map['monthTopPriorities'] ?? ['', '', '']),
-      weekTopPriorities:
-          List<String>.from(map['weekTopPriorities'] ?? ['', '', '']),
       dayTopPriorities:
           List<String>.from(map['dayTopPriorities'] ?? ['', '', '']),
       brainDump: map['brainDump'] ?? "",
@@ -92,8 +85,9 @@ class Tig {
               .toList() ??
           _generateTimeTable(map['startHour']?.toDouble() ?? 0.0,
               map['endHour']?.toDouble() ?? 24.0),
-      startHour: map['startHour']?.toDouble() ?? 0.0,
+      startHour: map['startHour']?.toDouble() ?? 5.0,
       endHour: map['endHour']?.toDouble() ?? 24.0,
+      grade: map['grade'] ?? 0,
     );
   }
 }
