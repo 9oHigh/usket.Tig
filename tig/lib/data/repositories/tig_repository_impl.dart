@@ -14,4 +14,8 @@ class TigRepositoryImpl implements TigRepository {
   @override
   Future<void> saveTigData(String userId, Tig tig) async =>
       await _tigDataSource.saveTigData(userId, tig);
+
+  @override
+  Future<List<Tig>> getTigsForMonth(String userId, int year, int month) async =>
+      await _tigDataSource.getTigsForMonth(userId, year, month);
 }

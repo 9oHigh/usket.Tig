@@ -10,6 +10,10 @@ class TigUsecase {
     return await repository.getTigData(userId, date);
   }
 
+  Future<List<Tig>> getTigsForMonth(String userId, int year, int month) async {
+    return await repository.getTigsForMonth(userId, year, month);
+  }
+
   Future<void> saveTigData(String userId, Tig tig) async {
     await repository.saveTigData(userId, tig);
   }
