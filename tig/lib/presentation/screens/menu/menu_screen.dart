@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tig/data/models/tig.dart';
 import 'package:tig/presentation/providers/tig/tig_provider.dart';
@@ -86,10 +87,10 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
               ),
             ),
             const SizedBox(
-              height: 18,
+              height: 16,
             ),
             SizedBox(
-              height: 300,
+              height: 250,
               width: MediaQuery.sizeOf(context).width,
               child: GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -133,10 +134,13 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
                 },
               ),
             ),
+            const SizedBox(
+              height: 16,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                TextButton(
+                ElevatedButton(
                   onPressed: () {},
                   child: const Text(
                     '구독하기',
@@ -147,7 +151,7 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
                     ),
                   ),
                 ),
-                const Text('490₩/월  '),
+                const Text('490₩/월 '),
               ],
             ),
             const SizedBox(height: 16),
@@ -206,9 +210,40 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
                 );
               }),
             ),
+            Row(
+              children: [
+                ElevatedButton(
+                  onPressed: _sendEmail,
+                  child: const Text(
+                    '문의 하기',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                )
+              ],
+            ),
           ],
         ),
       ),
     );
+  }
+
+  _sendEmail() async {
+    String body = "";
+    body += "아래의 내용을 함께 보내주시면 큰 도움이 됩니다😊\n";
+    body += "사용 중인 스마트폰: \n";
+    body += "오류 혹은 개선점: \n\n\n";
+    body += "이 외에 문의할 것이 있다면 편하게 작성해주세요 :)\n";
+    final Email email = Email(
+      subject: "문의드립니다.",
+      body: body,
+      recipients: ['usket@icloud.com'],
+      isHTML: false,
+    );
+
+    await FlutterEmailSender.send(email);
   }
 }
