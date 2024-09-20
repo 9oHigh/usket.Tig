@@ -15,6 +15,12 @@ ThemeData buildLightTheme() {
     textTheme: const TextTheme(
       bodyLarge: TextStyle(color: Colors.black),
     ),
+    pageTransitionsTheme: const PageTransitionsTheme(
+      builders: {
+        TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+      },
+    ),
   );
 }
 
