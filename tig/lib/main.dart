@@ -18,17 +18,21 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tig/presentation/screens/menu/menu_screen.dart';
 import 'package:tig/presentation/screens/tig_mode/tig_mode_screen.dart';
 import 'firebase_options.dart';
+import 'package:home_widget/home_widget.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await HomeWidget.registerInteractivityCallback(backgroundCallback);
   runApp(
     const ProviderScope(
       child: TigApp(),
     ),
   );
 }
+
+Future<void> backgroundCallback(Uri? uri) async {}
 
 class TigApp extends StatefulWidget {
   const TigApp({super.key});
@@ -116,51 +120,69 @@ class _TigScreenNavigator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Navigator(
-        key: _navigatorKey,
-        initialRoute: _isLoggedIn ? AppRoute.home : AppRoute.auth,
-        onGenerateRoute: (RouteSettings settings) {
-          var route = AppRoute.getRoute(settings.name!);
-          final arguments = settings.arguments;
-          switch (route) {
-            case AppRoute.auth:
-              return CupertinoPageRoute(
-                builder: (_) => const AuthScreen(),
-                settings: settings,
-              );
-            case AppRoute.home:
-              return CupertinoPageRoute(
-                builder: (_) => const HomeScreen(),
-                settings: settings,
-              );
-            case AppRoute.arrange:
-              return CupertinoPageRoute(
-                builder: (_) => const HomeArrangeScreen(),
-                settings: settings,
-              );
-            case AppRoute.tigMode:
-              if (arguments is Tig) {
+      body: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (bool didPop, Object? result) {
+          final allowed = _onWillPop();
+          if (allowed) {
+            _navigatorKey.currentState?.pop();
+          }
+        },
+        child: Navigator(
+          key: _navigatorKey,
+          initialRoute: _isLoggedIn ? AppRoute.home : AppRoute.auth,
+          onGenerateRoute: (RouteSettings settings) {
+            var route = AppRoute.getRoute(settings.name!);
+            final arguments = settings.arguments;
+            switch (route) {
+              case AppRoute.auth:
                 return CupertinoPageRoute(
-                  builder: (_) => TigModeScreen(
-                    tig: arguments,
-                  ),
+                  builder: (_) => const AuthScreen(),
                   settings: settings,
                 );
-              }
-            case AppRoute.menu:
-              return CupertinoPageRoute(
-                builder: (_) => const MenuScreen(),
-                settings: settings,
-              );
-            default:
-              return null;
-          }
-          return null;
-        },
+              case AppRoute.home:
+                return CupertinoPageRoute(
+                  builder: (_) => const HomeScreen(),
+                  settings: settings,
+                );
+              case AppRoute.arrange:
+                return CupertinoPageRoute(
+                  builder: (_) => const HomeArrangeScreen(),
+                  settings: settings,
+                );
+              case AppRoute.tigMode:
+                if (arguments is Tig) {
+                  return CupertinoPageRoute(
+                    builder: (_) => TigModeScreen(
+                      tig: arguments,
+                    ),
+                    settings: settings,
+                  );
+                }
+              case AppRoute.menu:
+                return CupertinoPageRoute(
+                  builder: (_) => const MenuScreen(),
+                  settings: settings,
+                );
+              default:
+                return null;
+            }
+            return null;
+          },
+        ),
       ),
-      bottomNavigationBar: AdmobBanner(
-        bannerAd: _bannerAd,
+      bottomNavigationBar: SafeArea(
+        child: AdmobBanner(
+          bannerAd: _bannerAd,
+        ),
       ),
     );
+  }
+
+  bool _onWillPop() {
+    if (_navigatorKey.currentState?.canPop() ?? false) {
+      return true;
+    }
+    return false;
   }
 }

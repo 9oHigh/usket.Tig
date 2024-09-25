@@ -39,8 +39,6 @@ class Tig {
 
   Tig({
     required this.date,
-    List<String>? monthTopPriorities,
-    List<String>? weekTopPriorities,
     List<String>? dayTopPriorities,
     this.brainDump = "",
     List<TimeEntry>? timeTable,

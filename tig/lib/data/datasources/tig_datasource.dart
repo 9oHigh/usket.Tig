@@ -41,7 +41,7 @@ class TigDatasource {
               .map((tigData) => Tig.fromMap(tigData))
               .where((tig) => tig.date.year == year && tig.date.month == month)
               .toList();
-
+         
           return matchedTigs;
         }
       }
@@ -67,7 +67,7 @@ class TigDatasource {
         });
 
         tig.grade = _getGrade(tig);
-        
+
         if (existingTigIndex != -1) {
           tigsData[existingTigIndex] = tig.toMap();
         } else {
