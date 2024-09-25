@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:home_widget/home_widget.dart';
 import 'package:tig/data/models/tig.dart';
 import 'package:tig/presentation/providers/tig/tig_provider.dart';
 
@@ -32,9 +35,65 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
     final tigUsecase = ref.read(tigUseCaseProvider);
     final monthlyTigs = await tigUsecase.getTigsForMonth(
         _userId, _currentMonth.year, _currentMonth.month);
+
+    await saveMonthlyTigsToPreferences(monthlyTigs);
+    await saveTodayTigsToPreferences(monthlyTigs);
+
     setState(() {
       _monthlyTigs = monthlyTigs;
     });
+  }
+
+  Future<void> saveMonthlyTigsToPreferences(List<Tig> monthlyTigs) async {
+    final monthlyTigsJson = jsonEncode(
+      monthlyTigs.map((tig) {
+        var tigMap = tig.toMap();
+        tigMap['date'] = tig.date.toIso8601String();
+        return tigMap;
+      }).toList(),
+    );
+
+    await HomeWidget.saveWidgetData<int>("current_month", _currentMonth.month);
+    await HomeWidget.saveWidgetData<String>("monthly_tigs", monthlyTigsJson);
+    await HomeWidget.updateWidget(
+      name: 'LargeWidgetProvider',
+      androidName: 'LargeWidgetProvider',
+    );
+  }
+
+  Future<void> saveTodayTigsToPreferences(List<Tig> monthlyTigs) async {
+    final today = DateTime.now();
+    Tig? todayTig;
+
+    for (var tig in monthlyTigs) {
+      if (tig.date.year == today.year &&
+          tig.date.month == today.month &&
+          tig.date.day == today.day) {
+        todayTig = tig;
+        break;
+      }
+    }
+
+    if (todayTig != null) {
+      final todayTigJson = jsonEncode({
+        ...todayTig.toMap(),
+        'date': todayTig.date.toIso8601String(),
+      });
+
+      await HomeWidget.saveWidgetData<int>("current_day", _currentMonth.day);
+      await HomeWidget.saveWidgetData<String>("today_tig", todayTigJson);
+      await HomeWidget.updateWidget(
+        name: 'SmallWidgetProvider',
+        androidName: 'SmallWidgetProvider',
+      );
+    } else {
+      await HomeWidget.saveWidgetData<int>("current_day", _currentMonth.day);
+      await HomeWidget.saveWidgetData<String>("today_tig", null);
+      await HomeWidget.updateWidget(
+        name: 'SmallWidgetProvider',
+        androidName: 'SmallWidgetProvider',
+      );
+    }
   }
 
   Color _getColorForGrade(int grade) {
@@ -52,6 +111,22 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
       default:
         return const Color.fromARGB(255, 231, 231, 231);
     }
+  }
+
+  _sendEmail() async {
+    String body = "";
+    body += "아래의 내용을 함께 보내주시면 큰 도움이 됩니다😊\n";
+    body += "사용 중인 스마트폰: \n";
+    body += "오류 혹은 개선점: \n\n\n";
+    body += "이 외에 문의할 것이 있다면 편하게 작성해주세요 :)\n";
+    final Email email = Email(
+      subject: "문의드립니다.",
+      body: body,
+      recipients: ['usket@icloud.com'],
+      isHTML: false,
+    );
+
+    await FlutterEmailSender.send(email);
   }
 
   @override
@@ -229,21 +304,5 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
         ),
       ),
     );
-  }
-
-  _sendEmail() async {
-    String body = "";
-    body += "아래의 내용을 함께 보내주시면 큰 도움이 됩니다😊\n";
-    body += "사용 중인 스마트폰: \n";
-    body += "오류 혹은 개선점: \n\n\n";
-    body += "이 외에 문의할 것이 있다면 편하게 작성해주세요 :)\n";
-    final Email email = Email(
-      subject: "문의드립니다.",
-      body: body,
-      recipients: ['usket@icloud.com'],
-      isHTML: false,
-    );
-
-    await FlutterEmailSender.send(email);
   }
 }

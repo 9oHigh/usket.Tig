@@ -18,17 +18,21 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tig/presentation/screens/menu/menu_screen.dart';
 import 'package:tig/presentation/screens/tig_mode/tig_mode_screen.dart';
 import 'firebase_options.dart';
+import 'package:home_widget/home_widget.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await HomeWidget.registerInteractivityCallback(backgroundCallback);
   runApp(
     const ProviderScope(
       child: TigApp(),
     ),
   );
 }
+
+Future<void> backgroundCallback(Uri? uri) async {}
 
 class TigApp extends StatefulWidget {
   const TigApp({super.key});
