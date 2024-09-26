@@ -29,6 +29,7 @@ class _HomeScreen extends ConsumerState<HomeScreen>
   late AnimationController _animationController;
   late TextEditingController _brainDumpController;
   late String _userId;
+  bool _fullAdIsLoading = false;
 
   @override
   void initState() {
@@ -90,6 +91,21 @@ class _HomeScreen extends ConsumerState<HomeScreen>
     });
   }
 
+  _showFullScreenAd() {
+    setState(() {
+      _fullAdIsLoading = true;
+    });
+
+    AdMobService.loadInterstitialAd(
+        () => _pushTigModeScreen(context), _setFullAdLoaded);
+  }
+
+  _setFullAdLoaded() {
+    setState(() {
+      _fullAdIsLoading = false;
+    });
+  }
+
   _pushTigModeScreen(BuildContext context) {
     Navigator.of(context).pushNamed(
       AppRoute.tigMode,
@@ -99,84 +115,92 @@ class _HomeScreen extends ConsumerState<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            'Time Box Planner',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          actions: [
-            IconButton(
-              onPressed: () {
-                Navigator.pushNamed(context, AppRoute.menu);
-              },
-              icon: const Icon(Icons.menu),
-            ),
-          ],
-        ),
-        floatingActionButton: _buildFloatingActionButton(),
-        body: Column(
-          children: [
-            Expanded(
-              child: ListView(
-                keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior.onDrag,
-                controller: _scrollController,
-                padding: const EdgeInsets.all(16.0),
-                children: [
-                  _buildDateSelector(),
-                  if (_isOnDaily) ...{
-                    const SizedBox(height: 16.0),
-                    _buildExpandableSection(
-                      "Daily priority top3",
-                      _isDayExpanded,
-                      () => setState(() => _isDayExpanded = !_isDayExpanded),
-                      tigData.dayTopPriorities,
-                      (index, value) {
-                        setState(() {
-                          tigData.dayTopPriorities[index] = value;
-                        });
-                      },
-                    ),
-                  },
-                  if (_isOnBraindump) ...{
-                    const SizedBox(height: 16.0),
-                    _buildBrainDump(),
-                  },
-                  const SizedBox(height: 16.0),
-                  const Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('End Time'),
-                      Text('Success'),
-                    ],
-                  ),
-                  const SizedBox(height: 8.0),
-                  _buildTimeTable(),
-                  const SizedBox(height: 16.0),
-                  SizedBox(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        _saveTigData();
-                        AdMobService.loadInterstitialAd(
-                          () => _pushTigModeScreen(context),
-                        );
-                      },
-                      child: const Text('시작 하기'),
-                    ),
-                  ),
-                ],
+    return Stack(
+      children: [
+        Scaffold(
+          appBar: AppBar(
+            title: const Text(
+              'Time Box Planner',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
               ),
             ),
-          ],
+            actions: [
+              IconButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, AppRoute.menu);
+                },
+                icon: const Icon(Icons.menu),
+              ),
+            ],
+          ),
+          floatingActionButton: _buildFloatingActionButton(),
+          body: Column(
+            children: [
+              Expanded(
+                child: ListView(
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  controller: _scrollController,
+                  padding: const EdgeInsets.all(16.0),
+                  children: [
+                    _buildDateSelector(),
+                    if (_isOnDaily) ...{
+                      const SizedBox(height: 16.0),
+                      _buildExpandableSection(
+                        "Daily priority top3",
+                        _isDayExpanded,
+                        () => setState(() => _isDayExpanded = !_isDayExpanded),
+                        tigData.dayTopPriorities,
+                        (index, value) {
+                          setState(() {
+                            tigData.dayTopPriorities[index] = value;
+                          });
+                        },
+                      ),
+                    },
+                    if (_isOnBraindump) ...{
+                      const SizedBox(height: 16.0),
+                      _buildBrainDump(),
+                    },
+                    const SizedBox(height: 16.0),
+                    const Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('End Time'),
+                        Text('Success'),
+                      ],
+                    ),
+                    const SizedBox(height: 8.0),
+                    _buildTimeTable(),
+                    const SizedBox(height: 16.0),
+                    SizedBox(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          _saveTigData();
+                          _showFullScreenAd();
+                        },
+                        child: const Text('시작 하기'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
+        if (_fullAdIsLoading) ...[
+          AbsorbPointer(
+            absorbing: true,
+            child: Container(
+              color: Colors.black54,
+              child: const Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          ),
+        ],
+      ],
     );
   }
 

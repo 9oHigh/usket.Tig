@@ -33,14 +33,14 @@ class AdMobService {
 
   static InterstitialAd? _interstitialAd;
 
-  static void loadInterstitialAd(VoidCallback onAdClosed) {
+  static void loadInterstitialAd(VoidCallback onAdClosed, VoidCallback loaded) {
     InterstitialAd.load(
       adUnitId: interstitialAdUnitId!,
       request: const AdRequest(),
       adLoadCallback: InterstitialAdLoadCallback(
         onAdLoaded: (InterstitialAd ad) {
           _interstitialAd = ad;
-          showInterstitialAd(onAdClosed);
+          showInterstitialAd(onAdClosed, loaded);
         },
         onAdFailedToLoad: (LoadAdError error) {
           _interstitialAd = null;
@@ -49,14 +49,17 @@ class AdMobService {
     );
   }
 
-  static void showInterstitialAd(VoidCallback onAdClosed) {
+  static void showInterstitialAd(VoidCallback onAdClosed, VoidCallback loaded) {
     _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
-       onAdDismissedFullScreenContent: (InterstitialAd ad) {
+      onAdDismissedFullScreenContent: (InterstitialAd ad) {
         ad.dispose();
+        loaded();
         onAdClosed();
       },
       onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
         ad.dispose();
+        loaded();
+        onAdClosed();
       },
     );
     _interstitialAd!.show();
