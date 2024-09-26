@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -95,8 +97,14 @@ class _TigApp extends State<TigApp> {
   }
 
   void _createBannerAd() {
+    FlutterView view = WidgetsBinding.instance.platformDispatcher.views.first;
+    Size size = view.physicalSize / view.devicePixelRatio;
+    AdSize adSize = AdSize(
+      width: size.width.truncate(),
+      height: AdSize.fullBanner.height,
+    );
     _bannerAd = BannerAd(
-      size: AdSize.fullBanner,
+      size: adSize,
       adUnitId: AdMobService.bannerAdUnitId ?? '',
       listener: AdMobService.bannerAdListener,
       request: const AdRequest(),
