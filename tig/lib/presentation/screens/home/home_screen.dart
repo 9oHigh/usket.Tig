@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tig/ads/admob_service.dart';
 import 'package:tig/core/routes/app_route.dart';
 import 'package:tig/data/models/tig.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -89,7 +90,7 @@ class _HomeScreen extends ConsumerState<HomeScreen>
     });
   }
 
-  pushTigModeScreen(BuildContext context) {
+  _pushTigModeScreen(BuildContext context) {
     Navigator.of(context).pushNamed(
       AppRoute.tigMode,
       arguments: tigData,
@@ -163,7 +164,9 @@ class _HomeScreen extends ConsumerState<HomeScreen>
                     child: ElevatedButton(
                       onPressed: () {
                         _saveTigData();
-                        pushTigModeScreen(context);
+                        AdMobService.loadInterstitialAd(
+                          () => _pushTigModeScreen(context),
+                        );
                       },
                       child: const Text('시작 하기'),
                     ),
