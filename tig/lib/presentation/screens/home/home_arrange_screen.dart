@@ -23,8 +23,8 @@ class HomeArrangeScreen extends StatefulWidget {
 }
 
 class _HomeArrangeScreen extends State<HomeArrangeScreen> {
-  bool _isOnDaily = false;
-  bool _isOnBraindump = false;
+  bool _isOnDaily = true;
+  bool _isOnBraindump = true;
 
   @override
   void initState() {

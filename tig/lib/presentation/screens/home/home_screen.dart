@@ -17,7 +17,7 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreen extends ConsumerState<HomeScreen>
     with SingleTickerProviderStateMixin {
-  bool _isDayExpanded = false;
+  bool _isDayExpanded = true;
   bool _isFabExpanded = false;
   bool _isAtBottom = false;
   bool _isOnDaily = true;
@@ -118,6 +118,7 @@ class _HomeScreen extends ConsumerState<HomeScreen>
     return Stack(
       children: [
         Scaffold(
+          resizeToAvoidBottomInset: true,
           appBar: AppBar(
             title: const Text(
               'Time Box Planner',
@@ -154,7 +155,10 @@ class _HomeScreen extends ConsumerState<HomeScreen>
                         tigData.dayTopPriorities,
                         (index, value) {
                           setState(() {
-                            tigData.dayTopPriorities[index] = value;
+                            tigData.dayTopPriorities[index].priority =
+                                value.priority;
+                            tigData.dayTopPriorities[index].isSucceed =
+                                value.isSucceed;
                           });
                         },
                       ),
@@ -174,14 +178,27 @@ class _HomeScreen extends ConsumerState<HomeScreen>
                     const SizedBox(height: 8.0),
                     _buildTimeTable(),
                     const SizedBox(height: 16.0),
-                    SizedBox(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          _saveTigData();
-                          _showFullScreenAd();
-                        },
-                        child: const Text('시작 하기'),
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SizedBox(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              _saveTigData();
+                            },
+                            child: const Text('저장 하기'),
+                          ),
+                        ),
+                        SizedBox(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              _saveTigData();
+                              _showFullScreenAd();
+                            },
+                            child: const Text('티그 모드'),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -232,11 +249,19 @@ class _HomeScreen extends ConsumerState<HomeScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text("Brain dump"),
+        const Text(
+          "Brain dump",
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         const SizedBox(height: 8),
         TextField(
           controller: _brainDumpController,
           onChanged: (text) => setState(() => tigData.brainDump = text),
+          onTapOutside: (event) =>
+              FocusManager.instance.primaryFocus?.unfocus(),
           decoration: const InputDecoration(
             hintText: "Spill out whatever comes to your mind!",
             border: OutlineInputBorder(),
@@ -324,8 +349,8 @@ class _HomeScreen extends ConsumerState<HomeScreen>
     String title,
     bool isExpanded,
     VoidCallback onToggle,
-    List<String> priorities,
-    Function(int, String) onPriorityChanged,
+    List<PriorityEntry> priorities,
+    Function(int, PriorityEntry) onPriorityChanged,
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -350,14 +375,52 @@ class _HomeScreen extends ConsumerState<HomeScreen>
                 ? List.generate(priorities.length, (index) {
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 4.0),
-                      child: TextField(
-                        controller:
-                            TextEditingController(text: priorities[index]),
-                        onChanged: (text) {
-                          onPriorityChanged(index, text);
-                        },
-                        decoration:
-                            const InputDecoration(border: OutlineInputBorder()),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Checkbox(
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                            visualDensity: const VisualDensity(
+                              horizontal: VisualDensity.minimumDensity,
+                              vertical: VisualDensity.minimumDensity,
+                            ),
+                            value: priorities[index].isSucceed,
+                            onChanged: (value) {
+                              setState(() {
+                                priorities[index].isSucceed =
+                                    !priorities[index].isSucceed;
+                                tigData.dayTopPriorities[index].priority =
+                                    priorities[index].priority;
+                                tigData.dayTopPriorities[index].isSucceed =
+                                    priorities[index].isSucceed;
+                              });
+                            },
+                          ),
+                          const SizedBox(
+                            width: 4,
+                          ),
+                          Expanded(
+                            child: TextField(
+                              minLines: 1,
+                              maxLines: 2,
+                              controller: TextEditingController(
+                                text: priorities[index].priority,
+                              ),
+                              onTapOutside: (event) =>
+                                  FocusManager.instance.primaryFocus?.unfocus(),
+                              onChanged: (text) {
+                                priorities[index].priority = text;
+                                tigData.dayTopPriorities[index].priority =
+                                    priorities[index].priority;
+                                tigData.dayTopPriorities[index].isSucceed =
+                                    priorities[index].isSucceed;
+                              },
+                              decoration: const InputDecoration(
+                                  border: UnderlineInputBorder()),
+                            ),
+                          ),
+                        ],
                       ),
                     );
                   }).toList()
@@ -378,8 +441,6 @@ class _HomeScreen extends ConsumerState<HomeScreen>
         final int minute = (timeSlot - hour) == 0.5 ? 30 : 0;
         TimeEntry? timeEntry = tigData.timeTable.firstWhere(
           (entry) => entry.time == timeSlot,
-          orElse: () =>
-              TimeEntry(activity: "", time: timeSlot, isSucceed: true),
         );
 
         final bool success =
@@ -396,25 +457,13 @@ class _HomeScreen extends ConsumerState<HomeScreen>
             Expanded(
               child: TextField(
                 controller: TextEditingController(text: timeEntry.activity),
+                onTapOutside: (event) =>
+                    FocusManager.instance.primaryFocus?.unfocus(),
                 onChanged: (text) {
-                  setState(
-                    () {
-                      final index = tigData.timeTable.indexWhere(
-                        (entry) => entry.time == timeSlot,
-                      );
-                      if (index != -1) {
-                        tigData.timeTable[index].activity = text;
-                      } else {
-                        tigData.timeTable.add(
-                          TimeEntry(
-                            activity: text,
-                            time: timeSlot,
-                            isSucceed: false,
-                          ),
-                        );
-                      }
-                    },
+                  final index = tigData.timeTable.indexWhere(
+                    (entry) => entry.time == timeSlot,
                   );
+                  tigData.timeTable[index].activity = text;
                 },
                 decoration: const InputDecoration(
                   hintText: "Enter activity",
@@ -429,15 +478,7 @@ class _HomeScreen extends ConsumerState<HomeScreen>
                   final index = tigData.timeTable.indexWhere(
                     (entry) => entry.time == timeSlot,
                   );
-                  if (index != -1) {
-                    tigData.timeTable[index].isSucceed = value ?? false;
-                  } else {
-                    tigData.timeTable.add(TimeEntry(
-                      activity: "",
-                      time: timeSlot,
-                      isSucceed: value ?? false,
-                    ));
-                  }
+                  tigData.timeTable[index].isSucceed = value ?? false;
                 });
               },
             ),

@@ -28,9 +28,33 @@ class TimeEntry {
   }
 }
 
+class PriorityEntry {
+  String priority;
+  bool isSucceed;
+
+  PriorityEntry({
+    required this.priority,
+    required this.isSucceed,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'priority': priority,
+      'isSucceed': isSucceed,
+    };
+  }
+  
+  factory PriorityEntry.fromMap(Map<String, dynamic> map) {
+    return PriorityEntry(
+      priority: map['priority'] ?? '',
+      isSucceed: map['isSucceed'] ?? false,
+    );
+  }
+}
+
 class Tig {
   DateTime date;
-  List<String> dayTopPriorities;
+  List<PriorityEntry> dayTopPriorities;
   String brainDump;
   List<TimeEntry> timeTable;
   double startHour;
@@ -39,14 +63,22 @@ class Tig {
 
   Tig({
     required this.date,
-    List<String>? dayTopPriorities,
+    List<PriorityEntry>? dayTopPriorities,
     this.brainDump = "",
     List<TimeEntry>? timeTable,
     this.startHour = 5.0,
     this.endHour = 24.0,
     this.grade = 0,
-  })  : dayTopPriorities = dayTopPriorities ?? ['', '', ''],
+  })  : dayTopPriorities = dayTopPriorities ?? _generateDefaultPriorities(),
         timeTable = timeTable ?? _generateTimeTable(startHour, endHour);
+
+  static List<PriorityEntry> _generateDefaultPriorities() {
+    return [
+      PriorityEntry(priority: '', isSucceed: false),
+      PriorityEntry(priority: '', isSucceed: false),
+      PriorityEntry(priority: '', isSucceed: false),
+    ];
+  }
 
   static List<TimeEntry> _generateTimeTable(double startHour, double endHour) {
     List<TimeEntry> timeEntries = [];
@@ -63,7 +95,8 @@ class Tig {
   Map<String, dynamic> toMap() {
     return {
       'date': Timestamp.fromDate(date),
-      'dayTopPriorities': dayTopPriorities,
+      'dayTopPriorities':
+          dayTopPriorities.map((priority) => priority.toMap()).toList(),
       'brainDump': brainDump,
       'timeTable': timeTable.map((entry) => entry.toMap()).toList(),
       'startHour': startHour,
@@ -75,8 +108,10 @@ class Tig {
   factory Tig.fromMap(Map<String, dynamic> map) {
     return Tig(
       date: (map['date'] as Timestamp).toDate(),
-      dayTopPriorities:
-          List<String>.from(map['dayTopPriorities'] ?? ['', '', '']),
+      dayTopPriorities: (map['dayTopPriorities'] as List<dynamic>?)
+              ?.map((priority) => PriorityEntry.fromMap(priority))
+              .toList() ??
+          _generateDefaultPriorities(),
       brainDump: map['brainDump'] ?? "",
       timeTable: (map['timeTable'] as List<dynamic>?)
               ?.map((entry) => TimeEntry.fromMap(entry))
