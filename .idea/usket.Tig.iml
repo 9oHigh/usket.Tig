@@ -102,6 +102,18 @@
       <excludeFolder url="file://$MODULE_DIR$/tig/windows/flutter/ephemeral/.plugin_symlinks/shared_preferences_windows/example/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/tig/windows/flutter/ephemeral/.plugin_symlinks/shared_preferences_windows/example/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/tig/windows/flutter/ephemeral/.plugin_symlinks/shared_preferences_windows/example/build" />
+      <excludeFolder url="file://$MODULE_DIR$/tig/ios/.symlinks/plugins/flutter_email_sender/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/tig/ios/.symlinks/plugins/flutter_email_sender/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/tig/ios/.symlinks/plugins/flutter_email_sender/build" />
+      <excludeFolder url="file://$MODULE_DIR$/tig/ios/.symlinks/plugins/flutter_email_sender/example/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/tig/ios/.symlinks/plugins/flutter_email_sender/example/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/tig/ios/.symlinks/plugins/flutter_email_sender/example/build" />
+      <excludeFolder url="file://$MODULE_DIR$/tig/ios/.symlinks/plugins/home_widget/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/tig/ios/.symlinks/plugins/home_widget/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/tig/ios/.symlinks/plugins/home_widget/build" />
+      <excludeFolder url="file://$MODULE_DIR$/tig/ios/.symlinks/plugins/home_widget/example/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/tig/ios/.symlinks/plugins/home_widget/example/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/tig/ios/.symlinks/plugins/home_widget/example/build" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

@@ -52,6 +52,7 @@ class _TigApp extends State<TigApp> {
   void initState() {
     super.initState();
     _checkLoginStatus();
+    _setHomeArrangeStatus();
     _initGoogleMobileAds();
     _createBannerAd();
   }
@@ -69,6 +70,12 @@ class _TigApp extends State<TigApp> {
       SharedPreferences pref = await SharedPreferences.getInstance();
       pref.setString('userId', user.uid);
     }
+  }
+
+  void _setHomeArrangeStatus() async {
+    final SharedPreferences pref = await SharedPreferences.getInstance();
+    pref.setBool("isOnDaily", true);
+    pref.setBool("isOnBraindump", true);
   }
 
   @override
