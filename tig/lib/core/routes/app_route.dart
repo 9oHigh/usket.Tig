@@ -4,6 +4,7 @@ class AppRoute {
   static const String auth = '/auth';
   static const String tigMode = '/tigMode';
   static const String menu = '/menu';
+  static const String tag = '/tag';
 
   static String? getRoute(String routeName) {
     switch (routeName) {
@@ -17,6 +18,8 @@ class AppRoute {
         return tigMode;
       case '/menu':
         return menu;
+      case '/tag':
+        return tag;
       default:
         return null;
     }

@@ -18,6 +18,7 @@ import 'package:tig/core/theme/app_theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tig/presentation/screens/menu/menu_screen.dart';
+import 'package:tig/presentation/screens/tag/tag_screen.dart';
 import 'package:tig/presentation/screens/tig_mode/tig_mode_screen.dart';
 import 'firebase_options.dart';
 import 'package:home_widget/home_widget.dart';
@@ -177,6 +178,11 @@ class _TigScreenNavigator extends StatelessWidget {
               case AppRoute.menu:
                 return CupertinoPageRoute(
                   builder: (_) => const MenuScreen(),
+                  settings: settings,
+                );
+              case AppRoute.tag:
+                return CupertinoPageRoute(
+                  builder: (_) => const TagScreen(),
                   settings: settings,
                 );
               default:
