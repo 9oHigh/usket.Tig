@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tig/ads/admob_service.dart';
@@ -18,18 +21,23 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreen extends ConsumerState<HomeScreen>
     with SingleTickerProviderStateMixin {
   bool _isDayExpanded = true;
-  bool _isFabExpanded = false;
   bool _isAtBottom = false;
   bool _isOnDaily = true;
   bool _isOnBraindump = true;
+  bool _fullAdIsLoading = false;
 
-  late Tig tigData = Tig(date: DateTime.now());
+  late String _userId;
   late DateTime _dateTime;
+  late Tig tigData = Tig(date: DateTime.now());
+  List<TextEditingController> _controllers = [];
+  List<FocusNode> _focusNodes = [];
+  int? _focusNodeIndex;
+  List<String> tags = [];
+
   late ScrollController _scrollController;
   late AnimationController _animationController;
   late TextEditingController _brainDumpController;
-  late String _userId;
-  bool _fullAdIsLoading = false;
+  late StreamSubscription<bool> keyboardSubscription;
 
   @override
   void initState() {
@@ -57,14 +65,23 @@ class _HomeScreen extends ConsumerState<HomeScreen>
 
     _loadTigData();
 
+    _loadTags();
+
     _loadPreferences();
   }
 
   @override
   void dispose() {
+    keyboardSubscription.cancel();
     _scrollController.dispose();
     _animationController.dispose();
     _brainDumpController.dispose();
+    for (var controller in _controllers) {
+      controller.dispose();
+    }
+    for (var focusNode in _focusNodes) {
+      focusNode.dispose();
+    }
     super.dispose();
   }
 
@@ -72,9 +89,11 @@ class _HomeScreen extends ConsumerState<HomeScreen>
     final tigUsecase = ref.read(tigUseCaseProvider);
     final fetchedData = await tigUsecase.getTigData(_userId, _dateTime);
 
+    tigData = fetchedData ?? Tig(date: _dateTime);
+    _brainDumpController.text = tigData.brainDump;
+
     setState(() {
-      tigData = fetchedData ?? Tig(date: _dateTime);
-      _brainDumpController.text = tigData.brainDump;
+      _setTimeTableControllers();
     });
   }
 
@@ -83,12 +102,67 @@ class _HomeScreen extends ConsumerState<HomeScreen>
     await tigUsecase.saveTigData(_userId, tigData);
   }
 
+  Future<void> _loadTags() async {
+    final SharedPreferences pref = await SharedPreferences.getInstance();
+    setState(() {
+      tags = pref.getStringList('tags') ?? [];
+    });
+  }
+
   Future<void> _loadPreferences() async {
     final SharedPreferences pref = await SharedPreferences.getInstance();
     setState(() {
       _isOnDaily = pref.getBool('isOnDaily') ?? true;
       _isOnBraindump = pref.getBool('isOnBraindump') ?? true;
     });
+  }
+
+  _setTimeTableControllers() {
+    _controllers = List.generate(39, (index) {
+      final activity = tigData.timeTable[index].activity;
+      return TextEditingController(text: activity);
+    });
+
+    _focusNodes = List.generate(39, (index) {
+      return FocusNode()
+        ..addListener(() {
+          if (_focusNodes[index].hasFocus) {
+            setState(() {
+              _focusNodeIndex = index;
+            });
+          }
+        });
+    });
+  }
+
+  _insertTextAtCursor(String text) {
+    if (_focusNodeIndex != null) {
+      final controller = _controllers[_focusNodeIndex!];
+      final currentText = controller.text;
+      final selection = controller.selection;
+
+      if (selection.start >= 0) {
+        final newText = currentText.replaceRange(
+          selection.start,
+          selection.end,
+          text,
+        );
+
+        controller.text = newText;
+        tigData.timeTable[_focusNodeIndex!].activity = newText;
+        controller.selection = TextSelection.fromPosition(
+          TextPosition(offset: selection.start + text.length),
+        );
+      }
+    }
+  }
+
+  void _moveToNextTextField() {
+    if (_focusNodeIndex != null && _focusNodeIndex! < _controllers.length - 1) {
+      _focusNodes[_focusNodeIndex!].unfocus();
+      _focusNodeIndex = _focusNodeIndex! + 1;
+      FocusScope.of(context).requestFocus(_focusNodes[_focusNodeIndex!]);
+    }
   }
 
   _showFullScreenAd() {
@@ -111,6 +185,10 @@ class _HomeScreen extends ConsumerState<HomeScreen>
       AppRoute.tigMode,
       arguments: tigData,
     );
+    for (var tt in tigData.timeTable) {
+      print("tt.activity: ${tt.activity}");
+      print("tt.time: ${tt.time}");
+    }
   }
 
   @override
@@ -135,7 +213,67 @@ class _HomeScreen extends ConsumerState<HomeScreen>
               ),
             ],
           ),
-          floatingActionButton: _buildFloatingActionButton(),
+          floatingActionButton:
+              KeyboardVisibilityBuilder(builder: (context, isVisible) {
+            if (isVisible) {
+              return const SizedBox.shrink();
+            } else {
+              return _buildFloatingActionButton();
+            }
+          }),
+          bottomSheet: KeyboardVisibilityBuilder(
+            builder: (context, isVisible) {
+              if (isVisible) {
+                return Row(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(
+                        left: 16,
+                        right: 16,
+                        bottom: MediaQuery.of(context).viewInsets.bottom,
+                      ),
+                      child: Container(
+                        width: MediaQuery.of(context).size.width - 32,
+                        height: 44,
+                        color: Colors.transparent,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: ListView.builder(
+                                  itemCount: tags.length,
+                                  scrollDirection: Axis.horizontal,
+                                  itemBuilder: (context, index) {
+                                    return Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 16.0),
+                                      child: Center(
+                                          child: TextButton(
+                                        onPressed: () {
+                                          _insertTextAtCursor(tags[index]);
+                                        },
+                                        child: Text(
+                                          tags[index],
+                                        ),
+                                      )),
+                                    );
+                                  }),
+                            ),
+                            IconButton(
+                              onPressed: () => _moveToNextTextField(),
+                              icon: const Icon(Icons.arrow_downward),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              } else {
+                return const SizedBox.shrink();
+              }
+            },
+          ),
           body: Column(
             children: [
               Expanded(
@@ -275,56 +413,24 @@ class _HomeScreen extends ConsumerState<HomeScreen>
     return AnimatedOpacity(
       opacity: _isAtBottom ? 0 : 1,
       duration: const Duration(milliseconds: 300),
-      child: Stack(
-        clipBehavior: Clip.none,
-        alignment: Alignment.bottomRight,
-        children: [
-          if (_isFabExpanded) ...[
-            _buildFloatingActionButtonItem(
-              onPressed: () {},
-              backgroundColor: Colors.red,
-              icon: Icons.calendar_today,
-              bottomPosition: 80,
-            ),
-            _buildFloatingActionButtonItem(
-              onPressed: () {},
-              backgroundColor: Colors.blue,
-              icon: Icons.add,
-              bottomPosition: 150,
+      child: Visibility(
+        visible: !_isAtBottom,
+        child: Stack(
+          children: [
+            FloatingActionButton(
+              backgroundColor: Colors.black,
+              onPressed: () {
+                Navigator.pushNamed(context, AppRoute.tag).then((_) {
+                  _loadTags();
+                });
+              },
+              child: const Icon(
+                Icons.tag_rounded,
+                color: Colors.white,
+              ),
             ),
           ],
-          FloatingActionButton(
-            onPressed: () {
-              setState(() {
-                _isFabExpanded = !_isFabExpanded;
-                _isFabExpanded
-                    ? _animationController.forward()
-                    : _animationController.reverse();
-              });
-            },
-            child: AnimatedIcon(
-              icon: AnimatedIcons.menu_close,
-              progress: _animationController,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFloatingActionButtonItem({
-    required VoidCallback onPressed,
-    required Color backgroundColor,
-    required IconData icon,
-    required double bottomPosition,
-  }) {
-    return Positioned(
-      bottom: bottomPosition,
-      child: FloatingActionButton(
-        onPressed: onPressed,
-        mini: true,
-        backgroundColor: backgroundColor,
-        child: Icon(icon),
+        ),
       ),
     );
   }
@@ -434,7 +540,9 @@ class _HomeScreen extends ConsumerState<HomeScreen>
   Widget _buildTimeTable() {
     final List<double> timeSlots =
         List.generate(39, (index) => 5.0 + index * 0.5);
-
+    if (_focusNodes.isEmpty) {
+      return const SizedBox.shrink();
+    }
     return Column(
       children: timeSlots.map((timeSlot) {
         final int hour = timeSlot.floor();
@@ -456,9 +564,8 @@ class _HomeScreen extends ConsumerState<HomeScreen>
             const SizedBox(width: 12),
             Expanded(
               child: TextField(
-                controller: TextEditingController(text: timeEntry.activity),
-                onTapOutside: (event) =>
-                    FocusManager.instance.primaryFocus?.unfocus(),
+                focusNode: _focusNodes[timeSlots.indexOf(timeSlot)],
+                controller: _controllers[timeSlots.indexOf(timeSlot)],
                 onChanged: (text) {
                   final index = tigData.timeTable.indexWhere(
                     (entry) => entry.time == timeSlot,
