@@ -118,12 +118,12 @@ class _HomeScreen extends ConsumerState<HomeScreen>
   }
 
   _setTimeTableControllers() {
-    _controllers = List.generate(39, (index) {
+    _controllers = List.generate(35, (index) {
       final activity = tigData.timeTable[index].activity;
       return TextEditingController(text: activity);
     });
 
-    _focusNodes = List.generate(39, (index) {
+    _focusNodes = List.generate(35, (index) {
       return FocusNode()
         ..addListener(() {
           if (_focusNodes[index].hasFocus) {
@@ -539,18 +539,16 @@ class _HomeScreen extends ConsumerState<HomeScreen>
 
   Widget _buildTimeTable() {
     final List<double> timeSlots =
-        List.generate(39, (index) => 5.0 + index * 0.5);
+        List.generate(35, (index) => 7.0 + index * 0.5);
+
     if (_focusNodes.isEmpty) {
       return const SizedBox.shrink();
     }
+
     return Column(
       children: timeSlots.map((timeSlot) {
         final int hour = timeSlot.floor();
         final int minute = (timeSlot - hour) == 0.5 ? 30 : 0;
-        TimeEntry? timeEntry = tigData.timeTable.firstWhere(
-          (entry) => entry.time == timeSlot,
-        );
-
         final bool success =
             tigData.timeTable.length > timeSlots.indexOf(timeSlot)
                 ? tigData.timeTable[timeSlots.indexOf(timeSlot)].isSucceed
