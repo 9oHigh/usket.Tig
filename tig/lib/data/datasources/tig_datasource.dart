@@ -41,7 +41,7 @@ class TigDatasource {
               .map((tigData) => Tig.fromMap(tigData))
               .where((tig) => tig.date.year == year && tig.date.month == month)
               .toList();
-         
+
           return matchedTigs;
         }
       }
@@ -86,12 +86,14 @@ class TigDatasource {
   }
 
   int _getGrade(Tig tig) {
+    int count = tig.timeTable.length;
     int successCount = tig.timeTable.where((time) => time.isSucceed).length;
+    double percentage = (successCount * 100) / count;
 
-    if (successCount == 0) return 0;
-    if (successCount < 6) return 1;
-    if (successCount < 11) return 2;
-    if (successCount < 16) return 3;
+    if (percentage == 0) return 0;
+    if (percentage <= 25) return 1;
+    if (percentage <= 50) return 2;
+    if (percentage <= 75) return 3;
     return 4;
   }
 }

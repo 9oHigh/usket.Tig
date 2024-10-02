@@ -66,7 +66,7 @@ class Tig {
     List<PriorityEntry>? dayTopPriorities,
     this.brainDump = "",
     List<TimeEntry>? timeTable,
-    this.startHour = 5.0,
+    this.startHour = 7.0,
     this.endHour = 24.0,
     this.grade = 0,
   })  : dayTopPriorities = dayTopPriorities ?? _generateDefaultPriorities(),
@@ -118,7 +118,7 @@ class Tig {
               .toList() ??
           _generateTimeTable(map['startHour']?.toDouble() ?? 0.0,
               map['endHour']?.toDouble() ?? 24.0),
-      startHour: map['startHour']?.toDouble() ?? 5.0,
+      startHour: map['startHour']?.toDouble() ?? 7.0,
       endHour: map['endHour']?.toDouble() ?? 24.0,
       grade: map['grade'] ?? 0,
     );

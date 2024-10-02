@@ -16,17 +16,17 @@ class MenuScreen extends ConsumerStatefulWidget {
 }
 
 class _MenuScreenState extends ConsumerState<MenuScreen> {
-  final PageController _pageController = PageController();
   int _currentSubscribePage = 0;
-
-  late DateTime _currentMonth;
+  final PageController _pageController = PageController();
+  
+  late DateTime _currentDate;
   late String _userId;
   List<Tig> _monthlyTigs = [];
 
   @override
   void initState() {
     super.initState();
-    _currentMonth = DateTime.now();
+    _currentDate = DateTime.now();
     _userId = FirebaseAuth.instance.currentUser?.uid ?? 'defaultUserId';
     _fetchMonthlyTigs();
   }
@@ -34,7 +34,7 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
   Future<void> _fetchMonthlyTigs() async {
     final tigUsecase = ref.read(tigUseCaseProvider);
     final monthlyTigs = await tigUsecase.getTigsForMonth(
-        _userId, _currentMonth.year, _currentMonth.month);
+        _userId, _currentDate.year, _currentDate.month);
 
     await saveMonthlyTigsToPreferences(monthlyTigs);
     await saveTodayTigsToPreferences(monthlyTigs);
@@ -53,7 +53,7 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
       }).toList(),
     );
 
-    await HomeWidget.saveWidgetData<int>("current_month", _currentMonth.month);
+    await HomeWidget.saveWidgetData<int>("current_month", _currentDate.month);
     await HomeWidget.saveWidgetData<String>("monthly_tigs", monthlyTigsJson);
     await HomeWidget.updateWidget(
       name: 'LargeWidgetProvider',
@@ -80,14 +80,14 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
         'date': todayTig.date.toIso8601String(),
       });
 
-      await HomeWidget.saveWidgetData<int>("current_day", _currentMonth.day);
+      await HomeWidget.saveWidgetData<int>("current_day", _currentDate.day);
       await HomeWidget.saveWidgetData<String>("today_tig", todayTigJson);
       await HomeWidget.updateWidget(
         name: 'SmallWidgetProvider',
         androidName: 'SmallWidgetProvider',
       );
     } else {
-      await HomeWidget.saveWidgetData<int>("current_day", _currentMonth.day);
+      await HomeWidget.saveWidgetData<int>("current_day", _currentDate.day);
       await HomeWidget.saveWidgetData<String>("today_tig", null);
       await HomeWidget.updateWidget(
         name: 'SmallWidgetProvider',
@@ -101,13 +101,13 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
       case 0:
         return const Color.fromARGB(255, 231, 231, 231);
       case 1:
-        return Colors.green[900]!;
-      case 2:
-        return Colors.green[600]!;
-      case 3:
         return Colors.green[300]!;
+      case 2:
+        return Colors.green[500]!;
+      case 3:
+        return Colors.green[700]!;
       case 4:
-        return Colors.green[50]!;
+        return Colors.green[900]!;
       default:
         return const Color.fromARGB(255, 231, 231, 231);
     }
@@ -153,7 +153,7 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
             Align(
               alignment: Alignment.topLeft,
               child: Text(
-                '${_currentMonth.month} 월 Tigs',
+                '${_currentDate.month} 월 Tigs',
                 style: const TextStyle(
                   fontSize: 16,
                   color: Colors.black,
@@ -174,7 +174,7 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
                   mainAxisSpacing: 2,
                 ),
                 itemCount:
-                    DateTime(_currentMonth.year, _currentMonth.month + 1, 0)
+                    DateTime(_currentDate.year, _currentDate.month + 1, 0)
                         .day,
                 itemBuilder: (context, index) {
                   final day = index + 1;
@@ -182,8 +182,8 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
                     (tig) => tig.date.day == day,
                     orElse: () => Tig(
                       date: DateTime(
-                        _currentMonth.year,
-                        _currentMonth.month,
+                        _currentDate.year,
+                        _currentDate.month,
                         day,
                       ),
                       timeTable: [],
