@@ -14,5 +14,8 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<void> signInWithApple() => _authDataSource.signInWithApple();
 
   @override
+  Future<void> signInWithKakao() => _authDataSource.signInWithKakao();
+
+  @override
   Future<UserModel?> getUser(String uid) => _authDataSource.getUser(uid);
 }

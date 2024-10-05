@@ -16,8 +16,8 @@ class AuthScreen extends ConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ElevatedButton(
-                onPressed: () async {
+              GestureDetector(
+                onTap: () async {
                   final messenger = ScaffoldMessenger.of(context);
                   final navigator = Navigator.of(context);
                   try {
@@ -32,26 +32,85 @@ class AuthScreen extends ConsumerWidget {
                     );
                   }
                 },
-                child: const Text('구글로 로그인하기'),
+                child: SizedBox(
+                  width: 200,
+                  height: 44,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(4),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          spreadRadius: 1,
+                          blurRadius: 2,
+                          offset: const Offset(0, 1),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.only(left: 14),
+                          child: SizedBox(
+                            width: 22,
+                            height: 22,
+                            child: Image.asset("assets/images/google_logo.png"),
+                          ),
+                        ),
+                        const Expanded(
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              "구글 로그인",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w400, fontSize: 17),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
               ),
-              const SizedBox(width: 8),
-              ElevatedButton(
-                onPressed: () async {
+              const SizedBox(height: 8),
+              GestureDetector(
+                onTap: () async {
                   final messenger = ScaffoldMessenger.of(context);
                   final navigator = Navigator.of(context);
                   try {
-                    await authUseCase.signInWithApple();
+                    await authUseCase.signInWithKakao();
                     messenger.showSnackBar(
-                      const SnackBar(content: Text('애플 로그인 성공')),
+                      const SnackBar(content: Text('카카오 로그인 성공')),
                     );
                     navigator.pushReplacementNamed('/home');
                   } catch (e) {
                     messenger.showSnackBar(
-                      SnackBar(content: Text('로그인 실패: $e')),
+                      SnackBar(content: Text('카카오 로그인 실패: $e')),
                     );
                   }
                 },
-                child: const Text('애플로 로그인하기'),
+                child: SizedBox(
+                    width: 200,
+                    height: 44,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            spreadRadius: 1,
+                            blurRadius: 2,
+                            offset: const Offset(0, 1),
+                          ),
+                        ],
+                      ),
+                      child: Image.asset(
+                        "assets/images/kakao_login.png",
+                        fit: BoxFit.fitWidth,
+                      ),
+                    )),
               ),
             ],
           ),

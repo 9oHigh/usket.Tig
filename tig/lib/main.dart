@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tig/ads/admob_banner.dart';
 import 'package:tig/core/helpers/helpers.dart';
@@ -28,6 +29,7 @@ void main() async {
   await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await HomeWidget.registerInteractivityCallback(backgroundCallback);
+  KakaoSdk.init(nativeAppKey: dotenv.get("KAKAO_NATIVE_APP_KEY"));
   runApp(
     const ProviderScope(
       child: TigApp(),
@@ -62,7 +64,7 @@ class _TigApp extends State<TigApp> {
   void dispose() {
     _bannerAd?.dispose();
     super.dispose();
-  }
+  } 
 
   void _checkLoginStatus() async {
     final user = FirebaseAuth.instance.currentUser;
