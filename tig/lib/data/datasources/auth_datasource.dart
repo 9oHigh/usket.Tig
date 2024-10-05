@@ -74,7 +74,7 @@ class AuthDatasource implements AuthRepository {
         );
 
         User? user = userCredential.user;
-        
+
         if (user != null) {
           await _registerUser(user);
         }
@@ -99,7 +99,7 @@ class AuthDatasource implements AuthRepository {
             await _registerUser(user);
           }
         } catch (error) {
-          return;
+          rethrow;
         }
       }
     } else {
@@ -120,7 +120,7 @@ class AuthDatasource implements AuthRepository {
           await _registerUser(user);
         }
       } catch (error) {
-        return;
+        rethrow;
       }
     }
   }
