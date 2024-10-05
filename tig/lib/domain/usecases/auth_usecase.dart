@@ -12,4 +12,8 @@ class AuthUseCase {
   Future<void> signInWithApple() async {
     await repository.signInWithApple();
   }
+
+  Future<void> signInWithKakao() async {
+    await repository.signInWithKakao();
+  }
 }
