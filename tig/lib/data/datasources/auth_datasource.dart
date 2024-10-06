@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:tig/domain/repositories/auth_repository.dart';
 import 'package:tig/data/models/user.dart';
@@ -16,7 +17,6 @@ class AuthDatasource implements AuthRepository {
   @override
   Future<void> signInWithGoogle() async {
     final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-
     if (googleUser != null) {
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
@@ -24,13 +24,7 @@ class AuthDatasource implements AuthRepository {
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
-
-      UserCredential userCredential =
-          await _firebaseAuth.signInWithCredential(credential);
-      User? user = userCredential.user;
-      if (user != null) {
-        await _registerUser(user);
-      }
+      await _signInWithCredential(credential);
     }
   }
 
@@ -42,92 +36,69 @@ class AuthDatasource implements AuthRepository {
         AppleIDAuthorizationScopes.fullName
       ],
     );
-
     final authCredential = OAuthProvider('apple.com').credential(
       accessToken: credential.authorizationCode,
       idToken: credential.identityToken,
     );
-
-    UserCredential userCredential =
-        await _firebaseAuth.signInWithCredential(authCredential);
-    User? user = userCredential.user;
-    if (user != null) {
-      await _registerUser(user);
-    }
+    await _signInWithCredential(authCredential);
   }
 
   @override
   Future<void> signInWithKakao() async {
     kakao.User? kakaoUser;
-
-    if (await kakao.isKakaoTalkInstalled()) {
-      try {
+    try {
+      if (await kakao.isKakaoTalkInstalled()) {
         await _kakaoSignIn.loginWithKakaoTalk();
-        kakaoUser = await _kakaoSignIn.me();
-        String email = "${kakaoUser.id}@kakao.com";
-        String password = "${kakaoUser.id}";
-
-        UserCredential userCredential =
-            await _firebaseAuth.createUserWithEmailAndPassword(
-          email: email,
-          password: password,
-        );
-
-        User? user = userCredential.user;
-
-        if (user != null) {
-          await _registerUser(user);
-        }
-      } catch (error) {
-        if (error is PlatformException && error.code == "CANCELED") {
-          return;
-        }
-        try {
-          await _kakaoSignIn.loginWithKakaoAccount();
-          kakaoUser = await _kakaoSignIn.me();
-          String email = "${kakaoUser.id}@kakao.com";
-          String password = "${kakaoUser.id}";
-
-          UserCredential userCredential =
-              await _firebaseAuth.createUserWithEmailAndPassword(
-            email: email,
-            password: password,
-          );
-          User? user = userCredential.user;
-
-          if (user != null) {
-            await _registerUser(user);
-          }
-        } catch (error) {
-          rethrow;
-        }
-      }
-    } else {
-      try {
+      } else {
         await _kakaoSignIn.loginWithKakaoAccount();
-        kakaoUser = await _kakaoSignIn.me();
-        String email = "${kakaoUser.id}@kakao.com";
-        String password = "${kakaoUser.id}";
+      }
+      kakaoUser = await _kakaoSignIn.me();
+      await _signInWithKakaoUser(kakaoUser);
+    } catch (error) {
+      if (error is PlatformException && error.code == "CANCELED") {
+        return;
+      }
+      rethrow;
+    }
+  }
 
-        UserCredential userCredential =
-            await _firebaseAuth.createUserWithEmailAndPassword(
-          email: email,
-          password: password,
-        );
-        User? user = userCredential.user;
-
-        if (user != null) {
-          await _registerUser(user);
-        }
-      } catch (error) {
+  Future<void> _signInWithKakaoUser(kakao.User kakaoUser) async {
+    String email = "${kakaoUser.id}@kakao.com";
+    String password = "${kakaoUser.id}";
+    try {
+      await _firebaseAuth.createUserWithEmailAndPassword(
+          email: email, password: password);
+    } catch (e) {
+      if (e is FirebaseAuthException && e.code == 'email-already-in-use') {
+        await _firebaseAuth.signInWithEmailAndPassword(
+            email: email, password: password);
+      } else {
         rethrow;
+      }
+    }
+    await _handleSignInResult();
+  }
+
+  Future<void> _signInWithCredential(AuthCredential credential) async {
+    UserCredential userCredential =
+        await _firebaseAuth.signInWithCredential(credential);
+    await _handleSignInResult(user: userCredential.user);
+  }
+
+  Future<void> _handleSignInResult({User? user}) async {
+    user ??= _firebaseAuth.currentUser;
+    if (user != null) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String storedUserId = prefs.getString("userId") ?? "";
+      if (user.uid != storedUserId) {
+        await prefs.setString("userId", user.uid);
+        await _registerUser(user);
       }
     }
   }
 
   Future<void> _registerUser(User user) async {
     final userRef = _firestore.collection('users').doc(user.uid);
-
     final userDoc = await userRef.get();
     if (!userDoc.exists) {
       UserModel userModel = UserModel(
@@ -147,10 +118,22 @@ class AuthDatasource implements AuthRepository {
   Future<UserModel?> getUser(String uid) async {
     final userRef = _firestore.collection('users').doc(uid);
     final doc = await userRef.get();
-    if (doc.exists) {
-      return UserModel.fromMap(doc.data()!);
-    } else {
-      return null;
+    return doc.exists ? UserModel.fromMap(doc.data()!) : null;
+  }
+
+  @override
+  Future<void> deleteUser() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String uid = prefs.getString("userId") ?? "";
+      User? user = _firebaseAuth.currentUser;
+      if (user != null && user.uid == uid) {
+        await _firestore.collection('users').doc(uid).delete();
+        await prefs.remove("userId");
+        await user.delete();
+      }
+    } catch (e) {
+      rethrow;
     }
   }
 }

@@ -37,7 +37,6 @@ class _HomeScreen extends ConsumerState<HomeScreen>
   late ScrollController _scrollController;
   late AnimationController _animationController;
   late TextEditingController _brainDumpController;
-  late StreamSubscription<bool> keyboardSubscription;
 
   @override
   void initState() {
@@ -72,7 +71,6 @@ class _HomeScreen extends ConsumerState<HomeScreen>
 
   @override
   void dispose() {
-    keyboardSubscription.cancel();
     _scrollController.dispose();
     _animationController.dispose();
     _brainDumpController.dispose();
@@ -185,10 +183,6 @@ class _HomeScreen extends ConsumerState<HomeScreen>
       AppRoute.tigMode,
       arguments: tigData,
     );
-    for (var tt in tigData.timeTable) {
-      print("tt.activity: ${tt.activity}");
-      print("tt.time: ${tt.time}");
-    }
   }
 
   @override
