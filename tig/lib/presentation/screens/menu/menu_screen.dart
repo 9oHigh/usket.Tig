@@ -32,16 +32,11 @@ class _ActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: onPressed,
-        child: Text(text,
-            style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black)),
-      ),
+    return ElevatedButton(
+      onPressed: onPressed,
+      child: Text(text,
+          style: const TextStyle(
+              fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black)),
     );
   }
 }
@@ -347,29 +342,32 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
   }
 
   Widget _buildActionButtons() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _ActionButton(text: '문의 하기', onPressed: _sendEmail),
-        const SizedBox(height: 8),
-        _ActionButton(
-          text: '회원탈퇴',
-          onPressed: () => _showDialog(
-            title: '회원탈퇴 안내',
-            content: '회원 탈퇴시 모든 정보가 제거됩니다.\n그래도 진행하시겠습니까?',
-            onConfirm: _deleteUser,
+    return SizedBox(
+      width: MediaQuery.of(context).size.width,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _ActionButton(text: '문의 하기', onPressed: _sendEmail),
+          const SizedBox(height: 8),
+          _ActionButton(
+            text: '회원탈퇴',
+            onPressed: () => _showDialog(
+              title: '회원탈퇴 안내',
+              content: '회원 탈퇴시 모든 정보가 제거됩니다.\n그래도 진행하시겠습니까?',
+              onConfirm: _deleteUser,
+            ),
           ),
-        ),
-        const SizedBox(height: 8),
-        _ActionButton(
-          text: '로그아웃',
-          onPressed: () => _showDialog(
-            title: '로그아웃 안내',
-            content: '로그아웃 하시겠습니까?',
-            onConfirm: _logoutUser,
+          const SizedBox(height: 8),
+          _ActionButton(
+            text: '로그아웃',
+            onPressed: () => _showDialog(
+              title: '로그아웃 안내',
+              content: '로그아웃 하시겠습니까?',
+              onConfirm: _logoutUser,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
