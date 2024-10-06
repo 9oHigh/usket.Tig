@@ -5,4 +5,5 @@ abstract class AuthRepository {
   Future<void> signInWithApple();
   Future<void> signInWithKakao();
   Future<UserModel?> getUser(String uid);
+  Future<void> deleteUser();
 }

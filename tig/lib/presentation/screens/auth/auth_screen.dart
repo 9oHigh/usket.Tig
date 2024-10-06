@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tig/presentation/providers/auth/auth_provider.dart';
 
 class AuthScreen extends ConsumerWidget {
@@ -18,10 +19,13 @@ class AuthScreen extends ConsumerWidget {
             children: [
               GestureDetector(
                 onTap: () async {
+                  final SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
                   final messenger = ScaffoldMessenger.of(context);
                   final navigator = Navigator.of(context);
                   try {
                     await authUseCase.signInWithGoogle();
+                    prefs.setBool("isLoggedIn", true);
                     messenger.showSnackBar(
                       const SnackBar(content: Text('구글 로그인 성공')),
                     );
@@ -77,10 +81,13 @@ class AuthScreen extends ConsumerWidget {
               const SizedBox(height: 8),
               GestureDetector(
                 onTap: () async {
+                  final SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
                   final messenger = ScaffoldMessenger.of(context);
                   final navigator = Navigator.of(context);
                   try {
                     await authUseCase.signInWithKakao();
+                    prefs.setBool("isLoggedIn", true);
                     messenger.showSnackBar(
                       const SnackBar(content: Text('카카오 로그인 성공')),
                     );

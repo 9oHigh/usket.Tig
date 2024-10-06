@@ -16,4 +16,8 @@ class AuthUseCase {
   Future<void> signInWithKakao() async {
     await repository.signInWithKakao();
   }
+
+  Future<void> deleteUser() async {
+    await repository.deleteUser();
+  }
 }

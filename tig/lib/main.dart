@@ -49,12 +49,12 @@ class TigApp extends StatefulWidget {
 class _TigApp extends State<TigApp> {
   BannerAd? _bannerAd;
   final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
-  late bool _isLoggedIn;
+  late Future<bool> _loginStatus;
 
   @override
   void initState() {
     super.initState();
-    _checkLoginStatus();
+    _loginStatus = _checkLoginStatus();
     _setHomeArrangeStatus();
     _initGoogleMobileAds();
     _createBannerAd();
@@ -64,15 +64,13 @@ class _TigApp extends State<TigApp> {
   void dispose() {
     _bannerAd?.dispose();
     super.dispose();
-  } 
+  }
 
-  void _checkLoginStatus() async {
+  Future<bool> _checkLoginStatus() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    bool isLoggedIn = pref.getBool("isLoggedIn") ?? false;
     final user = FirebaseAuth.instance.currentUser;
-    _isLoggedIn = user != null;
-    if (user != null) {
-      SharedPreferences pref = await SharedPreferences.getInstance();
-      pref.setString('userId', user.uid);
-    }
+    return user != null && isLoggedIn;
   }
 
   void _setHomeArrangeStatus() async {
@@ -94,10 +92,26 @@ class _TigApp extends State<TigApp> {
       theme: buildLightTheme(),
       darkTheme: buildDarkTheme(),
       themeMode: ThemeMode.system,
-      home: _TigScreenNavigator(
-        navigatorKey: _navigatorKey,
-        bannerAd: _bannerAd,
-        isLoggedIn: _isLoggedIn,
+      home: FutureBuilder<bool>(
+        future: _loginStatus,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                '앱을 다시 시작해주세요.\nERROR: ${snapshot.error}',
+              ),
+            );
+          } else {
+            final isLoggedIn = snapshot.data ?? false;
+            return _TigScreenNavigator(
+              navigatorKey: _navigatorKey,
+              bannerAd: _bannerAd,
+              isLoggedIn: isLoggedIn,
+            );
+          }
+        },
       ),
     );
   }
