@@ -1,9 +1,11 @@
 import 'dart:io';
-import 'dart:ui';
+import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AdMobService {
+  static bool _adLoaded = false;
+
   static String? get interstitialAdUnitId {
     final id = Platform.isAndroid
         ? dotenv.env['ADMOB_ANDROID_INTERSTITIAL_ID']
@@ -40,24 +42,35 @@ class AdMobService {
       adLoadCallback: InterstitialAdLoadCallback(
         onAdLoaded: (InterstitialAd ad) {
           _interstitialAd = ad;
+          _adLoaded = true;
           showInterstitialAd(onAdClosed, loaded);
         },
         onAdFailedToLoad: (LoadAdError error) {
           _interstitialAd = null;
+          _adLoaded = false;
+          do {
+            Future.delayed(const Duration(seconds: 4), () {
+              loadInterstitialAd(onAdClosed, loaded);
+            });
+          } while (_adLoaded);
         },
       ),
     );
   }
 
   static void showInterstitialAd(VoidCallback onAdClosed, VoidCallback loaded) {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+
     _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
       onAdDismissedFullScreenContent: (InterstitialAd ad) {
         ad.dispose();
+        SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
         loaded();
         onAdClosed();
       },
       onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
         ad.dispose();
+        SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
         loaded();
         onAdClosed();
       },

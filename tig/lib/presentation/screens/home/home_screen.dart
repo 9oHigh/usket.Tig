@@ -167,7 +167,7 @@ class _HomeScreen extends ConsumerState<HomeScreen>
     setState(() {
       _fullAdIsLoading = true;
     });
-
+    Future.delayed(const Duration(seconds: 3));
     AdMobService.loadInterstitialAd(
         () => _pushTigModeScreen(context), _setFullAdLoaded);
   }
@@ -344,7 +344,26 @@ class _HomeScreen extends ConsumerState<HomeScreen>
             child: Container(
               color: Colors.black54,
               child: const Center(
-                child: CircularProgressIndicator(),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "티그 모드를 위해 데이터를 준비중이에요.\n준비되는 동안 광고가 나와요.\n잠시만 기다려주시면 멋진 티그모드를 만날 수 있어요!",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    CircularProgressIndicator(
+                      color: Colors.white,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
