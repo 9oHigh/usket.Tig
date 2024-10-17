@@ -77,6 +77,23 @@ flutter:
   assets:
     - .env
     - assets/images/
+  fonts:
+    - family: PaperlogyRegular
+      fonts:
+        - asset: assets/fonts/Paperlogy-Regular.ttf
+    - family: PaperlogySemiBold
+      fonts:
+        - asset: assets/fonts/Paperlogy-SemiBold.ttf
+    - family: PaperlogyExtraBold
+      fonts:
+        - asset: assets/fonts/Paperlogy-ExtraBold.ttf
+    - family: NanumBrush
+      fonts:
+        - asset: assets/fonts/NanumBrush.ttf
+    - family: ShigotoMemogaki
+      fonts:
+        - asset: assets/fonts/ShigotoMemogaki.ttf
+      
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
