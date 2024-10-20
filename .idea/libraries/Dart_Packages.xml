@@ -359,6 +359,13 @@
             </list>
           </value>
         </entry>
+        <entry key="flutter_localizations">
+          <value>
+            <list>
+              <option value="$PROJECT_DIR$/../flutter/packages/flutter_localizations/lib" />
+            </list>
+          </value>
+        </entry>
         <entry key="flutter_riverpod">
           <value>
             <list>
@@ -506,13 +513,6 @@
             </list>
           </value>
         </entry>
-        <entry key="kakao_flutter_sdk">
-          <value>
-            <list>
-              <option value="$PROJECT_DIR$/../.pub-cache/hosted/pub.dev/kakao_flutter_sdk-1.9.6/lib" />
-            </list>
-          </value>
-        </entry>
         <entry key="kakao_flutter_sdk_auth">
           <value>
             <list>
@@ -524,41 +524,6 @@
           <value>
             <list>
               <option value="$PROJECT_DIR$/../.pub-cache/hosted/pub.dev/kakao_flutter_sdk_common-1.9.6/lib" />
-            </list>
-          </value>
-        </entry>
-        <entry key="kakao_flutter_sdk_friend">
-          <value>
-            <list>
-              <option value="$PROJECT_DIR$/../.pub-cache/hosted/pub.dev/kakao_flutter_sdk_friend-1.9.6/lib" />
-            </list>
-          </value>
-        </entry>
-        <entry key="kakao_flutter_sdk_navi">
-          <value>
-            <list>
-              <option value="$PROJECT_DIR$/../.pub-cache/hosted/pub.dev/kakao_flutter_sdk_navi-1.9.6/lib" />
-            </list>
-          </value>
-        </entry>
-        <entry key="kakao_flutter_sdk_share">
-          <value>
-            <list>
-              <option value="$PROJECT_DIR$/../.pub-cache/hosted/pub.dev/kakao_flutter_sdk_share-1.9.6/lib" />
-            </list>
-          </value>
-        </entry>
-        <entry key="kakao_flutter_sdk_talk">
-          <value>
-            <list>
-              <option value="$PROJECT_DIR$/../.pub-cache/hosted/pub.dev/kakao_flutter_sdk_talk-1.9.6/lib" />
-            </list>
-          </value>
-        </entry>
-        <entry key="kakao_flutter_sdk_template">
-          <value>
-            <list>
-              <option value="$PROJECT_DIR$/../.pub-cache/hosted/pub.dev/kakao_flutter_sdk_template-1.9.6/lib" />
             </list>
           </value>
         </entry>
@@ -1060,14 +1025,8 @@
       <root url="file://$PROJECT_DIR$/../.pub-cache/hosted/pub.dev/io-1.0.4/lib" />
       <root url="file://$PROJECT_DIR$/../.pub-cache/hosted/pub.dev/js-0.7.1/lib" />
       <root url="file://$PROJECT_DIR$/../.pub-cache/hosted/pub.dev/json_annotation-4.9.0/lib" />
-      <root url="file://$PROJECT_DIR$/../.pub-cache/hosted/pub.dev/kakao_flutter_sdk-1.9.6/lib" />
       <root url="file://$PROJECT_DIR$/../.pub-cache/hosted/pub.dev/kakao_flutter_sdk_auth-1.9.6/lib" />
       <root url="file://$PROJECT_DIR$/../.pub-cache/hosted/pub.dev/kakao_flutter_sdk_common-1.9.6/lib" />
-      <root url="file://$PROJECT_DIR$/../.pub-cache/hosted/pub.dev/kakao_flutter_sdk_friend-1.9.6/lib" />
-      <root url="file://$PROJECT_DIR$/../.pub-cache/hosted/pub.dev/kakao_flutter_sdk_navi-1.9.6/lib" />
-      <root url="file://$PROJECT_DIR$/../.pub-cache/hosted/pub.dev/kakao_flutter_sdk_share-1.9.6/lib" />
-      <root url="file://$PROJECT_DIR$/../.pub-cache/hosted/pub.dev/kakao_flutter_sdk_talk-1.9.6/lib" />
-      <root url="file://$PROJECT_DIR$/../.pub-cache/hosted/pub.dev/kakao_flutter_sdk_template-1.9.6/lib" />
       <root url="file://$PROJECT_DIR$/../.pub-cache/hosted/pub.dev/kakao_flutter_sdk_user-1.9.6/lib" />
       <root url="file://$PROJECT_DIR$/../.pub-cache/hosted/pub.dev/leak_tracker-10.0.5/lib" />
       <root url="file://$PROJECT_DIR$/../.pub-cache/hosted/pub.dev/leak_tracker_flutter_testing-3.0.5/lib" />
@@ -1131,6 +1090,7 @@
       <root url="file://$PROJECT_DIR$/../flutter/bin/cache/dart-sdk/pkg/_macros/lib" />
       <root url="file://$PROJECT_DIR$/../flutter/bin/cache/pkg/sky_engine/lib" />
       <root url="file://$PROJECT_DIR$/../flutter/packages/flutter/lib" />
+      <root url="file://$PROJECT_DIR$/../flutter/packages/flutter_localizations/lib" />
       <root url="file://$PROJECT_DIR$/../flutter/packages/flutter_test/lib" />
       <root url="file://$PROJECT_DIR$/../flutter/packages/flutter_web_plugins/lib" />
     </CLASSES>

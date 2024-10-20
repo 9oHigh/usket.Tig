@@ -43,7 +43,8 @@ class _TagScreenState extends State<TagScreen> {
               focusNode.requestFocus();
             });
             return AlertDialog(
-              title: const Text('태그 추가'),
+              actionsAlignment: MainAxisAlignment.spaceEvenly,
+              title: const Center(child: Text('태그 추가')),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -72,6 +73,15 @@ class _TagScreenState extends State<TagScreen> {
               actions: [
                 TextButton(
                   onPressed: () {
+                    setStateDialog(() {
+                      errorMessage = null;
+                    });
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('취소'),
+                ),
+                TextButton(
+                  onPressed: () {
                     if (tagController.text.isNotEmpty &&
                         !tags.contains(tagController.text)) {
                       setState(() {
@@ -88,15 +98,6 @@ class _TagScreenState extends State<TagScreen> {
                   },
                   child: const Text('확인'),
                 ),
-                TextButton(
-                  onPressed: () {
-                    setStateDialog(() {
-                      errorMessage = null;
-                    });
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('취소'),
-                ),
               ],
             );
           },
@@ -109,6 +110,12 @@ class _TagScreenState extends State<TagScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Icon(Icons.arrow_back_ios_new),
+        ),
         title: const Text(
           "태그",
           style: TextStyle(
@@ -119,8 +126,7 @@ class _TagScreenState extends State<TagScreen> {
           IconButton(
             onPressed: _addTag,
             icon: const Icon(
-              Icons.add_circle_outline,
-              color: Colors.black,
+              Icons.add,
             ),
           ),
         ],
@@ -139,6 +145,17 @@ class _TagScreenState extends State<TagScreen> {
             _saveTags();
           },
           itemCount: tags.length,
+          proxyDecorator:
+              (Widget child, int index, Animation<double> animation) {
+            final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+            return Material(
+              elevation: 1,
+              color: isDarkMode
+                  ? Colors.black.withAlpha(200)
+                  : Colors.white.withAlpha(200),
+              child: child,
+            );
+          },
           itemBuilder: (context, index) {
             return Dismissible(
               key: Key(tags[index]),

@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -73,15 +74,29 @@ class _TigApp extends State<TigApp> {
     return user != null && isLoggedIn;
   }
 
-  void _setHomeArrangeStatus() async {
+  _setHomeArrangeStatus() async {
     final SharedPreferences pref = await SharedPreferences.getInstance();
-    pref.setBool("isOnDaily", true);
-    pref.setBool("isOnBraindump", true);
+    final bool? isOnDaily = pref.getBool("isOnDaily");
+    final bool? isOnBraindump = pref.getBool("isOnBraindump");
+    if (isOnDaily == null && isOnBraindump == null) {
+      pref.setBool("isOnDaily", true);
+      pref.setBool("isOnBraindump", true);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      supportedLocales: const [
+        Locale('en', ''),
+        Locale('ja', ''),
+        Locale('ko', ''),
+      ],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       builder: (context, child) {
         return ScrollConfiguration(
           behavior: Helpers.fixedScrollBehavior,

@@ -27,7 +27,11 @@ class AuthScreen extends ConsumerWidget {
                     await authUseCase.signInWithGoogle();
                     prefs.setBool("isLoggedIn", true);
                     messenger.showSnackBar(
-                      const SnackBar(content: Text('구글 로그인 성공')),
+                      const SnackBar(
+                          content: Text(
+                        '구글 로그인 성공',
+                        style: TextStyle(),
+                      )),
                     );
                     navigator.pushReplacementNamed('/home');
                   } catch (e) {
@@ -69,7 +73,7 @@ class AuthScreen extends ConsumerWidget {
                             child: Text(
                               "구글 로그인",
                               style: TextStyle(
-                                  fontWeight: FontWeight.w400, fontSize: 17),
+                                  fontWeight: FontWeight.w400, fontSize: 16),
                             ),
                           ),
                         )

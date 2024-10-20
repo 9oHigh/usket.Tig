@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -29,10 +28,10 @@ class _HomeArrangeScreen extends State<HomeArrangeScreen> {
   @override
   void initState() {
     super.initState();
-    initailizeOptions();
+    _initailizeOptions();
   }
 
-  void initailizeOptions() async {
+  _initailizeOptions() async {
     final SharedPreferences pref = await SharedPreferences.getInstance();
     setState(() {
       _isOnDaily = pref.getBool('isOnDaily') ?? false;
@@ -40,7 +39,7 @@ class _HomeArrangeScreen extends State<HomeArrangeScreen> {
     });
   }
 
-  void setPref(ArrangeType type, bool value) async {
+  _setPref(ArrangeType type, bool value) async {
     final SharedPreferences pref = await SharedPreferences.getInstance();
     pref.setBool(type.arrangeName, value);
   }
@@ -49,6 +48,7 @@ class _HomeArrangeScreen extends State<HomeArrangeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: const Text('정렬'),
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
@@ -64,16 +64,19 @@ class _HomeArrangeScreen extends State<HomeArrangeScreen> {
             children: [
               Row(
                 children: [
-                  const Text('Daily priority'),
+                  Text(
+                    'Daily priority',
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
                   Expanded(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        CupertinoSwitch(
+                        Switch(
                           value: _isOnDaily,
-                          onChanged: (value) {
+                          onChanged: (value) async {
+                            await _setPref(ArrangeType.isOnDaily, value);
                             setState(() {
-                              setPref(ArrangeType.isOnDaily, value);
                               _isOnDaily = value;
                             });
                           },
@@ -85,16 +88,19 @@ class _HomeArrangeScreen extends State<HomeArrangeScreen> {
               ),
               Row(
                 children: [
-                  const Text('Braindump'),
+                  Text(
+                    'Braindump',
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
                   Expanded(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        CupertinoSwitch(
+                        Switch(
                           value: _isOnBraindump,
-                          onChanged: (value) {
+                          onChanged: (value) async {
+                            await _setPref(ArrangeType.isOnBraindump, value);
                             setState(() {
-                              setPref(ArrangeType.isOnBraindump, value);
                               _isOnBraindump = value;
                             });
                           },

@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
@@ -30,9 +29,12 @@ class _HomeScreen extends ConsumerState<HomeScreen>
   late DateTime _dateTime;
   late Tig tigData = Tig(date: DateTime.now());
   List<TextEditingController> _controllers = [];
-  List<FocusNode> _focusNodes = [];
-  int? _focusNodeIndex;
   List<String> tags = [];
+
+  List<FocusNode> _focusNodes = [];
+  List<FocusNode> _dailyPrioritysNodes = [];
+  FocusNode _braindumpNode = FocusNode();
+  int? _focusNodeIndex;
 
   late ScrollController _scrollController;
   late AnimationController _animationController;
@@ -41,7 +43,7 @@ class _HomeScreen extends ConsumerState<HomeScreen>
   @override
   void initState() {
     super.initState();
-
+    _dateTime = DateTime.now();
     _userId = FirebaseAuth.instance.currentUser?.uid ?? 'defaultUserId';
 
     _scrollController = ScrollController()
@@ -60,12 +62,9 @@ class _HomeScreen extends ConsumerState<HomeScreen>
 
     _brainDumpController = TextEditingController();
 
-    _dateTime = DateTime.now();
-
+    _initailizeFocusNodes();
     _loadTigData();
-
     _loadTags();
-
     _loadPreferences();
   }
 
@@ -81,6 +80,13 @@ class _HomeScreen extends ConsumerState<HomeScreen>
       focusNode.dispose();
     }
     super.dispose();
+  }
+
+  _initailizeFocusNodes() {
+    _dailyPrioritysNodes = List.generate(3, (index) {
+      return FocusNode();
+    });
+    _braindumpNode = FocusNode();
   }
 
   Future<void> _loadTigData() async {
@@ -163,11 +169,11 @@ class _HomeScreen extends ConsumerState<HomeScreen>
     }
   }
 
-  _showFullScreenAd() {
+  _showFullScreenAd() async {
     setState(() {
       _fullAdIsLoading = true;
     });
-    Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 2));
     AdMobService.loadInterstitialAd(
         () => _pushTigModeScreen(context), _setFullAdLoaded);
   }
@@ -183,6 +189,38 @@ class _HomeScreen extends ConsumerState<HomeScreen>
       AppRoute.tigMode,
       arguments: tigData,
     );
+  }
+
+  _showSavedDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        actionsAlignment: MainAxisAlignment.center,
+        title: const Center(child: Text("저장 완료")),
+        content: const Text(
+          "저장이 완료되었습니다.",
+          textAlign: TextAlign.center,
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('확인'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  TextStyle _getTextStyle(BuildContext context) {
+    Locale currentLocale = Localizations.localeOf(context);
+    Localizations.localeOf(context);
+    if (currentLocale.languageCode == 'ja') {
+      return const TextStyle(
+          fontFamily: 'ShigotoMemogaki', fontSize: 24, color: Colors.black);
+    } else {
+      return const TextStyle(
+          fontFamily: 'NanumBrush', fontSize: 24, color: Colors.black);
+    }
   }
 
   @override
@@ -217,125 +255,133 @@ class _HomeScreen extends ConsumerState<HomeScreen>
           }),
           bottomSheet: KeyboardVisibilityBuilder(
             builder: (context, isVisible) {
-              if (isVisible) {
-                return Row(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(
-                        left: 16,
-                        right: 16,
-                        bottom: MediaQuery.of(context).viewInsets.bottom,
-                      ),
-                      child: Container(
-                        width: MediaQuery.of(context).size.width - 32,
-                        height: 44,
-                        color: Colors.transparent,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: ListView.builder(
-                                  itemCount: tags.length,
-                                  scrollDirection: Axis.horizontal,
-                                  itemBuilder: (context, index) {
-                                    return Padding(
-                                      padding:
-                                          const EdgeInsets.only(right: 16.0),
-                                      child: Center(
-                                          child: TextButton(
-                                        onPressed: () {
-                                          _insertTextAtCursor(tags[index]);
-                                        },
-                                        child: Text(
-                                          tags[index],
-                                        ),
-                                      )),
-                                    );
-                                  }),
+              FocusNode currentFocus = FocusManager.instance.primaryFocus!;
+              bool isOtherFocusNodeFocused =
+                  !_focusNodes.contains(currentFocus);
+              if (isVisible && !isOtherFocusNodeFocused) {
+                return Padding(
+                  padding: EdgeInsets.only(
+                    top: 2.0,
+                    left: 2.0,
+                    right: 2.0,
+                    bottom: MediaQuery.of(context).viewInsets.bottom,
+                  ),
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: tags.map((tag) {
+                          return Padding(
+                            padding:
+                                const EdgeInsets.only(right: 2.0, left: 2.0),
+                            child: TextButton(
+                              onPressed: () {
+                                _insertTextAtCursor(tag);
+                                _moveToNextTextField();
+                              },
+                              child: Text(tag),
                             ),
-                            IconButton(
-                              onPressed: () => _moveToNextTextField(),
-                              icon: const Icon(Icons.arrow_downward),
-                            ),
-                          ],
-                        ),
+                          );
+                        }).toList(),
                       ),
                     ),
-                  ],
+                  ),
                 );
               } else {
                 return const SizedBox.shrink();
               }
             },
           ),
-          body: Column(
-            children: [
-              Expanded(
-                child: ListView(
-                  keyboardDismissBehavior:
-                      ScrollViewKeyboardDismissBehavior.onDrag,
-                  controller: _scrollController,
-                  padding: const EdgeInsets.all(16.0),
-                  children: [
-                    _buildDateSelector(),
-                    if (_isOnDaily) ...{
-                      const SizedBox(height: 16.0),
-                      _buildExpandableSection(
-                        "Daily priority top3",
-                        _isDayExpanded,
-                        () => setState(() => _isDayExpanded = !_isDayExpanded),
-                        tigData.dayTopPriorities,
-                        (index, value) {
-                          setState(() {
-                            tigData.dayTopPriorities[index].priority =
-                                value.priority;
-                            tigData.dayTopPriorities[index].isSucceed =
-                                value.isSucceed;
-                          });
-                        },
+          body: LayoutBuilder(
+            builder: (context, constraints) {
+              return KeyboardVisibilityBuilder(builder: (context, isVisible) {
+                FocusNode currentFocus = FocusManager.instance.primaryFocus!;
+                bool isOtherFocusNodeFocused =
+                    !_focusNodes.contains(currentFocus);
+                return Padding(
+                  padding: EdgeInsets.only(
+                      bottom: isVisible && !isOtherFocusNodeFocused
+                          ? MediaQuery.of(context).viewInsets.bottom + 20
+                          : 0),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: ListView(
+                          keyboardDismissBehavior:
+                              ScrollViewKeyboardDismissBehavior.onDrag,
+                          controller: _scrollController,
+                          padding: const EdgeInsets.all(16.0),
+                          children: [
+                            _buildDateSelector(),
+                            if (_isOnDaily) ...{
+                              const SizedBox(height: 16.0),
+                              _buildExpandableSection(
+                                "Daily priority top3",
+                                _isDayExpanded,
+                                () => setState(
+                                    () => _isDayExpanded = !_isDayExpanded),
+                                tigData.dayTopPriorities,
+                                (index, value) {
+                                  setState(() {
+                                    tigData.dayTopPriorities[index].priority =
+                                        value.priority;
+                                    tigData.dayTopPriorities[index].isSucceed =
+                                        value.isSucceed;
+                                  });
+                                },
+                              ),
+                            },
+                            if (_isOnBraindump) ...{
+                              const SizedBox(height: 16.0),
+                              _buildBrainDump(),
+                            },
+                            const SizedBox(height: 16.0),
+                            const Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text('End Time'),
+                                Text('Success'),
+                              ],
+                            ),
+                            const SizedBox(height: 8.0),
+                            _buildTimeTable(),
+                            const SizedBox(height: 16.0),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                SizedBox(
+                                  child: ElevatedButton(
+                                    onPressed: () async {
+                                      await _saveTigData();
+                                      _showSavedDialog();
+                                    },
+                                    child: const Text('저장 하기'),
+                                  ),
+                                ),
+                                SizedBox(
+                                  child: ElevatedButton.icon(
+                                    icon: const ImageIcon(
+                                      AssetImage("assets/images/play.png"),
+                                      size: 10,
+                                    ),
+                                    onPressed: () async {
+                                      await _saveTigData();
+                                      await _showFullScreenAd();
+                                    },
+                                    label: const Text('티그 모드'),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    },
-                    if (_isOnBraindump) ...{
-                      const SizedBox(height: 16.0),
-                      _buildBrainDump(),
-                    },
-                    const SizedBox(height: 16.0),
-                    const Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('End Time'),
-                        Text('Success'),
-                      ],
-                    ),
-                    const SizedBox(height: 8.0),
-                    _buildTimeTable(),
-                    const SizedBox(height: 16.0),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SizedBox(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              _saveTigData();
-                            },
-                            child: const Text('저장 하기'),
-                          ),
-                        ),
-                        SizedBox(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              _saveTigData();
-                              _showFullScreenAd();
-                            },
-                            child: const Text('티그 모드'),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
+                    ],
+                  ),
+                );
+              });
+            },
           ),
         ),
         if (_fullAdIsLoading) ...[
@@ -348,7 +394,7 @@ class _HomeScreen extends ConsumerState<HomeScreen>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "티그 모드를 위해 데이터를 준비중이에요.\n준비되는 동안 광고가 나와요.\n잠시만 기다려주시면 멋진 티그모드를 만날 수 있어요!",
+                      "티그 모드를 위해 데이터를 준비중이에요.\n준비되는 동안 광고가 나와요.\n잠시만 기다려주세요🔥",
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -408,14 +454,38 @@ class _HomeScreen extends ConsumerState<HomeScreen>
           ),
         ),
         const SizedBox(height: 8),
-        TextField(
-          controller: _brainDumpController,
-          onChanged: (text) => setState(() => tigData.brainDump = text),
-          onTapOutside: (event) =>
-              FocusManager.instance.primaryFocus?.unfocus(),
-          decoration: const InputDecoration(
-            hintText: "Spill out whatever comes to your mind!",
-            border: OutlineInputBorder(),
+        Container(
+          height: MediaQuery.of(context).size.width,
+          width: MediaQuery.of(context).size.width,
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/images/post_it.png'),
+              fit: BoxFit.cover,
+            ),
+          ),
+          child: TextField(
+            focusNode: _braindumpNode,
+            cursorColor: Colors.black,
+            cursorHeight: 16,
+            cursorWidth: 1.5,
+            controller: _brainDumpController,
+            maxLines: 8,
+            minLines: 1,
+            onChanged: (text) => setState(() {}),
+            onTapOutside: (event) =>
+                FocusManager.instance.primaryFocus?.unfocus(),
+            style: _getTextStyle(context),
+            decoration: InputDecoration(
+              hintText: "Fill it out with everything that comes to mind now!",
+              hintStyle: _getTextStyle(context),
+              border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              filled: true,
+              fillColor: Colors.transparent,
+              contentPadding: const EdgeInsets.only(
+                  left: 36, top: 52, bottom: 72, right: 40),
+            ),
           ),
         ),
       ],
@@ -423,6 +493,7 @@ class _HomeScreen extends ConsumerState<HomeScreen>
   }
 
   Widget _buildFloatingActionButton() {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return AnimatedOpacity(
       opacity: _isAtBottom ? 0 : 1,
       duration: const Duration(milliseconds: 300),
@@ -431,15 +502,16 @@ class _HomeScreen extends ConsumerState<HomeScreen>
         child: Stack(
           children: [
             FloatingActionButton(
-              backgroundColor: Colors.black,
+              backgroundColor: isDarkMode ? Colors.white : Colors.black,
               onPressed: () {
                 Navigator.pushNamed(context, AppRoute.tag).then((_) {
                   _loadTags();
                 });
               },
-              child: const Icon(
+              child: Icon(
                 Icons.tag_rounded,
-                color: Colors.white,
+                size: 32,
+                color: isDarkMode ? Colors.black : Colors.white,
               ),
             ),
           ],
@@ -521,6 +593,7 @@ class _HomeScreen extends ConsumerState<HomeScreen>
                           ),
                           Expanded(
                             child: TextField(
+                              focusNode: _dailyPrioritysNodes[index],
                               minLines: 1,
                               maxLines: 2,
                               controller: TextEditingController(
@@ -535,8 +608,6 @@ class _HomeScreen extends ConsumerState<HomeScreen>
                                 tigData.dayTopPriorities[index].isSucceed =
                                     priorities[index].isSucceed;
                               },
-                              decoration: const InputDecoration(
-                                  border: UnderlineInputBorder()),
                             ),
                           ),
                         ],
@@ -583,9 +654,9 @@ class _HomeScreen extends ConsumerState<HomeScreen>
                   );
                   tigData.timeTable[index].activity = text;
                 },
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: "Enter activity",
-                  border: UnderlineInputBorder(),
+                  hintStyle: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
             ),

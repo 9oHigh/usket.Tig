@@ -10,20 +10,6 @@ import 'package:tig/presentation/providers/auth/auth_provider.dart';
 import 'package:tig/presentation/providers/tig/tig_provider.dart';
 import '../../../core/routes/app_route.dart';
 
-class _SubscriptionPageContent extends StatelessWidget {
-  final String text;
-
-  const _SubscriptionPageContent({required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: const Color.fromARGB(255, 244, 242, 236),
-      child: Center(child: Text(text, textAlign: TextAlign.center)),
-    );
-  }
-}
-
 class _ActionButton extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
@@ -34,9 +20,7 @@ class _ActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: onPressed,
-      child: Text(text,
-          style: const TextStyle(
-              fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black)),
+      child: Text(text),
     );
   }
 }
@@ -274,7 +258,7 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
       child: Center(
         child: Text(
           day.toString(),
-          style: TextStyle(
+          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
               color: tigForDay.grade > 0 ? Colors.white : Colors.black),
         ),
       ),
@@ -289,11 +273,7 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
           children: [
             ElevatedButton(
               onPressed: () {},
-              child: const Text('구독하기',
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black)),
+              child: const Text('구독하기'),
             ),
             const Padding(
               padding: EdgeInsets.only(right: 4.0),
@@ -309,13 +289,19 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
             onPageChanged: (value) =>
                 setState(() => _currentSubscribePage = value),
             children: const [
-              _SubscriptionPageContent(
-                  text: '구독하면 이런게 생겨요!\n화면에 표시되는 모든 광고가 제거됩니다😊'),
-              _SubscriptionPageContent(
-                  text: '구독하면 이런게 생겨요!\n얼마나 열심히 진행하는지 한 눈에 볼 수 있게 위젯을 제공해요😊'),
-              _SubscriptionPageContent(
-                  text:
-                      '구독하면 이런게 생겨요!\n개발자가 더 나은 앱을 만들어갈 수 있는\n 원동력을 주실 수 있어요😊\n반드시 보답할게요!'),
+              Center(
+                child: Text('구독하면 이런게 생겨요!\n화면에 표시되는 모든 광고가 제거됩니다😊',
+                    textAlign: TextAlign.center),
+              ),
+              Center(
+                child: Text('구독하면 이런게 생겨요!\n월별, 일별 진행상황을 확인할 수 있는\n위젯을 제공해요😊',
+                    textAlign: TextAlign.center),
+              ),
+              Center(
+                child: Text(
+                    '구독하면 이런게 생겨요!\n개발자가 더 좋은 앱을 만들어갈 수 있는\n원동력을 주실 수 있어요😊\n반드시 보답할게요!',
+                    textAlign: TextAlign.center),
+              ),
             ],
           ),
         ),
@@ -329,13 +315,16 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
   }
 
   Widget _buildPageIndicator(int index) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
       width: _currentSubscribePage == index ? 12 : 8,
       height: _currentSubscribePage == index ? 12 : 8,
       decoration: BoxDecoration(
-        color: _currentSubscribePage == index ? Colors.black : Colors.grey,
+        color: _currentSubscribePage == index
+            ? (isDarkMode ? Colors.white : Colors.black)
+            : (isDarkMode ? Colors.grey.shade700 : Colors.grey),
         shape: BoxShape.circle,
       ),
     );
