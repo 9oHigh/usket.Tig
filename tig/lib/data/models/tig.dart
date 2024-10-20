@@ -43,7 +43,7 @@ class PriorityEntry {
       'isSucceed': isSucceed,
     };
   }
-  
+
   factory PriorityEntry.fromMap(Map<String, dynamic> map) {
     return PriorityEntry(
       priority: map['priority'] ?? '',
@@ -116,7 +116,7 @@ class Tig {
       timeTable: (map['timeTable'] as List<dynamic>?)
               ?.map((entry) => TimeEntry.fromMap(entry))
               .toList() ??
-          _generateTimeTable(map['startHour']?.toDouble() ?? 0.0,
+          _generateTimeTable(map['startHour']?.toDouble() ?? 7.0,
               map['endHour']?.toDouble() ?? 24.0),
       startHour: map['startHour']?.toDouble() ?? 7.0,
       endHour: map['endHour']?.toDouble() ?? 24.0,
