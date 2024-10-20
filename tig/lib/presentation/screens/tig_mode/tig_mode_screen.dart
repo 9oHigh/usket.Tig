@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tig/data/models/tig.dart';
 import 'package:tig/presentation/providers/tig/tig_provider.dart';
+import 'package:tig/presentation/widgets/styles/circular_count_down_painter.dart';
 
 class TigModeScreen extends ConsumerStatefulWidget {
   final Tig tig;
@@ -16,12 +17,14 @@ class TigModeScreen extends ConsumerStatefulWidget {
 
 class _TigModeScreenState extends ConsumerState<TigModeScreen> {
   TimeEntry? _currentTimeEntry;
-  late Tig _tig;
   Timer? _timer;
+  bool _isWaiting = false;
+
+  late Tig _tig;
   late int _remainSeconds;
+
   late DateTime _startTime;
   late DateTime _endTime;
-  bool _isWaiting = false;
 
   @override
   void initState() {
@@ -166,11 +169,21 @@ class _TigModeScreenState extends ConsumerState<TigModeScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.cancel, color: Colors.red),
+          const Icon(
+            Icons.cancel,
+            color: Colors.red,
+            size: 32,
+          ),
+          const SizedBox(
+            height: 8,
+          ),
           const Text(
             '현재 시간에는 티그가 존재하지 않아요.\n티그를 등록하고 다시 시작해보세요😊',
             textAlign: TextAlign.center,
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+          const SizedBox(
+            height: 12,
           ),
           ElevatedButton(
             onPressed: () {
@@ -185,36 +198,93 @@ class _TigModeScreenState extends ConsumerState<TigModeScreen> {
   }
 
   Widget _buildEntryWidget() {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(
-          '시작 시간: ${_startTime.hour.toString().padLeft(2, '0')}:${_startTime.minute.toString().padLeft(2, '0')}',
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+        Padding(
+          padding: const EdgeInsets.only(left: 32, right: 32),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '시작 시간: ${_startTime.hour.toString().padLeft(2, '0')}:${_startTime.minute.toString().padLeft(2, '0')}',
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+              ),
+              Text(
+                '종료 시간: ${_endTime.hour.toString().padLeft(2, '0')}:${_endTime.minute.toString().padLeft(2, '0')}',
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+              ),
+            ],
+          ),
         ),
-        Text(
-          '종료 시간: ${_endTime.hour.toString().padLeft(2, '0')}:${_endTime.minute.toString().padLeft(2, '0')}',
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+        const SizedBox(height: 32),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            double maxWidth = constraints.maxWidth * 0.8;
+            return Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: isDarkMode
+                    ? Colors.grey.withAlpha(125)
+                    : Colors.grey.withAlpha(75),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              constraints: BoxConstraints(
+                maxWidth: maxWidth,
+              ),
+              child: Text(
+                '${_currentTimeEntry?.activity}',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  color: isDarkMode ? Colors.white : Colors.black,
+                ),
+                maxLines: 4,
+                overflow: TextOverflow.ellipsis,
+              ),
+            );
+          },
         ),
-        const SizedBox(height: 8),
-        Text(
-          '${_currentTimeEntry?.activity}',
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        const SizedBox(height: 32),
+        Stack(
+          alignment: Alignment.center,
+          children: [
+            CustomPaint(
+              size: const Size(200, 200),
+              painter: CircularCountdownPainter(
+                  _remainSeconds / (30 * 60), isDarkMode),
+            ),
+            Column(
+              children: [
+                Text(
+                  _isWaiting ? '대기 중' : '남은 시간',
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  '${_remainSeconds ~/ 60}분 ${(_remainSeconds % 60).toString().padLeft(2, '0')}초',
+                  style: const TextStyle(
+                      fontFamily: 'PaperlogyExtraBold', fontSize: 24),
+                ),
+              ],
+            )
+          ],
         ),
-        const SizedBox(height: 8),
-        Text(
-          _isWaiting ? '대기 중' : '남은 시간',
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-        Text(
-          '${_remainSeconds ~/ 60}분 ${(_remainSeconds % 60).toString().padLeft(2, '0')}초',
-          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 32),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            ElevatedButton(
+              onPressed: () {
+                _timer?.cancel();
+                Navigator.pop(context);
+              },
+              child: const Text('종료'),
+            ),
+            const SizedBox(width: 8),
             ElevatedButton(
               onPressed: () async {
                 if (_currentTimeEntry != null) {
@@ -225,15 +295,7 @@ class _TigModeScreenState extends ConsumerState<TigModeScreen> {
                   _moveToNextEntry();
                 }
               },
-              child: const Text('다음 으로'),
-            ),
-            const SizedBox(width: 8),
-            ElevatedButton(
-              onPressed: () {
-                _timer?.cancel();
-                Navigator.pop(context);
-              },
-              child: const Text('종료'),
+              child: const Text('다음'),
             ),
           ],
         ),
