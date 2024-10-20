@@ -5,6 +5,7 @@ import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tig/ads/admob_service.dart';
+import 'package:tig/core/manager/home_widget_manager.dart';
 import 'package:tig/core/routes/app_route.dart';
 import 'package:tig/data/models/tig.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -354,6 +355,8 @@ class _HomeScreen extends ConsumerState<HomeScreen>
                                   child: ElevatedButton(
                                     onPressed: () async {
                                       await _saveTigData();
+                                      await HomeWidgetManager()
+                                          .updateWidgetData();
                                       _showSavedDialog();
                                     },
                                     child: const Text('저장 하기'),

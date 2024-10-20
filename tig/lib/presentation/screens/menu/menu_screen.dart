@@ -1,9 +1,7 @@
-import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:home_widget/home_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tig/data/models/tig.dart';
 import 'package:tig/presentation/providers/auth/auth_provider.dart';
@@ -52,44 +50,9 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
     final monthlyTigs = await tigUsecase.getTigsForMonth(
         _userId, _currentDate.year, _currentDate.month);
 
-    await _saveMonthlyTigsToPreferences(monthlyTigs);
-    await _saveTodayTigsToPreferences(monthlyTigs);
-
     setState(() {
       _monthlyTigs = monthlyTigs;
     });
-  }
-
-  Future<void> _saveMonthlyTigsToPreferences(List<Tig> monthlyTigs) async {
-    final monthlyTigsJson = jsonEncode(monthlyTigs
-        .map((tig) => {...tig.toMap(), 'date': tig.date.toIso8601String()})
-        .toList());
-
-    await HomeWidget.saveWidgetData<int>("current_month", _currentDate.month);
-    await HomeWidget.saveWidgetData<String>("monthly_tigs", monthlyTigsJson);
-    await HomeWidget.updateWidget(
-        name: 'LargeWidgetProvider', androidName: 'LargeWidgetProvider');
-  }
-
-  Future<void> _saveTodayTigsToPreferences(List<Tig> monthlyTigs) async {
-    final today = DateTime.now();
-    final todayTig = monthlyTigs.firstWhere(
-      (tig) =>
-          tig.date.year == today.year &&
-          tig.date.month == today.month &&
-          tig.date.day == today.day,
-      orElse: () => Tig(date: today, timeTable: []),
-    );
-
-    final todayTigJson = todayTig != null
-        ? jsonEncode(
-            {...todayTig.toMap(), 'date': todayTig.date.toIso8601String()})
-        : null;
-
-    await HomeWidget.saveWidgetData<int>("current_day", _currentDate.day);
-    await HomeWidget.saveWidgetData<String>("today_tig", todayTigJson);
-    await HomeWidget.updateWidget(
-        name: 'SmallWidgetProvider', androidName: 'SmallWidgetProvider');
   }
 
   Color _getColorForGrade(int grade) {
@@ -190,8 +153,10 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('설정',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        title: const Text(
+          '설정',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),

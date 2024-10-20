@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tig/core/manager/home_widget_manager.dart';
 import 'package:tig/data/models/tig.dart';
 import 'package:tig/presentation/providers/tig/tig_provider.dart';
 import 'package:tig/presentation/widgets/styles/circular_count_down_painter.dart';
@@ -292,6 +293,7 @@ class _TigModeScreenState extends ConsumerState<TigModeScreen> {
                   final userId = await _getUserId();
                   _currentTimeEntry!.isSucceed = true;
                   await tigUsecase.saveTigData(userId, _tig);
+                  await HomeWidgetManager().updateWidgetData();
                   _moveToNextEntry();
                 }
               },
