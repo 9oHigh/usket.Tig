@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tig/presentation/providers/auth/auth_provider.dart';
 
@@ -27,16 +28,23 @@ class AuthScreen extends ConsumerWidget {
                     await authUseCase.signInWithGoogle();
                     prefs.setBool("isLoggedIn", true);
                     messenger.showSnackBar(
-                      const SnackBar(
+                      SnackBar(
                           content: Text(
-                        '구글 로그인 성공',
-                        style: TextStyle(),
+                        Intl.message('auth_google_login_success'),
                       )),
                     );
                     navigator.pushReplacementNamed('/home');
                   } catch (e) {
                     messenger.showSnackBar(
-                      SnackBar(content: Text('로그인 실패: $e')),
+                      SnackBar(
+                          content: Text(
+                        Intl.message(
+                          'auth_google_login_failure',
+                          args: [
+                            (e.toString()),
+                          ],
+                        ),
+                      )),
                     );
                   }
                 },
@@ -67,12 +75,12 @@ class AuthScreen extends ConsumerWidget {
                             child: Image.asset("assets/images/google_logo.png"),
                           ),
                         ),
-                        const Expanded(
+                        Expanded(
                           child: Align(
                             alignment: Alignment.center,
                             child: Text(
-                              "구글 로그인",
-                              style: TextStyle(
+                              Intl.message('auth_google_login'),
+                              style: const TextStyle(
                                   fontWeight: FontWeight.w400, fontSize: 16),
                             ),
                           ),
@@ -92,14 +100,17 @@ class AuthScreen extends ConsumerWidget {
                   try {
                     await authUseCase.signInWithKakao();
                     prefs.setBool("isLoggedIn", true);
-                    messenger.showSnackBar(
-                      const SnackBar(content: Text('카카오 로그인 성공')),
-                    );
+                    messenger.showSnackBar(SnackBar(
+                        content: Text(
+                      Intl.message('auth_kakao_login_success'),
+                    )));
                     navigator.pushReplacementNamed('/home');
                   } catch (e) {
-                    messenger.showSnackBar(
-                      SnackBar(content: Text('카카오 로그인 실패: $e')),
-                    );
+                    messenger.showSnackBar(SnackBar(
+                        content: Text(Intl.message(
+                      'auth_kakao_login_failure',
+                      args: [(e.toString())],
+                    ))));
                   }
                 },
                 child: SizedBox(

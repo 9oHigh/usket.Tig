@@ -1,0 +1,10 @@
+{
+    "flutterTranslator.config": {
+        "arbConfig": {
+            "sourcePath": "/Users/leegyeonghu/usket.Tig/tig/lib/l10n/intl_ko.arb",
+            "exclude": [],
+            "prefix": "intl_",
+            "custom": {}
+        }
+    }
+}

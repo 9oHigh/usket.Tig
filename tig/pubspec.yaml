@@ -65,8 +65,11 @@ dev_dependencies:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
-
 # The following section is specific to Flutter packages.
+
+flutter_intl:
+  enabled: true
+
 flutter:
 
   # The following line ensures that the Material Icons font is
@@ -79,6 +82,12 @@ flutter:
     - .env
     - assets/images/
   fonts:
+    - family: CangJiGaoDeGuoMiaoHei
+      fonts:
+        - asset: assets/fonts/CangJiGaoDeGuoMiaoHei.ttf
+    - family: MaoKenShiJinHei
+      fonts:
+        - asset: assets/fonts/MaoKenShiJinHei.ttf
     - family: PaperlogyRegular
       fonts:
         - asset: assets/fonts/Paperlogy-Regular.ttf
@@ -94,14 +103,10 @@ flutter:
     - family: ShigotoMemogaki
       fonts:
         - asset: assets/fonts/ShigotoMemogaki.ttf
-      
-
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
-
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/assets-and-images/#from-packages
-
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
   # "family" key with the font family name, and a "fonts" key with a

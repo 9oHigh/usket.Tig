@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TagScreen extends StatefulWidget {
@@ -44,15 +45,15 @@ class _TagScreenState extends State<TagScreen> {
             });
             return AlertDialog(
               actionsAlignment: MainAxisAlignment.spaceEvenly,
-              title: const Center(child: Text('태그 추가')),
+              title: Center(child: Text(Intl.message('tag_add'))),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TextField(
                     focusNode: focusNode,
                     controller: tagController,
-                    decoration: const InputDecoration(
-                      hintText: '태그를 입력하세요',
+                    decoration: InputDecoration(
+                      hintText: Intl.message('tag_add_input'),
                     ),
                   ),
                   if (errorMessage != null)
@@ -61,9 +62,16 @@ class _TagScreenState extends State<TagScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Text(
-                            errorMessage!,
-                            style: const TextStyle(color: Colors.red),
+                          Expanded(
+                            child: Text(
+                              errorMessage!,
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontSize: 12,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                         ],
                       ),
@@ -78,7 +86,7 @@ class _TagScreenState extends State<TagScreen> {
                     });
                     Navigator.of(context).pop();
                   },
-                  child: const Text('취소'),
+                  child: Text(Intl.message('cancel')),
                 ),
                 TextButton(
                   onPressed: () {
@@ -91,12 +99,18 @@ class _TagScreenState extends State<TagScreen> {
                       errorMessage = null;
                       Navigator.of(context).pop();
                     } else {
-                      setStateDialog(() {
-                        errorMessage = "동일한 태그는 등록이 불가능해요.";
-                      });
+                      if (tagController.text.isEmpty) {
+                        setStateDialog(() {
+                          errorMessage = Intl.message('tag_empty');
+                        });
+                      } else {
+                        setStateDialog(() {
+                          errorMessage = Intl.message('tag_duplicated');
+                        });
+                      }
                     }
                   },
-                  child: const Text('확인'),
+                  child: Text(Intl.message('ok')),
                 ),
               ],
             );
@@ -116,9 +130,9 @@ class _TagScreenState extends State<TagScreen> {
           },
           icon: const Icon(Icons.arrow_back_ios_new),
         ),
-        title: const Text(
-          "태그",
-          style: TextStyle(
+        title: Text(
+          Intl.message('tag_title'),
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -170,16 +184,16 @@ class _TagScreenState extends State<TagScreen> {
                 return showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
-                    title: const Text('삭제 확인'),
-                    content: const Text('이 태그를 삭제하시겠습니까?'),
+                    title: Text(Intl.message('tag_delete_title')),
+                    content: Text(Intl.message('tag_delete_content')),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.of(context).pop(false),
-                        child: const Text('취소'),
+                        child: Text(Intl.message('cancel')),
                       ),
                       TextButton(
                         onPressed: () => Navigator.of(context).pop(true),
-                        child: const Text('삭제'),
+                        child: Text(Intl.message('delete')),
                       ),
                     ],
                   ),
@@ -188,7 +202,8 @@ class _TagScreenState extends State<TagScreen> {
               onDismissed: (direction) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('${tags[index]}가 삭제되었습니다.'),
+                    content: Text(Intl.message('tag_delete_completed',
+                        args: [(tags[index].toString())])),
                   ),
                 );
                 setState(() {
