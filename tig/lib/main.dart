@@ -5,11 +5,13 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:intl/intl.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tig/ads/admob_banner.dart';
 import 'package:tig/core/helpers/helpers.dart';
 import 'package:tig/data/models/tig.dart';
+import 'package:tig/generated/l10n.dart';
 import 'package:tig/presentation/screens/auth/auth_screen.dart';
 import 'package:tig/presentation/screens/home/home_arrange_screen.dart';
 import 'package:tig/presentation/screens/home/home_screen.dart';
@@ -84,19 +86,53 @@ class _TigApp extends State<TigApp> {
     }
   }
 
+  void _rebuildOnLocaleChange() => setState(() {});
+
   @override
   Widget build(BuildContext context) {
+    Locale locale = WidgetsBinding.instance.platformDispatcher.locale;
+    WidgetsBinding.instance.platformDispatcher.onLocaleChanged =
+        _rebuildOnLocaleChange;
+    FontLocale fontLocale;
+    switch (locale.languageCode) {
+      case 'de':
+        fontLocale = FontLocale.de;
+        break;
+      case 'en':
+        fontLocale = FontLocale.en;
+        break;
+      case 'es':
+        fontLocale = FontLocale.es;
+        break;
+      case 'ja':
+        fontLocale = FontLocale.ja;
+        break;
+      case 'ko':
+        fontLocale = FontLocale.ko;
+        break;
+      case 'pt':
+        fontLocale = FontLocale.pt;
+        break;
+      case 'zh':
+        if (locale.countryCode == 'CN') {
+          fontLocale = FontLocale.zh_CN;
+        } else if (locale.countryCode == 'TW') {
+          fontLocale = FontLocale.zh_TW;
+        } else {
+          fontLocale = FontLocale.zh_CN;
+        }
+        break;
+      default:
+        fontLocale = FontLocale.en;
+    }
     return MaterialApp(
-      supportedLocales: const [
-        Locale('en', ''),
-        Locale('ja', ''),
-        Locale('ko', ''),
-      ],
       localizationsDelegates: const [
+        S.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
+      supportedLocales: S.delegate.supportedLocales,
       builder: (context, child) {
         return ScrollConfiguration(
           behavior: Helpers.fixedScrollBehavior,
@@ -104,8 +140,8 @@ class _TigApp extends State<TigApp> {
         );
       },
       debugShowCheckedModeBanner: false,
-      theme: buildLightTheme(),
-      darkTheme: buildDarkTheme(),
+      theme: buildLightTheme(fontLocale),
+      darkTheme: buildDarkTheme(fontLocale),
       themeMode: ThemeMode.system,
       home: FutureBuilder<bool>(
         future: _loginStatus,
@@ -115,7 +151,10 @@ class _TigApp extends State<TigApp> {
           } else if (snapshot.hasError) {
             return Center(
               child: Text(
-                '앱을 다시 시작해주세요.\nERROR: ${snapshot.error}',
+                Intl.message(
+                  'main_restart',
+                  args: [(snapshot.error.toString())],
+                ),
               ),
             );
           } else {

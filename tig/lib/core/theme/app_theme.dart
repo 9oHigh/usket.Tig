@@ -1,32 +1,84 @@
 import 'package:flutter/material.dart';
 
-ThemeData buildLightTheme() {
+enum FontLocale { de, en, es, ja, ko, pt, zh_CN, zh_TW }
+
+extension on FontLocale {
+  String get extraBoldFontName {
+    switch (this) {
+      case FontLocale.de:
+      case FontLocale.en:
+      case FontLocale.es:
+      case FontLocale.ja:
+      case FontLocale.ko:
+      case FontLocale.pt:
+        return "PaperlogyExtraBold";
+      case FontLocale.zh_CN:
+      case FontLocale.zh_TW:
+        return "MaoKenShiJinHei";
+    }
+  }
+
+  String get semiBoldFontName {
+    switch (this) {
+      case FontLocale.de:
+      case FontLocale.en:
+      case FontLocale.es:
+      case FontLocale.ja:
+      case FontLocale.ko:
+      case FontLocale.pt:
+        return "PaperlogySemiBold";
+      case FontLocale.zh_CN:
+      case FontLocale.zh_TW:
+        return "MaoKenShiJinHei";
+    }
+  }
+
+  String get regularFontName {
+    switch (this) {
+      case FontLocale.de:
+      case FontLocale.en:
+      case FontLocale.es:
+      case FontLocale.ja:
+      case FontLocale.ko:
+      case FontLocale.pt:
+        return "PaperlogyRegular";
+      case FontLocale.zh_CN:
+      case FontLocale.zh_TW:
+        return "CangJiGaoDeGuoMiaoHei";
+    }
+  }
+}
+
+ThemeData buildLightTheme(FontLocale locale) {
+  final String extraBoldFontName = locale.extraBoldFontName;
+  final String semiBoldFontName = locale.semiBoldFontName;
+  final String regularFontName = locale.regularFontName;
+
   return ThemeData(
     brightness: Brightness.light,
     primaryColor: Colors.black,
     scaffoldBackgroundColor: Colors.white,
-    appBarTheme: const AppBarTheme(
+    appBarTheme: AppBarTheme(
         color: Colors.white,
         centerTitle: true,
         titleTextStyle: TextStyle(
           color: Colors.black,
-          fontFamily: 'PaperlogyExtraBold',
+          fontFamily: extraBoldFontName,
           fontSize: 20,
         ),
-        iconTheme: IconThemeData(
+        iconTheme: const IconThemeData(
           color: Colors.black,
           weight: 2.0,
         ),
-        actionsIconTheme: IconThemeData(
+        actionsIconTheme: const IconThemeData(
           color: Colors.black,
           weight: 2.0,
         )),
-    textTheme: const TextTheme(
+    textTheme: TextTheme(
       headlineMedium:
-          TextStyle(color: Colors.black, fontFamily: 'PaperlogySemiBold'),
-      bodyLarge: TextStyle(color: Colors.black, fontFamily: 'PaperlogyRegular'),
-      bodyMedium:
-          TextStyle(color: Colors.black, fontFamily: 'PaperlogyRegular'),
+          TextStyle(color: Colors.black, fontFamily: semiBoldFontName),
+      bodyLarge: TextStyle(color: Colors.black, fontFamily: regularFontName),
+      bodyMedium: TextStyle(color: Colors.black, fontFamily: regularFontName),
     ),
     pageTransitionsTheme: const PageTransitionsTheme(
       builders: {
@@ -40,9 +92,9 @@ ThemeData buildLightTheme() {
         foregroundColor: WidgetStateProperty.all(Colors.white),
         iconColor: WidgetStateProperty.all(Colors.white),
         textStyle: WidgetStateProperty.all(
-          const TextStyle(
+          TextStyle(
             fontSize: 14,
-            fontFamily: 'PaperlogySemiBold',
+            fontFamily: semiBoldFontName,
           ),
         ),
       ),
@@ -52,9 +104,9 @@ ThemeData buildLightTheme() {
         backgroundColor: WidgetStateProperty.all(Colors.black),
         foregroundColor: WidgetStateProperty.all(Colors.white),
         textStyle: WidgetStateProperty.all(
-          const TextStyle(
+          TextStyle(
             fontSize: 10,
-            fontFamily: 'PaperlogySemiBold',
+            fontFamily: semiBoldFontName,
           ),
         ),
       ),
@@ -63,14 +115,14 @@ ThemeData buildLightTheme() {
       backgroundColor: Colors.white,
       headerBackgroundColor: Colors.black,
       headerForegroundColor: Colors.white,
-      yearStyle: const TextStyle(
+      yearStyle: TextStyle(
         color: Colors.white,
-        fontFamily: 'PaperlogyExtraBold',
+        fontFamily: extraBoldFontName,
         fontSize: 20,
       ),
-      dayStyle: const TextStyle(
+      dayStyle: TextStyle(
         color: Colors.black,
-        fontFamily: 'PaperlogyRegular',
+        fontFamily: regularFontName,
       ),
       todayBackgroundColor: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) {
@@ -142,16 +194,16 @@ ThemeData buildLightTheme() {
         color: Colors.red,
       ),
     ),
-    dialogTheme: const DialogTheme(
+    dialogTheme: DialogTheme(
       backgroundColor: Colors.white,
       alignment: Alignment.center,
       titleTextStyle: TextStyle(
-        fontFamily: 'PaperlogyExtraBold',
+        fontFamily: semiBoldFontName,
         fontSize: 16,
         color: Colors.black,
       ),
       contentTextStyle: TextStyle(
-        fontFamily: 'PaperlogyRegular',
+        fontFamily: regularFontName,
         fontSize: 14,
         color: Colors.black,
       ),
@@ -159,34 +211,36 @@ ThemeData buildLightTheme() {
   );
 }
 
-ThemeData buildDarkTheme() {
+ThemeData buildDarkTheme(FontLocale locale) {
+  final String extraBoldFontName = locale.extraBoldFontName;
+  final String semiBoldFontName = locale.semiBoldFontName;
+  final String regularFontName = locale.regularFontName;
   return ThemeData(
     brightness: Brightness.dark,
     primaryColor: Colors.white,
     scaffoldBackgroundColor: Colors.black,
-    appBarTheme: const AppBarTheme(
+    appBarTheme: AppBarTheme(
       color: Colors.black,
       centerTitle: true,
       titleTextStyle: TextStyle(
         color: Colors.white,
-        fontFamily: 'PaperlogyExtraBold',
+        fontFamily: extraBoldFontName,
         fontSize: 20,
       ),
-      iconTheme: IconThemeData(
+      iconTheme: const IconThemeData(
         color: Colors.white,
         weight: 2.0,
       ),
-      actionsIconTheme: IconThemeData(
+      actionsIconTheme: const IconThemeData(
         color: Colors.white,
         weight: 2.0,
       ),
     ),
-    textTheme: const TextTheme(
+    textTheme: TextTheme(
       headlineMedium:
-          TextStyle(color: Colors.white, fontFamily: 'PaperlogySemiBold'),
-      bodyLarge: TextStyle(color: Colors.white, fontFamily: 'PaperlogyRegular'),
-      bodyMedium:
-          TextStyle(color: Colors.white, fontFamily: 'PaperlogyRegular'),
+          TextStyle(color: Colors.white, fontFamily: semiBoldFontName),
+      bodyLarge: TextStyle(color: Colors.white, fontFamily: regularFontName),
+      bodyMedium: TextStyle(color: Colors.white, fontFamily: regularFontName),
     ),
     pageTransitionsTheme: const PageTransitionsTheme(
       builders: {
@@ -200,9 +254,9 @@ ThemeData buildDarkTheme() {
         foregroundColor: WidgetStateProperty.all(Colors.black),
         iconColor: WidgetStateProperty.all(Colors.black),
         textStyle: WidgetStateProperty.all(
-          const TextStyle(
+          TextStyle(
             fontSize: 14,
-            fontFamily: 'PaperlogySemiBold',
+            fontFamily: semiBoldFontName,
           ),
         ),
       ),
@@ -212,9 +266,9 @@ ThemeData buildDarkTheme() {
         backgroundColor: WidgetStateProperty.all(Colors.white),
         foregroundColor: WidgetStateProperty.all(Colors.black),
         textStyle: WidgetStateProperty.all(
-          const TextStyle(
+          TextStyle(
             fontSize: 10,
-            fontFamily: 'PaperlogySemiBold',
+            fontFamily: semiBoldFontName,
           ),
         ),
       ),
@@ -223,14 +277,14 @@ ThemeData buildDarkTheme() {
       backgroundColor: Colors.black,
       headerBackgroundColor: Colors.red,
       headerForegroundColor: Colors.white,
-      yearStyle: const TextStyle(
+      yearStyle: TextStyle(
         color: Colors.white,
-        fontFamily: 'PaperlogyExtraBold',
+        fontFamily: extraBoldFontName,
         fontSize: 20,
       ),
-      dayStyle: const TextStyle(
+      dayStyle: TextStyle(
         color: Colors.white,
-        fontFamily: 'PaperlogyRegular',
+        fontFamily: regularFontName,
       ),
       todayBackgroundColor: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) {
@@ -304,19 +358,19 @@ ThemeData buildDarkTheme() {
         color: Colors.red,
       ),
     ),
-    dialogTheme: const DialogTheme(
-      shape: RoundedRectangleBorder(
+    dialogTheme: DialogTheme(
+      shape: const RoundedRectangleBorder(
           side: BorderSide(color: Colors.white),
           borderRadius: BorderRadius.all(Radius.circular(8))),
       backgroundColor: Colors.black,
       alignment: Alignment.center,
       titleTextStyle: TextStyle(
-        fontFamily: 'PaperlogyExtraBold',
+        fontFamily: extraBoldFontName,
         fontSize: 16,
         color: Colors.white,
       ),
       contentTextStyle: TextStyle(
-        fontFamily: 'PaperlogyRegular',
+        fontFamily: regularFontName,
         fontSize: 14,
         color: Colors.white,
       ),

@@ -197,15 +197,15 @@ class _HomeScreen extends ConsumerState<HomeScreen>
       context: context,
       builder: (context) => AlertDialog(
         actionsAlignment: MainAxisAlignment.center,
-        title: const Center(child: Text("저장 완료")),
-        content: const Text(
-          "저장이 완료되었습니다.",
+        title: Center(child: Text(Intl.message('home_save_completed'))),
+        content: Text(
+          Intl.message("home_save_completed_desc"),
           textAlign: TextAlign.center,
         ),
         actions: [
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('확인'),
+            child: Text(Intl.message('ok')),
           ),
         ],
       ),
@@ -216,11 +216,16 @@ class _HomeScreen extends ConsumerState<HomeScreen>
     Locale currentLocale = Localizations.localeOf(context);
     Localizations.localeOf(context);
     if (currentLocale.languageCode == 'ja') {
-      return const TextStyle(
-          fontFamily: 'ShigotoMemogaki', fontSize: 24, color: Colors.black);
+      return TextStyle(
+          fontFamily: 'ShigotoMemogaki', fontSize: 22, color: Colors.grey[600]);
+    } else if (currentLocale.languageCode == 'zh') {
+      return TextStyle(
+          fontFamily: "CangJiGaoDeGuoMiaoHei",
+          fontSize: 16,
+          color: Colors.grey[600]);
     } else {
-      return const TextStyle(
-          fontFamily: 'NanumBrush', fontSize: 24, color: Colors.black);
+      return TextStyle(
+          fontFamily: 'NanumBrush', fontSize: 22, color: Colors.grey[600]);
     }
   }
 
@@ -232,7 +237,7 @@ class _HomeScreen extends ConsumerState<HomeScreen>
           resizeToAvoidBottomInset: true,
           appBar: AppBar(
             title: const Text(
-              'Time Box Planner',
+              'TimeBox Planner',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
               ),
@@ -318,7 +323,7 @@ class _HomeScreen extends ConsumerState<HomeScreen>
                             if (_isOnDaily) ...{
                               const SizedBox(height: 16.0),
                               _buildExpandableSection(
-                                "Daily priority top3",
+                                "Daily Priority Top3",
                                 _isDayExpanded,
                                 () => setState(
                                     () => _isDayExpanded = !_isDayExpanded),
@@ -338,11 +343,11 @@ class _HomeScreen extends ConsumerState<HomeScreen>
                               _buildBrainDump(),
                             },
                             const SizedBox(height: 16.0),
-                            const Row(
+                            Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('End Time'),
-                                Text('Success'),
+                                Text(Intl.message('end_time')),
+                                Text(Intl.message('success')),
                               ],
                             ),
                             const SizedBox(height: 8.0),
@@ -359,7 +364,7 @@ class _HomeScreen extends ConsumerState<HomeScreen>
                                           .updateWidgetData();
                                       _showSavedDialog();
                                     },
-                                    child: const Text('저장 하기'),
+                                    child: Text(Intl.message('home_save_desc')),
                                   ),
                                 ),
                                 SizedBox(
@@ -372,7 +377,7 @@ class _HomeScreen extends ConsumerState<HomeScreen>
                                       await _saveTigData();
                                       await _showFullScreenAd();
                                     },
-                                    label: const Text('티그 모드'),
+                                    label: Text(Intl.message('tig_mode')),
                                   ),
                                 ),
                               ],
@@ -392,23 +397,23 @@ class _HomeScreen extends ConsumerState<HomeScreen>
             absorbing: true,
             child: Container(
               color: Colors.black54,
-              child: const Center(
+              child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "티그 모드를 위해 데이터를 준비중이에요.\n준비되는 동안 광고가 나와요.\n잠시만 기다려주세요🔥",
-                      style: TextStyle(
+                      Intl.message('home_tig_mode_prepare'),
+                      style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
-                    CircularProgressIndicator(
+                    const CircularProgressIndicator(
                       color: Colors.white,
                     ),
                   ],
@@ -450,7 +455,7 @@ class _HomeScreen extends ConsumerState<HomeScreen>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          "Brain dump",
+          "Braindump",
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -477,9 +482,11 @@ class _HomeScreen extends ConsumerState<HomeScreen>
             onChanged: (text) => setState(() {}),
             onTapOutside: (event) =>
                 FocusManager.instance.primaryFocus?.unfocus(),
-            style: _getTextStyle(context),
+            style: _getTextStyle(context).copyWith(
+              color: Colors.black,
+            ),
             decoration: InputDecoration(
-              hintText: "Fill it out with everything that comes to mind now!",
+              hintText: Intl.message('home_braindump_placeholder'),
               hintStyle: _getTextStyle(context),
               border: InputBorder.none,
               enabledBorder: InputBorder.none,
@@ -658,21 +665,28 @@ class _HomeScreen extends ConsumerState<HomeScreen>
                   tigData.timeTable[index].activity = text;
                 },
                 decoration: InputDecoration(
-                  hintText: "Enter activity",
-                  hintStyle: Theme.of(context).textTheme.bodyMedium,
+                  hintText: Intl.message('home_activity_placeholder'),
+                  hintStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        color: Colors.grey,
+                      ),
                 ),
               ),
             ),
-            Checkbox(
-              value: success,
-              onChanged: (bool? value) {
-                setState(() {
-                  final index = tigData.timeTable.indexWhere(
-                    (entry) => entry.time == timeSlot,
-                  );
-                  tigData.timeTable[index].isSucceed = value ?? false;
-                });
-              },
+            const SizedBox(width: 12),
+            SizedBox(
+              width: 24,
+              height: 24,
+              child: Checkbox(
+                value: success,
+                onChanged: (bool? value) {
+                  setState(() {
+                    final index = tigData.timeTable.indexWhere(
+                      (entry) => entry.time == timeSlot,
+                    );
+                    tigData.timeTable[index].isSucceed = value ?? false;
+                  });
+                },
+              ),
             ),
           ],
         );

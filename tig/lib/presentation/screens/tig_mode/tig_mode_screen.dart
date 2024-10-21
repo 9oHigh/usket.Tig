@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tig/core/manager/home_widget_manager.dart';
 import 'package:tig/data/models/tig.dart';
@@ -178,10 +179,10 @@ class _TigModeScreenState extends ConsumerState<TigModeScreen> {
           const SizedBox(
             height: 8,
           ),
-          const Text(
-            '현재 시간에는 티그가 존재하지 않아요.\n티그를 등록하고 다시 시작해보세요😊',
+          Text(
+            Intl.message('tig_mode_empty_tig'),
             textAlign: TextAlign.center,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
           const SizedBox(
             height: 12,
@@ -191,7 +192,7 @@ class _TigModeScreenState extends ConsumerState<TigModeScreen> {
               _timer?.cancel();
               Navigator.pop(context);
             },
-            child: const Text('나가기'),
+            child: Text(Intl.message('exit')),
           )
         ],
       ),
@@ -205,16 +206,23 @@ class _TigModeScreenState extends ConsumerState<TigModeScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 32, right: 32),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                '시작 시간: ${_startTime.hour.toString().padLeft(2, '0')}:${_startTime.minute.toString().padLeft(2, '0')}',
+                Intl.message('tig_mode_start_time', args: [
+                  "${_startTime.hour.toString().padLeft(2, '0')}:${_startTime.minute.toString().padLeft(2, '0')}"
+                ]),
                 style:
                     const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
               ),
+              const SizedBox(
+                height: 8,
+              ),
               Text(
-                '종료 시간: ${_endTime.hour.toString().padLeft(2, '0')}:${_endTime.minute.toString().padLeft(2, '0')}',
+                Intl.message('tig_mode_end_time', args: [
+                  "${_endTime.hour.toString().padLeft(2, '0')}:${_endTime.minute.toString().padLeft(2, '0')}"
+                ]),
                 style:
                     const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
               ),
@@ -261,12 +269,20 @@ class _TigModeScreenState extends ConsumerState<TigModeScreen> {
             Column(
               children: [
                 Text(
-                  _isWaiting ? '대기 중' : '남은 시간',
+                  _isWaiting
+                      ? Intl.message('tig_mode_waiting')
+                      : Intl.message('tig_mode_remain_time'),
                   style: const TextStyle(
                       fontSize: 16, fontWeight: FontWeight.bold),
                 ),
+                const SizedBox(
+                  height: 2,
+                ),
                 Text(
-                  '${_remainSeconds ~/ 60}분 ${(_remainSeconds % 60).toString().padLeft(2, '0')}초',
+                  Intl.message('tig_mode_count_down', args: [
+                    ((_remainSeconds ~/ 60).toString()),
+                    ((_remainSeconds % 60).toString().padLeft(2, '0'))
+                  ]),
                   style: const TextStyle(
                       fontFamily: 'PaperlogyExtraBold', fontSize: 24),
                 ),
@@ -283,7 +299,7 @@ class _TigModeScreenState extends ConsumerState<TigModeScreen> {
                 _timer?.cancel();
                 Navigator.pop(context);
               },
-              child: const Text('종료'),
+              child: Text(Intl.message('end')),
             ),
             const SizedBox(width: 8),
             ElevatedButton(
@@ -297,7 +313,7 @@ class _TigModeScreenState extends ConsumerState<TigModeScreen> {
                   _moveToNextEntry();
                 }
               },
-              child: const Text('다음'),
+              child: Text(Intl.message('next')),
             ),
           ],
         ),

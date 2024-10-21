@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tig/data/models/tig.dart';
 import 'package:tig/presentation/providers/auth/auth_provider.dart';
@@ -74,15 +75,8 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
 
   Future<void> _sendEmail() async {
     final Email email = Email(
-      subject: "문의드립니다.",
-      body: """
-아래의 내용을 함께 보내주시면 큰 도움이 됩니다😊
-사용 중인 스마트폰: 
-오류 혹은 개선점: 
-
-
-이 외에 문의할 것이 있다면 편하게 작성해주세요 :)
-      """,
+      subject: Intl.message('menu_email_subject'),
+      body: Intl.message('menu_email_body'),
       recipients: ['usket@icloud.com'],
       isHTML: false,
     );
@@ -105,14 +99,14 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
             children: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text('취소'),
+                child: Text(Intl.message('cancel')),
               ),
               TextButton(
                 onPressed: () {
                   onConfirm();
                   Navigator.of(context).pop();
                 },
-                child: const Text('확인'),
+                child: Text(Intl.message('ok')),
               ),
             ],
           ),
@@ -130,7 +124,7 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
       _goToAuthScreen();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error deleting user: $e')),
+        SnackBar(content: Text(Intl.message('menu_delete_user_failure'))),
       );
     }
   }
@@ -153,9 +147,9 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          '설정',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: Text(
+          Intl.message('setting'),
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         leading: IconButton(
@@ -186,7 +180,10 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '${_currentDate.month}월 Tigs',
+          Intl.message(
+            'menu_month_tigs',
+            args: [(_currentDate.month.toString())],
+          ),
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
@@ -238,11 +235,11 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
           children: [
             ElevatedButton(
               onPressed: () {},
-              child: const Text('구독하기'),
+              child: Text(Intl.message('menu_subscribe')),
             ),
-            const Padding(
-              padding: EdgeInsets.only(right: 4.0),
-              child: Text('490₩/월'),
+            Padding(
+              padding: const EdgeInsets.only(right: 4.0),
+              child: Text(Intl.message('menu_price_per_month', args: ["490₩"])),
             ),
           ],
         ),
@@ -253,19 +250,24 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
             controller: _pageController,
             onPageChanged: (value) =>
                 setState(() => _currentSubscribePage = value),
-            children: const [
+            children: [
               Center(
-                child: Text('구독하면 이런게 생겨요!\n화면에 표시되는 모든 광고가 제거됩니다😊',
-                    textAlign: TextAlign.center),
-              ),
-              Center(
-                child: Text('구독하면 이런게 생겨요!\n월별, 일별 진행상황을 확인할 수 있는\n위젯을 제공해요😊',
-                    textAlign: TextAlign.center),
+                child: Text(
+                  Intl.message('menu_subscribe_get1'),
+                  textAlign: TextAlign.center,
+                ),
               ),
               Center(
                 child: Text(
-                    '구독하면 이런게 생겨요!\n개발자가 더 좋은 앱을 만들어갈 수 있는\n원동력을 주실 수 있어요😊\n반드시 보답할게요!',
-                    textAlign: TextAlign.center),
+                  Intl.message('menu_subscribe_get2'),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              Center(
+                child: Text(
+                  Intl.message('menu_subscribe_get3'),
+                  textAlign: TextAlign.center,
+                ),
               ),
             ],
           ),
@@ -301,22 +303,23 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _ActionButton(text: '문의 하기', onPressed: _sendEmail),
+          _ActionButton(
+              text: Intl.message('menu_contact_us'), onPressed: _sendEmail),
           const SizedBox(height: 8),
           _ActionButton(
-            text: '회원탈퇴',
+            text: Intl.message('menu_withdrawal_text'),
             onPressed: () => _showDialog(
-              title: '회원탈퇴 안내',
-              content: '회원 탈퇴시 모든 정보가 제거됩니다.\n그래도 진행하시겠습니까?',
+              title: Intl.message('menu_withdrawal_title'),
+              content: Intl.message('menu_withdrawal_content'),
               onConfirm: _deleteUser,
             ),
           ),
           const SizedBox(height: 8),
           _ActionButton(
-            text: '로그아웃',
+            text: Intl.message('menu_logout_text'),
             onPressed: () => _showDialog(
-              title: '로그아웃 안내',
-              content: '로그아웃 하시겠습니까?',
+              title: Intl.message('menu_logout_title'),
+              content: Intl.message('menu_logout_content'),
               onConfirm: _logoutUser,
             ),
           ),

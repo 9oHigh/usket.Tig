@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum ArrangeType { isOnDaily, isOnBraindump }
@@ -48,7 +49,9 @@ class _HomeArrangeScreen extends State<HomeArrangeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('정렬'),
+        title: Text(
+          Intl.message('home_arrange_title'),
+        ),
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
@@ -65,7 +68,7 @@ class _HomeArrangeScreen extends State<HomeArrangeScreen> {
               Row(
                 children: [
                   Text(
-                    'Daily priority',
+                    'Daily Priority',
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   Expanded(
