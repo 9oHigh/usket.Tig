@@ -38,7 +38,9 @@ class AdMobService {
   static void loadInterstitialAd(VoidCallback onAdClosed, VoidCallback loaded) {
     InterstitialAd.load(
       adUnitId: interstitialAdUnitId!,
-      request: const AdRequest(),
+      request: const AdRequest(
+        nonPersonalizedAds: true,
+      ),
       adLoadCallback: InterstitialAdLoadCallback(
         onAdLoaded: (InterstitialAd ad) {
           _interstitialAd = ad;
