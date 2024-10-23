@@ -56,7 +56,7 @@ class AuthDatasource implements AuthRepository {
       await _signInWithKakaoUser(kakaoUser);
     } catch (error) {
       if (error is PlatformException && error.code == "CANCELED") {
-        return;
+        rethrow;
       }
       rethrow;
     }

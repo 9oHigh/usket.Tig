@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -28,10 +29,11 @@ import 'firebase_options.dart';
 import 'package:home_widget/home_widget.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await HomeWidget.registerInteractivityCallback(backgroundCallback);
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   KakaoSdk.init(nativeAppKey: dotenv.get("KAKAO_NATIVE_APP_KEY"));
   runApp(
     const ProviderScope(
@@ -61,12 +63,18 @@ class _TigApp extends State<TigApp> {
     _setHomeArrangeStatus();
     _initGoogleMobileAds();
     _createBannerAd();
+    _removeSplash();
   }
 
   @override
   void dispose() {
     _bannerAd?.dispose();
     super.dispose();
+  }
+
+  Future<void> _removeSplash() async {
+    await Future.delayed(const Duration(seconds: 1));
+    FlutterNativeSplash.remove();
   }
 
   Future<bool> _checkLoginStatus() async {

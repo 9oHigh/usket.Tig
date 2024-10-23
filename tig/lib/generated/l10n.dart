@@ -220,6 +220,56 @@ class S {
     );
   }
 
+  /// `Elon Musk `
+  String get auth_elon_musk {
+    return Intl.message(
+      'Elon Musk ',
+      name: 'auth_elon_musk',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `chose the best `
+  String get auth_pick_best {
+    return Intl.message(
+      'chose the best ',
+      name: 'auth_pick_best',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `planner.`
+  String get auth_palnner {
+    return Intl.message(
+      'planner.',
+      name: 'auth_palnner',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `To achieve your goals,`
+  String get auth_for_time_box_planner {
+    return Intl.message(
+      'To achieve your goals,',
+      name: 'auth_for_time_box_planner',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `join TimeBox Planner.`
+  String get auth_with_timebox_planner {
+    return Intl.message(
+      'join TimeBox Planner.',
+      name: 'auth_with_timebox_planner',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `View Options`
   String get home_arrange_title {
     return Intl.message(

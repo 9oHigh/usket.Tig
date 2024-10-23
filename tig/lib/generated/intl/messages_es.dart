@@ -42,6 +42,9 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "auth_elon_musk": MessageLookupByLibrary.simpleMessage("Elon Musk "),
+        "auth_for_time_box_planner": MessageLookupByLibrary.simpleMessage(
+            "Para alcanzar tus objetivos,"),
         "auth_google_login":
             MessageLookupByLibrary.simpleMessage("Iniciar sesión con Google"),
         "auth_google_login_failure": m0,
@@ -52,6 +55,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "auth_kakao_login_failure": m1,
         "auth_kakao_login_success": MessageLookupByLibrary.simpleMessage(
             "Inicio de sesión en Kakao exitoso."),
+        "auth_palnner": MessageLookupByLibrary.simpleMessage("planificador."),
+        "auth_pick_best":
+            MessageLookupByLibrary.simpleMessage("eligió el mejor "),
+        "auth_with_timebox_planner":
+            MessageLookupByLibrary.simpleMessage("únete a TimeBox Planner."),
         "cancel": MessageLookupByLibrary.simpleMessage("Cancelar"),
         "delete": MessageLookupByLibrary.simpleMessage("Eliminar"),
         "end": MessageLookupByLibrary.simpleMessage("Finalizar"),
