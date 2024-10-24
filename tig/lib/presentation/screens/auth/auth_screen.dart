@@ -147,10 +147,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
               width: MediaQuery.of(context).size.width,
               height: 120,
               child: _isLoading
-                  ? Center(
-                      child: CircularProgressIndicator(
-                        color: isDarkMode ? Colors.white : Colors.black,
-                      ),
+                  ? const Center(
+                      child: CircularProgressIndicator(),
                     )
                   : _buildAuthButtons(authUseCase, imagePath),
             ),
