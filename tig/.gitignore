@@ -51,3 +51,6 @@ ios/
 
 # Ignore the firebase_options file
 lib/firebase_options.dart
+
+# Ignore key properties
+key.properties
