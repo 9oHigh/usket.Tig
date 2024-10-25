@@ -6,6 +6,7 @@ import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tig/core/manager/purchase_observer.dart';
 import 'package:tig/data/models/tig.dart';
 import 'package:tig/presentation/providers/auth/auth_provider.dart';
 import 'package:tig/presentation/providers/tig/tig_provider.dart';
@@ -20,12 +21,15 @@ class MenuScreen extends ConsumerStatefulWidget {
 }
 
 class _MenuScreenState extends ConsumerState<MenuScreen> {
+  final purchasesObserver = PurchasesObserver();
+
   final PageController _pageController = PageController();
   int _currentSubscribePage = 0;
 
   late DateTime _currentDate;
   late String _userId;
   List<Tig> _monthlyTigs = [];
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -202,6 +206,40 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
     );
   }
 
+  void _onSubscribeButtonPressed() async {
+    setState(() => _isLoading = true);
+
+    try {
+      final product =
+          await purchasesObserver.getSubscriptionProduct('settings');
+      if (product == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(Intl.message('subscription_product_not_found'))),
+        );
+        return;
+      }
+
+      await purchasesObserver.purchaseSubscription(product);
+
+      if (purchasesObserver.isSubscribed) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(Intl.message('subscription_successful'))),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(Intl.message('subscription_failed'))),
+        );
+      }
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${Intl.message('purchase_failed')}: $error')),
+      );
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
   void _goToAuthScreen() {
     Navigator.pushNamedAndRemoveUntil(
       context,
@@ -242,50 +280,29 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
           icon: const Icon(Icons.arrow_back_ios_new),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            children: [
-              const SizedBox(height: 16),
-              _buildMonthlyTigsSection(),
-              const SizedBox(height: 8),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    IgnorePointer(
-                      child: ImageFiltered(
-                        imageFilter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: _buildSubscriptionSection(),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                          color: Colors.grey.withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(8)),
-                      child: Text(
-                        Intl.message('menu_update_intro'),
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: isDarkMode ? Colors.white : Colors.black,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                children: [
+                  const SizedBox(height: 16),
+                  _buildMonthlyTigsSection(),
+                  const SizedBox(height: 12),
+                  _buildSubscriptionSection(),
+                  const SizedBox(height: 12),
+                  _buildActionButtons(),
+                ],
               ),
-              const SizedBox(height: 12),
-              _buildActionButtons(),
-            ],
+            ),
           ),
-        ),
+          if (_isLoading) ...{
+            const Center(
+              child: CircularProgressIndicator(),
+            ),
+          }
+        ],
       ),
     );
   }
@@ -346,12 +363,15 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                _onSubscribeButtonPressed();
+              },
               child: Text(Intl.message('menu_subscribe')),
             ),
             Padding(
               padding: const EdgeInsets.only(right: 4.0),
-              child: Text(Intl.message('menu_price_per_month', args: ["490₩"])),
+              child: Text(Intl.message('menu_price_per_month',
+                  args: [purchasesObserver.localizedPrice])),
             ),
           ],
         ),

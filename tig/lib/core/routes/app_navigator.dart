@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:tig/ads/admob_banner.dart';
-import 'package:tig/core/routes/app_route.dart';
 import 'package:tig/data/models/tig.dart';
 import 'package:tig/presentation/screens/auth/auth_screen.dart';
 import 'package:tig/presentation/screens/home/home_arrange_screen.dart';
@@ -10,20 +9,24 @@ import 'package:tig/presentation/screens/home/home_screen.dart';
 import 'package:tig/presentation/screens/menu/menu_screen.dart';
 import 'package:tig/presentation/screens/tag/tag_screen.dart';
 import 'package:tig/presentation/screens/tig_mode/tig_mode_screen.dart';
+import 'app_route.dart';
 
 class AppScreenNavigator extends StatelessWidget {
+  final GlobalKey<NavigatorState> _navigatorKey;
+  final BannerAd? _bannerAd;
+  final bool _isLoggedIn;
+  final bool _isSubscribed;
+
   const AppScreenNavigator({
     super.key,
     required GlobalKey<NavigatorState> navigatorKey,
     required BannerAd? bannerAd,
     required bool isLoggedIn,
+    required bool isSubscribed,
   })  : _navigatorKey = navigatorKey,
         _bannerAd = bannerAd,
-        _isLoggedIn = isLoggedIn;
-
-  final GlobalKey<NavigatorState> _navigatorKey;
-  final BannerAd? _bannerAd;
-  final bool _isLoggedIn;
+        _isLoggedIn = isLoggedIn,
+        _isSubscribed = isSubscribed;
 
   bool _onWillPop() {
     if (_navigatorKey.currentState?.canPop() ?? false) {
@@ -91,11 +94,13 @@ class AppScreenNavigator extends StatelessWidget {
           },
         ),
       ),
-      bottomNavigationBar: SafeArea(
-        child: AdmobBanner(
-          bannerAd: _bannerAd,
-        ),
-      ),
+      bottomNavigationBar: !_isSubscribed
+          ? SafeArea(
+              child: AdmobBanner(
+                bannerAd: _bannerAd,
+              ),
+            )
+          : null,
     );
   }
 }
