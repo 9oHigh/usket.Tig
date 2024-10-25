@@ -17,13 +17,11 @@
     "auth_kakao_login_success": "카카오 로그인에 성공했습니다.",
     "auth_kakao_login_failure": "카카오 로그인에 실패했습니다.\n오류: {error}",
     "auth_kakao_login": "카카오 로그인",
-
     "auth_elon_musk": "일론 머스크",
     "auth_pick_best": "가 선택한 최고의 ",
     "auth_palnner": "플래너.",
     "auth_for_time_box_planner": "목표 달성을 위해",
     "auth_with_timebox_planner": "타임박스 플래너와 함께 해요.",
-    
     "home_arrange_title": "보기 옵션",
     "home_save_completed": "저장 완료",
     "home_save_completed_desc": "티그들이 정상적으로 저장되었습니다.",
@@ -37,7 +35,7 @@
     "menu_month_tigs": "{month}월 Tigs",
     "menu_subscribe": "구독하기",
     "menu_subscribe_cancel": "구독 취소하기",
-    "menu_price_per_month": "{price}/월",
+    "menu_price_per_month": "{price} / 월",
     "menu_subscribe_get1": "구독하시면 모든 광고가 제거됩니다😊",
     "menu_subscribe_get2": "구독하시면 월별 및 일별 진행 상황을 확인할 수 있는\n위젯들을 제공합니다😊",
     "menu_subscribe_get3": "구독을 통해 더 멋진 앱을 만드는 데\n도움을 주실 수 있습니다.\n항상 감사합니다😊",

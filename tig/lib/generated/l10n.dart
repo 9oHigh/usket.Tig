@@ -400,10 +400,10 @@ class S {
     );
   }
 
-  /// `{price}/month`
+  /// `{price} / month`
   String menu_price_per_month(Object price) {
     return Intl.message(
-      '$price/month',
+      '$price / month',
       name: 'menu_price_per_month',
       desc: '',
       args: [price],

@@ -30,7 +30,7 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m3(month) => "Tigs de ${month}";
 
-  static String m4(price) => "${price}/mes";
+  static String m4(price) => "${price} / mes";
 
   static String m5(item) => "${item} ha sido eliminado.";
 

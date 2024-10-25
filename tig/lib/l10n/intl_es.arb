@@ -35,7 +35,7 @@
   "menu_month_tigs": "Tigs de {month}",
   "menu_subscribe": "Suscribirse",
   "menu_subscribe_cancel": "Cancelar suscripción",
-  "menu_price_per_month": "{price}/mes",
+  "menu_price_per_month": "{price} / mes",
   "menu_subscribe_get1": "Se eliminarán todos los anuncios 😊",
   "menu_subscribe_get2": "Ofrecemos un widget donde puedes verificar tu progreso mensual y diario 😊",
   "menu_subscribe_get3": "Puedes ayudar a los desarrolladores a crear mejores aplicaciones 😊",

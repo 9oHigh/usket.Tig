@@ -28,7 +28,7 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m3(month) => "${month} Tigs";
 
-  static String m4(price) => "${price}/month";
+  static String m4(price) => "${price} / month";
 
   static String m5(item) => "${item} has been deleted.";
 

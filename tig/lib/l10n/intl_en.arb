@@ -17,13 +17,11 @@
   "auth_kakao_login_success": "Kakao login successful",
   "auth_kakao_login_failure": "Kakao login failed\nERROR: {error}",
   "auth_kakao_login": "Kakao Login",
-
   "auth_elon_musk": "Elon Musk ",
   "auth_pick_best": "chose the best ",
   "auth_palnner": "planner.",
   "auth_for_time_box_planner": "To achieve your goals,",
   "auth_with_timebox_planner": "join TimeBox Planner.",
-
   "home_arrange_title": "View Options",
   "home_save_completed": "Save Completed",
   "home_save_completed_desc": "Your data has been saved successfully.",
@@ -37,7 +35,7 @@
   "menu_month_tigs": "{month} Tigs",
   "menu_subscribe": "Subscribe",
   "menu_subscribe_cancel": "Unsubscribe",
-  "menu_price_per_month": "{price}/month",
+  "menu_price_per_month": "{price} / month",
   "menu_subscribe_get1": "When you subscribe, all ads will be removed 😊",
   "menu_subscribe_get2": "You can use widgets to track your monthly and daily progress 😊",
   "menu_subscribe_get3": "You’ll help developers improve the app 😊",

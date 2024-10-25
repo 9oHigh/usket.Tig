@@ -35,7 +35,7 @@
   "menu_month_tigs": "{month}月提格",
   "menu_subscribe": "订阅",
   "menu_subscribe_cancel": "取消订阅",
-  "menu_price_per_month": "{price}/月",
+  "menu_price_per_month": "{price} / 月",
   "menu_subscribe_get1": "订阅后，屏幕上的所有广告将被删除😊",
   "menu_subscribe_get2": "订阅后，您将获得一个小部件，以查看每月和每日的进度😊",
   "menu_subscribe_get3": "订阅将支持开发者，帮助我们创造更好的应用😊",
