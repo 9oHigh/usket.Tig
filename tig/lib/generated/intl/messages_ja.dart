@@ -100,6 +100,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "購読をキャンセルすると、進行状況を確認するウィジェットが削除されます🥲"),
         "menu_subscribe_lose3": MessageLookupByLibrary.simpleMessage(
             "購読をキャンセルすると、今後の機能が利用できなくなります🥲"),
+        "menu_update_intro": MessageLookupByLibrary.simpleMessage("更新予定です。"),
         "menu_withdrawal_content": MessageLookupByLibrary.simpleMessage(
             "会員脱退時にすべての情報が削除されます。\nそれでも進めますか？"),
         "menu_withdrawal_text": MessageLookupByLibrary.simpleMessage("会員脱退"),

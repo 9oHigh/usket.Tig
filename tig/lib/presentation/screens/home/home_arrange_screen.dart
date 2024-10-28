@@ -32,7 +32,7 @@ class _HomeArrangeScreen extends State<HomeArrangeScreen> {
     _initailizeOptions();
   }
 
-  _initailizeOptions() async {
+  void _initailizeOptions() async {
     final SharedPreferences pref = await SharedPreferences.getInstance();
     setState(() {
       _isOnDaily = pref.getBool('isOnDaily') ?? false;
@@ -40,7 +40,7 @@ class _HomeArrangeScreen extends State<HomeArrangeScreen> {
     });
   }
 
-  _setPref(ArrangeType type, bool value) async {
+  Future<void> _setPref(ArrangeType type, bool value) async {
     final SharedPreferences pref = await SharedPreferences.getInstance();
     pref.setBool(type.arrangeName, value);
   }

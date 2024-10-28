@@ -19,16 +19,16 @@ class _TagScreenState extends State<TagScreen> {
     _loadTags();
   }
 
-  Future<void> _saveTags() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    await pref.setStringList('tags', tags);
-  }
-
   Future<void> _loadTags() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     setState(() {
       tags = pref.getStringList('tags') ?? [];
     });
+  }
+
+  Future<void> _saveTags() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    await pref.setStringList('tags', tags);
   }
 
   void _addTag() {

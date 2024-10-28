@@ -99,6 +99,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "구독을 취소하면 진행 상황을 확인할 수 있는 위젯이 사라집니다🥲"),
         "menu_subscribe_lose3": MessageLookupByLibrary.simpleMessage(
             "구독을 취소하면 향후 추가될 기능을 사용할 수 없습니다🥲"),
+        "menu_update_intro":
+            MessageLookupByLibrary.simpleMessage("업데이트 예정입니다."),
         "menu_withdrawal_content": MessageLookupByLibrary.simpleMessage(
             "회원 탈퇴 시 모든 정보가 삭제됩니다.\n그래도 진행하시겠습니까?"),
         "menu_withdrawal_text": MessageLookupByLibrary.simpleMessage("회원 탈퇴"),

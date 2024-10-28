@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
@@ -7,22 +9,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tig/data/models/tig.dart';
 import 'package:tig/presentation/providers/auth/auth_provider.dart';
 import 'package:tig/presentation/providers/tig/tig_provider.dart';
+import 'package:tig/presentation/widgets/buttons/menu_button.dart';
 import '../../../core/routes/app_route.dart';
-
-class _ActionButton extends StatelessWidget {
-  final String text;
-  final VoidCallback onPressed;
-
-  const _ActionButton({required this.text, required this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      child: Text(text),
-    );
-  }
-}
 
 class MenuScreen extends ConsumerStatefulWidget {
   const MenuScreen({super.key});
@@ -32,8 +20,9 @@ class MenuScreen extends ConsumerStatefulWidget {
 }
 
 class _MenuScreenState extends ConsumerState<MenuScreen> {
-  int _currentSubscribePage = 0;
   final PageController _pageController = PageController();
+  int _currentSubscribePage = 0;
+
   late DateTime _currentDate;
   late String _userId;
   List<Tig> _monthlyTigs = [];
@@ -56,21 +45,24 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
     });
   }
 
-  Color _getColorForGrade(int grade) {
-    switch (grade) {
-      case 0:
-        return const Color.fromARGB(255, 231, 231, 231);
-      case 1:
-        return Colors.green[300]!;
-      case 2:
-        return Colors.green[500]!;
-      case 3:
-        return Colors.green[700]!;
-      case 4:
-        return Colors.green[900]!;
-      default:
-        return const Color.fromARGB(255, 231, 231, 231);
+  Future<void> _deleteUser() async {
+    try {
+      final authUsecase = ref.read(authUseCaseProvider);
+      await authUsecase.deleteUser();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setBool("isLoggedIn", false);
+      _goToAuthScreen();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(Intl.message('menu_delete_user_failure'))),
+      );
     }
+  }
+
+  Future<void> _logoutUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool("isLoggedIn", false);
+    _goToAuthScreen();
   }
 
   Future<void> _sendEmail() async {
@@ -82,6 +74,101 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
     );
 
     await FlutterEmailSender.send(email);
+  }
+
+  String _getMonthName(int month, String language) {
+    switch (language) {
+      case 'ko':
+        return '$month월 Tigs';
+      case 'en':
+        return '${[
+          '',
+          'January',
+          'February',
+          'March',
+          'April',
+          'May',
+          'June',
+          'July',
+          'August',
+          'September',
+          'October',
+          'November',
+          'December'
+        ][month]} Tigs';
+      case 'es':
+        return '${[
+          '',
+          'Enero',
+          'Febrero',
+          'Marzo',
+          'Abril',
+          'Mayo',
+          'Junio',
+          'Julio',
+          'Agosto',
+          'Septiembre',
+          'Octubre',
+          'Noviembre',
+          'Diciembre'
+        ][month]} Tigs';
+      case 'pt':
+        return '${[
+          '',
+          'Janeiro',
+          'Fevereiro',
+          'Março',
+          'Abril',
+          'Maio',
+          'Junho',
+          'Julho',
+          'Agosto',
+          'Setembro',
+          'Outubro',
+          'Novembro',
+          'Dezembro'
+        ][month]} Tigs';
+      case 'de':
+        return '${[
+          '',
+          'Januar',
+          'Februar',
+          'März',
+          'April',
+          'Mai',
+          'Juni',
+          'Juli',
+          'August',
+          'September',
+          'Oktober',
+          'November',
+          'Dezember'
+        ][month]} Tigs';
+      case 'zh':
+        return '${[
+          '',
+          '一月',
+          '二月',
+          '三月',
+          '四月',
+          '五月',
+          '六月',
+          '七月',
+          '八月',
+          '九月',
+          '十月',
+          '十一月',
+          '十二月'
+        ][month]} Tigs';
+      case 'ja':
+        return '$month月のTigs';
+      default:
+        return '$month month Tigs';
+    }
+  }
+
+  String _getCurrentLanguageCode(BuildContext context) {
+    return Localizations.localeOf(context).languageCode;
   }
 
   void _showDialog(
@@ -115,26 +202,6 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
     );
   }
 
-  Future<void> _deleteUser() async {
-    try {
-      final authUsecase = ref.read(authUseCaseProvider);
-      await authUsecase.deleteUser();
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setBool("isLoggedIn", false);
-      _goToAuthScreen();
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(Intl.message('menu_delete_user_failure'))),
-      );
-    }
-  }
-
-  Future<void> _logoutUser() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool("isLoggedIn", false);
-    _goToAuthScreen();
-  }
-
   void _goToAuthScreen() {
     Navigator.pushNamedAndRemoveUntil(
       context,
@@ -143,8 +210,26 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
     );
   }
 
+  Color _getColorForGrade(int grade) {
+    switch (grade) {
+      case 0:
+        return const Color.fromARGB(255, 231, 231, 231);
+      case 1:
+        return Colors.green[300]!;
+      case 2:
+        return Colors.green[500]!;
+      case 3:
+        return Colors.green[700]!;
+      case 4:
+        return Colors.green[900]!;
+      default:
+        return const Color.fromARGB(255, 231, 231, 231);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -164,8 +249,38 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
             children: [
               const SizedBox(height: 16),
               _buildMonthlyTigsSection(),
-              const SizedBox(height: 12),
-              _buildSubscriptionSection(),
+              const SizedBox(height: 8),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    IgnorePointer(
+                      child: ImageFiltered(
+                        imageFilter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: _buildSubscriptionSection(),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                          color: Colors.grey.withOpacity(0.5),
+                          borderRadius: BorderRadius.circular(8)),
+                      child: Text(
+                        Intl.message('menu_update_intro'),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: isDarkMode ? Colors.white : Colors.black,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               const SizedBox(height: 12),
               _buildActionButtons(),
             ],
@@ -180,10 +295,7 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          Intl.message(
-            'menu_month_tigs',
-            args: [(_currentDate.month.toString())],
-          ),
+          _getMonthName(_currentDate.month, _getCurrentLanguageCode(context)),
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
@@ -273,10 +385,13 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
           ),
         ),
         const SizedBox(height: 12),
+        /*
+        인앱결제 출시 때, 적용하기.
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(3, (index) => _buildPageIndicator(index)),
         ),
+        */
       ],
     );
   }
@@ -303,10 +418,10 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _ActionButton(
+          MenuButton(
               text: Intl.message('menu_contact_us'), onPressed: _sendEmail),
           const SizedBox(height: 8),
-          _ActionButton(
+          MenuButton(
             text: Intl.message('menu_withdrawal_text'),
             onPressed: () => _showDialog(
               title: Intl.message('menu_withdrawal_title'),
@@ -315,7 +430,7 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
             ),
           ),
           const SizedBox(height: 8),
-          _ActionButton(
+          MenuButton(
             text: Intl.message('menu_logout_text'),
             onPressed: () => _showDialog(
               title: Intl.message('menu_logout_title'),

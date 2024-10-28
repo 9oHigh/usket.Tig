@@ -107,6 +107,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Sie verlieren das Widget, das Ihren Fortschritt verfolgt 🥲"),
         "menu_subscribe_lose3": MessageLookupByLibrary.simpleMessage(
             "Sie verlieren den Zugriff auf kommende Funktionen 🥲"),
+        "menu_update_intro":
+            MessageLookupByLibrary.simpleMessage("Demnächst verfügbar."),
         "menu_withdrawal_content": MessageLookupByLibrary.simpleMessage(
             "Alle Ihre Daten werden gelöscht.\nMöchten Sie fortfahren?"),
         "menu_withdrawal_text":

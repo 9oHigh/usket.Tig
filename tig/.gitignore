@@ -54,3 +54,7 @@ lib/firebase_options.dart
 
 # Ignore key properties
 key.properties
+
+# Ignore l10n
+lib/generated
+lib/l10n
