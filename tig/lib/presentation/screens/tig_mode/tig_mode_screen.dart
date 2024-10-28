@@ -41,24 +41,12 @@ class _TigModeScreenState extends ConsumerState<TigModeScreen> {
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: _currentTimeEntry == null
-            ? _buildNoEntryWidget()
-            : _buildEntryWidget(),
-      ),
-    );
-  }
-
   void _initializeTimer() {
     final int currentIndex = _getCurrentEntryIndex();
     if (currentIndex != -1) {
       _currentTimeEntry = _tig.timeTable[currentIndex];
       _calculateTimes();
       _remainSeconds = _endTime.difference(DateTime.now()).inSeconds;
-
       _startWaitingOrCountdown();
     }
   }
@@ -164,6 +152,22 @@ class _TigModeScreenState extends ConsumerState<TigModeScreen> {
       }
     }
     return null;
+  }
+
+  Future<String> _getUserId() async {
+    final SharedPreferences pref = await SharedPreferences.getInstance();
+    return pref.getString('userId') ?? '';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: _currentTimeEntry == null
+            ? _buildNoEntryWidget()
+            : _buildEntryWidget(),
+      ),
+    );
   }
 
   Widget _buildNoEntryWidget() {
@@ -319,10 +323,5 @@ class _TigModeScreenState extends ConsumerState<TigModeScreen> {
         ),
       ],
     );
-  }
-
-  Future<String> _getUserId() async {
-    final SharedPreferences pref = await SharedPreferences.getInstance();
-    return pref.getString('userId') ?? '';
   }
 }

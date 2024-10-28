@@ -105,6 +105,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Não fornecemos mais o \nwidget para verificar seu progresso mensal e diário🥲"),
         "menu_subscribe_lose3": MessageLookupByLibrary.simpleMessage(
             "Você não poderá usar os recursos\nque virão no futuro🥲"),
+        "menu_update_intro": MessageLookupByLibrary.simpleMessage("Em breve."),
         "menu_withdrawal_content": MessageLookupByLibrary.simpleMessage(
             "Quando você cancelar sua assinatura, todas as informações serão removidas.\nVocê ainda deseja prosseguir?"),
         "menu_withdrawal_text":

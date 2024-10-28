@@ -105,6 +105,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "You’ll lose the widget that tracks your progress 🥲"),
         "menu_subscribe_lose3": MessageLookupByLibrary.simpleMessage(
             "You won’t be able to access upcoming features 🥲"),
+        "menu_update_intro":
+            MessageLookupByLibrary.simpleMessage("Coming soon."),
         "menu_withdrawal_content": MessageLookupByLibrary.simpleMessage(
             "All your data will be deleted.\nDo you want to proceed?"),
         "menu_withdrawal_text":

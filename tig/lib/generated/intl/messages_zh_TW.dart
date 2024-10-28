@@ -97,6 +97,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("如果您取消訂閱，您將不再獲得查看進度的小工具🥲"),
         "menu_subscribe_lose3":
             MessageLookupByLibrary.simpleMessage("如果您取消訂閱，您將無法使用將來創建的功能🥲"),
+        "menu_update_intro": MessageLookupByLibrary.simpleMessage("即將推出。"),
         "menu_withdrawal_content": MessageLookupByLibrary.simpleMessage(
             "您取消會員資格時，所有資訊將被刪除。\n您是否確定要繼續？"),
         "menu_withdrawal_text": MessageLookupByLibrary.simpleMessage("取消會員資格"),

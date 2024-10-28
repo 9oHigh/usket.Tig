@@ -83,7 +83,7 @@ class _HomeScreen extends ConsumerState<HomeScreen>
     super.dispose();
   }
 
-  _initailizeFocusNodes() {
+  void _initailizeFocusNodes() {
     _dailyPrioritysNodes = List.generate(3, (index) {
       return FocusNode();
     });
@@ -102,11 +102,6 @@ class _HomeScreen extends ConsumerState<HomeScreen>
     });
   }
 
-  Future<void> _saveTigData() async {
-    final tigUsecase = ref.read(tigUseCaseProvider);
-    await tigUsecase.saveTigData(_userId, tigData);
-  }
-
   Future<void> _loadTags() async {
     final SharedPreferences pref = await SharedPreferences.getInstance();
     setState(() {
@@ -122,7 +117,12 @@ class _HomeScreen extends ConsumerState<HomeScreen>
     });
   }
 
-  _setTimeTableControllers() {
+  Future<void> _saveTigData() async {
+    final tigUsecase = ref.read(tigUseCaseProvider);
+    await tigUsecase.saveTigData(_userId, tigData);
+  }
+
+  void _setTimeTableControllers() {
     _controllers = List.generate(35, (index) {
       final activity = tigData.timeTable[index].activity;
       return TextEditingController(text: activity);
@@ -140,7 +140,7 @@ class _HomeScreen extends ConsumerState<HomeScreen>
     });
   }
 
-  _insertTextAtCursor(String text) {
+  void _insertTextAtCursor(String text) {
     if (_focusNodeIndex != null) {
       final controller = _controllers[_focusNodeIndex!];
       final currentText = controller.text;
@@ -170,7 +170,7 @@ class _HomeScreen extends ConsumerState<HomeScreen>
     }
   }
 
-  _showFullScreenAd() async {
+  Future<void> _showFullScreenAd() async {
     setState(() {
       _fullAdIsLoading = true;
     });
@@ -179,20 +179,20 @@ class _HomeScreen extends ConsumerState<HomeScreen>
         () => _pushTigModeScreen(context), _setFullAdLoaded);
   }
 
-  _setFullAdLoaded() {
+  void _setFullAdLoaded() {
     setState(() {
       _fullAdIsLoading = false;
     });
   }
 
-  _pushTigModeScreen(BuildContext context) {
+  void _pushTigModeScreen(BuildContext context) {
     Navigator.of(context).pushNamed(
       AppRoute.tigMode,
       arguments: tigData,
     );
   }
 
-  _showSavedDialog() {
+  void _showSavedDialog() {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -226,6 +226,22 @@ class _HomeScreen extends ConsumerState<HomeScreen>
     } else {
       return TextStyle(
           fontFamily: 'NanumBrush', fontSize: 22, color: Colors.grey[600]);
+    }
+  }
+
+  void _showDatePicker() async {
+    DateTime? selectedDate = await showDatePicker(
+      context: context,
+      initialDate: tigData.date,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+
+    if (selectedDate != null) {
+      setState(() {
+        _dateTime = selectedDate;
+        _loadTigData();
+      });
     }
   }
 
@@ -528,22 +544,6 @@ class _HomeScreen extends ConsumerState<HomeScreen>
         ),
       ),
     );
-  }
-
-  void _showDatePicker() async {
-    DateTime? selectedDate = await showDatePicker(
-      context: context,
-      initialDate: tigData.date,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
-
-    if (selectedDate != null) {
-      setState(() {
-        _dateTime = selectedDate;
-        _loadTigData();
-      });
-    }
   }
 
   Widget _buildExpandableSection(

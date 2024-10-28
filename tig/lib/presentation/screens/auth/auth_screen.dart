@@ -31,6 +31,14 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
     _startAnimations();
   }
 
+  @override
+  void dispose() {
+    for (var controller in _controllers) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
   void _startAnimations() async {
     await Future.delayed(const Duration(milliseconds: 750));
     for (var controller in _controllers) {
@@ -40,43 +48,75 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
     _isAnimationCompleted = true;
   }
 
-  @override
-  void dispose() {
-    for (var controller in _controllers) {
-      controller.dispose();
+  Future<void> _signInWithGoogle(authProvider) async {
+    if (!_isAnimationCompleted) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    final prefs = await SharedPreferences.getInstance();
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+
+    try {
+      await authProvider.signInWithGoogle();
+      prefs.setBool("isLoggedIn", true);
+      messenger.showSnackBar(
+        SnackBar(content: Text(Intl.message('auth_google_login_success'))),
+      );
+      navigator.pushReplacement(CupertinoPageRoute(
+        builder: (context) => const HomeScreen(),
+      ));
+    } catch (e) {
+      messenger.showSnackBar(
+        SnackBar(
+            content: Text(Intl.message('auth_google_login_failure',
+                args: [e.toString()]))),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
-    super.dispose();
   }
 
-  TextStyle _getTextStyle(BuildContext context, {bool isBold = false}) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final Locale locale = Localizations.localeOf(context);
-    String fontName = "PaperlogyRegular";
-    if (locale.languageCode == 'zh') {
-      fontName = "CangJiGaoDeGuoMiaoHei";
-    }
-    return TextStyle(
-      fontSize: 12,
-      fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-      color: isDarkMode ? Colors.white : Colors.black,
-    ).copyWith(fontFamily: fontName);
-  }
+  Future<void> _signInWithKakao(authProvider) async {
+    if (!_isAnimationCompleted) return;
 
-  Widget _buildAnimatedText(String text, AnimationController controller) {
-    return AnimatedBuilder(
-      animation: controller,
-      builder: (context, child) {
-        return Opacity(
-          opacity: controller.value,
-          child: Text(text, style: _getTextStyle(context)),
-        );
-      },
-    );
+    setState(() {
+      _isLoading = true;
+    });
+
+    final prefs = await SharedPreferences.getInstance();
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+
+    try {
+      await authProvider.signInWithKakao();
+      prefs.setBool("isLoggedIn", true);
+      messenger.showSnackBar(
+        SnackBar(content: Text(Intl.message('auth_kakao_login_success'))),
+      );
+      navigator.pushReplacement(CupertinoPageRoute(
+        builder: (context) => const HomeScreen(),
+      ));
+    } catch (e) {
+      messenger.showSnackBar(
+        SnackBar(
+            content: Text(Intl.message('auth_kakao_login_failure',
+                args: [e.toString()]))),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final authUseCase = ref.watch(authUseCaseProvider);
+    final authProvider = ref.watch(authUseCaseProvider);
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final Locale locale = Localizations.localeOf(context);
     String imagePath = locale.languageCode.toString().toLowerCase();
@@ -150,7 +190,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
                   ? const Center(
                       child: CircularProgressIndicator(),
                     )
-                  : _buildAuthButtons(authUseCase, imagePath),
+                  : _buildAuthButtons(authProvider, imagePath),
             ),
           ],
         ),
@@ -158,17 +198,31 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
     );
   }
 
-  Widget _buildAuthButtons(authUseCase, String imagePath) {
+  TextStyle _getTextStyle(BuildContext context, {bool isBold = false}) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final Locale locale = Localizations.localeOf(context);
+    String fontName = "PaperlogyRegular";
+    if (locale.languageCode == 'zh') {
+      fontName = "CangJiGaoDeGuoMiaoHei";
+    }
+    return TextStyle(
+      fontSize: 12,
+      fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+      color: isDarkMode ? Colors.white : Colors.black,
+    ).copyWith(fontFamily: fontName);
+  }
+
+  Widget _buildAuthButtons(authProvider, String imagePath) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         _buildAuthButton(
-          onTap: () => _signInWithGoogle(authUseCase),
+          onTap: () => _signInWithGoogle(authProvider),
           imagePath: "assets/images/login_button/google_login_$imagePath.png",
         ),
         const SizedBox(height: 4),
         _buildAuthButton(
-          onTap: () => _signInWithKakao(authUseCase),
+          onTap: () => _signInWithKakao(authProvider),
           imagePath: "assets/images/login_button/kakao_login_$imagePath.png",
         ),
       ],
@@ -187,69 +241,15 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
     );
   }
 
-  Future<void> _signInWithGoogle(authUseCase) async {
-    if (!_isAnimationCompleted) return;
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    final prefs = await SharedPreferences.getInstance();
-    final messenger = ScaffoldMessenger.of(context);
-    final navigator = Navigator.of(context);
-
-    try {
-      await authUseCase.signInWithGoogle();
-      prefs.setBool("isLoggedIn", true);
-      messenger.showSnackBar(
-        SnackBar(content: Text(Intl.message('auth_google_login_success'))),
-      );
-      navigator.pushReplacement(CupertinoPageRoute(
-        builder: (context) => const HomeScreen(),
-      ));
-    } catch (e) {
-      messenger.showSnackBar(
-        SnackBar(
-            content: Text(Intl.message('auth_google_login_failure',
-                args: [e.toString()]))),
-      );
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
-  Future<void> _signInWithKakao(authUseCase) async {
-    if (!_isAnimationCompleted) return;
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    final prefs = await SharedPreferences.getInstance();
-    final messenger = ScaffoldMessenger.of(context);
-    final navigator = Navigator.of(context);
-
-    try {
-      await authUseCase.signInWithKakao();
-      prefs.setBool("isLoggedIn", true);
-      messenger.showSnackBar(
-        SnackBar(content: Text(Intl.message('auth_kakao_login_success'))),
-      );
-      navigator.pushReplacement(CupertinoPageRoute(
-        builder: (context) => const HomeScreen(),
-      ));
-    } catch (e) {
-      messenger.showSnackBar(
-        SnackBar(
-            content: Text(Intl.message('auth_kakao_login_failure',
-                args: [e.toString()]))),
-      );
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
+  Widget _buildAnimatedText(String text, AnimationController controller) {
+    return AnimatedBuilder(
+      animation: controller,
+      builder: (context, child) {
+        return Opacity(
+          opacity: controller.value,
+          child: Text(text, style: _getTextStyle(context)),
+        );
+      },
+    );
   }
 }

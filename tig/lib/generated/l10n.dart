@@ -470,6 +470,16 @@ class S {
     );
   }
 
+  /// `Coming soon.`
+  String get menu_update_intro {
+    return Intl.message(
+      'Coming soon.',
+      name: 'menu_update_intro',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Contact us`
   String get menu_contact_us {
     return Intl.message(
