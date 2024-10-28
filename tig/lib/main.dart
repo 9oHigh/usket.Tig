@@ -32,7 +32,7 @@ void main() async {
 
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   KakaoSdk.init(nativeAppKey: dotenv.get("KAKAO_NATIVE_APP_KEY"));
-
+  
   runApp(
     ProviderScope(
       child: TigApp(
@@ -52,6 +52,6 @@ class TigApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return isSubscribed ? const UnSubscribedTigApp() : const SubscribedTigApp();
+    return isSubscribed ? const SubscribedTigApp() : const UnSubscribedTigApp();
   }
 }
