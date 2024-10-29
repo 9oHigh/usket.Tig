@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tig/core/manager/home_widget_manager.dart';
 import 'package:tig/core/manager/shared_preference_manager.dart';
 import 'package:tig/data/models/tig.dart';

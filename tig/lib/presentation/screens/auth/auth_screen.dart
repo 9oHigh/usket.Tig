@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tig/core/manager/shared_preference_manager.dart';
 import 'package:tig/presentation/providers/auth/auth_provider.dart';
 import 'package:tig/presentation/screens/home/home_screen.dart';

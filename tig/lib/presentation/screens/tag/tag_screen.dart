@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tig/core/manager/shared_preference_manager.dart';
 
 class TagScreen extends StatefulWidget {
