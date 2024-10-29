@@ -1,56 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-class TimeEntry {
-  String activity;
-  double time;
-  bool isSucceed;
-
-  TimeEntry({
-    required this.activity,
-    required this.time,
-    required this.isSucceed,
-  });
-
-  Map<String, dynamic> toMap() {
-    return {
-      'activity': activity,
-      'time': time,
-      'isSucceed': isSucceed,
-    };
-  }
-
-  factory TimeEntry.fromMap(Map<String, dynamic> map) {
-    return TimeEntry(
-      activity: map['activity'] ?? '',
-      time: map['time']?.toDouble() ?? 0.0,
-      isSucceed: map['isSucceed'] ?? false,
-    );
-  }
-}
-
-class PriorityEntry {
-  String priority;
-  bool isSucceed;
-
-  PriorityEntry({
-    required this.priority,
-    required this.isSucceed,
-  });
-
-  Map<String, dynamic> toMap() {
-    return {
-      'priority': priority,
-      'isSucceed': isSucceed,
-    };
-  }
-
-  factory PriorityEntry.fromMap(Map<String, dynamic> map) {
-    return PriorityEntry(
-      priority: map['priority'] ?? '',
-      isSucceed: map['isSucceed'] ?? false,
-    );
-  }
-}
+import 'priority_entry.dart';
+import 'time_entry.dart';
 
 class Tig {
   DateTime date;
@@ -66,6 +16,7 @@ class Tig {
     List<PriorityEntry>? dayTopPriorities,
     this.brainDump = "",
     List<TimeEntry>? timeTable,
+    // MARK: - 추후에는 변경가능하게 만들기
     this.startHour = 7.0,
     this.endHour = 24.0,
     this.grade = 0,
