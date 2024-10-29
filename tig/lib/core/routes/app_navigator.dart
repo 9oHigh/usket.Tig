@@ -13,6 +13,7 @@ import 'package:tig/presentation/screens/tig_mode/tig_mode_screen.dart';
 
 class AppScreenNavigator extends StatelessWidget {
   const AppScreenNavigator({
+    super.key,
     required GlobalKey<NavigatorState> navigatorKey,
     required BannerAd? bannerAd,
     required bool isLoggedIn,
