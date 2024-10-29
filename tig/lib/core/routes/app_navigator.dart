@@ -11,8 +11,12 @@ import 'package:tig/presentation/screens/menu/menu_screen.dart';
 import 'package:tig/presentation/screens/tag/tag_screen.dart';
 import 'package:tig/presentation/screens/tig_mode/tig_mode_screen.dart';
 
-class AppScreenNavigator extends StatelessWidget {
-  const AppScreenNavigator({
+class AppNavigator extends StatelessWidget {
+  final GlobalKey<NavigatorState> _navigatorKey;
+  final BannerAd? _bannerAd;
+  final bool _isLoggedIn;
+
+  const AppNavigator({
     super.key,
     required GlobalKey<NavigatorState> navigatorKey,
     required BannerAd? bannerAd,
@@ -21,16 +25,7 @@ class AppScreenNavigator extends StatelessWidget {
         _bannerAd = bannerAd,
         _isLoggedIn = isLoggedIn;
 
-  final GlobalKey<NavigatorState> _navigatorKey;
-  final BannerAd? _bannerAd;
-  final bool _isLoggedIn;
-
-  bool _onWillPop() {
-    if (_navigatorKey.currentState?.canPop() ?? false) {
-      return true;
-    }
-    return false;
-  }
+  bool _onWillPop() => _navigatorKey.currentState?.canPop() ?? false;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +33,7 @@ class AppScreenNavigator extends StatelessWidget {
       body: PopScope(
         canPop: false,
         onPopInvokedWithResult: (bool didPop, Object? result) {
-          final allowed = _onWillPop();
+          final bool allowed = _onWillPop();
           if (allowed) {
             _navigatorKey.currentState?.pop();
           }

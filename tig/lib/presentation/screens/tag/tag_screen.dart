@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tig/core/manager/shared_preference_manager.dart';
 
 class TagScreen extends StatefulWidget {
   const TagScreen({super.key});
@@ -19,16 +20,15 @@ class _TagScreenState extends State<TagScreen> {
     _loadTags();
   }
 
-  Future<void> _loadTags() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
+  void _loadTags() {
     setState(() {
-      tags = pref.getStringList('tags') ?? [];
+      tags =
+          SharedPreferenceManager().getPref<List<String>>(PrefsType.tags) ?? [];
     });
   }
 
   Future<void> _saveTags() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    await pref.setStringList('tags', tags);
+    await SharedPreferenceManager().setPref<List<String>>(PrefsType.tags, tags);
   }
 
   void _addTag() {

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tig/core/manager/shared_preference_manager.dart';
 import 'package:tig/presentation/providers/auth/auth_provider.dart';
 import 'package:tig/presentation/screens/home/home_screen.dart';
 
@@ -55,13 +56,12 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
       _isLoading = true;
     });
 
-    final prefs = await SharedPreferences.getInstance();
     final messenger = ScaffoldMessenger.of(context);
     final navigator = Navigator.of(context);
 
     try {
       await authProvider.signInWithGoogle();
-      prefs.setBool("isLoggedIn", true);
+      await SharedPreferenceManager().setPref<bool>(PrefsType.isLoggedIn, true);
       messenger.showSnackBar(
         SnackBar(content: Text(Intl.message('auth_google_login_success'))),
       );
@@ -88,13 +88,12 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
       _isLoading = true;
     });
 
-    final prefs = await SharedPreferences.getInstance();
     final messenger = ScaffoldMessenger.of(context);
     final navigator = Navigator.of(context);
 
     try {
       await authProvider.signInWithKakao();
-      prefs.setBool("isLoggedIn", true);
+      await SharedPreferenceManager().setPref<bool>(PrefsType.isLoggedIn, true);
       messenger.showSnackBar(
         SnackBar(content: Text(Intl.message('auth_kakao_login_success'))),
       );

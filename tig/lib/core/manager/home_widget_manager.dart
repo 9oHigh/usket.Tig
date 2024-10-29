@@ -12,34 +12,37 @@ class HomeWidgetManager {
   static final HomeWidgetManager _instance =
       HomeWidgetManager._privateConstructor();
 
-  factory HomeWidgetManager() {
-    return _instance;
-  }
+  factory HomeWidgetManager() => _instance;
 
-  Future<void> updateWidgetData() async {
-    final container = ProviderContainer();
+  Future<void> updateWidgetData(ProviderContainer container) async {
     final tigUsecase = container.read(tigUseCaseProvider);
-    final String userId =
-        FirebaseAuth.instance.currentUser?.uid ?? 'defaultUserId';
-    final DateTime currentDate = DateTime.now();
+    final userId = _getUserId();
+    final currentDate = DateTime.now();
 
     final monthlyTigs = await tigUsecase.getTigsForMonth(
         userId, currentDate.year, currentDate.month);
 
-    await _saveTigsToPreferences(monthlyTigs, currentDate);
-
-    container.dispose();
+    await _saveMonthlyData(monthlyTigs, currentDate);
+    await _saveTodayData(monthlyTigs, currentDate);
+    await _updateWidgets();
   }
 
-  Future<void> _saveTigsToPreferences(
-      List<Tig> monthlyTigs, DateTime currentDate) async {
-    final monthlyTigsJson = jsonEncode(monthlyTigs
-        .map((tig) => {...tig.toMap(), 'date': tig.date.toIso8601String()})
-        .toList());
+  String _getUserId() =>
+      FirebaseAuth.instance.currentUser?.uid ?? 'defaultUserId';
 
+  Future<void> _saveMonthlyData(
+      List<Tig> monthlyTigs, DateTime currentDate) async {
+    final monthlyTigsJson = jsonEncode(
+      monthlyTigs
+          .map((tig) => {...tig.toMap(), 'date': tig.date.toIso8601String()})
+          .toList(),
+    );
     await HomeWidget.saveWidgetData<int>("current_month", currentDate.month);
     await HomeWidget.saveWidgetData<String>("monthly_tigs", monthlyTigsJson);
+  }
 
+  Future<void> _saveTodayData(
+      List<Tig> monthlyTigs, DateTime currentDate) async {
     final todayTig = monthlyTigs.firstWhere(
       (tig) =>
           tig.date.year == currentDate.year &&
@@ -54,7 +57,9 @@ class HomeWidgetManager {
 
     await HomeWidget.saveWidgetData<int>("current_day", currentDate.day);
     await HomeWidget.saveWidgetData<String>("today_tig", todayTigJson);
+  }
 
+  Future<void> _updateWidgets() async {
     await HomeWidget.updateWidget(
         name: 'LargeWidgetProvider', androidName: 'LargeWidgetProvider');
     await HomeWidget.updateWidget(

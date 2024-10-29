@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tig/core/manager/shared_preference_manager.dart';
 
 enum ArrangeType { isOnDaily, isOnBraindump }
 
@@ -33,16 +33,12 @@ class _HomeArrangeScreen extends State<HomeArrangeScreen> {
   }
 
   void _initailizeOptions() async {
-    final SharedPreferences pref = await SharedPreferences.getInstance();
     setState(() {
-      _isOnDaily = pref.getBool('isOnDaily') ?? false;
-      _isOnBraindump = pref.getBool('isOnBraindump') ?? false;
+      _isOnDaily =
+          SharedPreferenceManager().getPref<bool>(PrefsType.isOnDaily) ?? false;
+      _isOnBraindump =
+          SharedPreferenceManager().getPref<bool>(PrefsType.isOnBraindump) ?? false;
     });
-  }
-
-  Future<void> _setPref(ArrangeType type, bool value) async {
-    final SharedPreferences pref = await SharedPreferences.getInstance();
-    pref.setBool(type.arrangeName, value);
   }
 
   @override
@@ -78,7 +74,8 @@ class _HomeArrangeScreen extends State<HomeArrangeScreen> {
                         Switch(
                           value: _isOnDaily,
                           onChanged: (value) async {
-                            await _setPref(ArrangeType.isOnDaily, value);
+                            await SharedPreferenceManager()
+                                .setPref<bool>(PrefsType.isOnDaily, value);
                             setState(() {
                               _isOnDaily = value;
                             });
@@ -102,7 +99,8 @@ class _HomeArrangeScreen extends State<HomeArrangeScreen> {
                         Switch(
                           value: _isOnBraindump,
                           onChanged: (value) async {
-                            await _setPref(ArrangeType.isOnBraindump, value);
+                            await SharedPreferenceManager()
+                                .setPref<bool>(PrefsType.isOnBraindump, value);
                             setState(() {
                               _isOnBraindump = value;
                             });

@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tig/core/manager/home_widget_manager.dart';
+import 'package:tig/core/manager/shared_preference_manager.dart';
 import 'package:tig/data/models/tig.dart';
+import 'package:tig/data/models/time_entry.dart';
 import 'package:tig/presentation/providers/tig/tig_provider.dart';
 import 'package:tig/presentation/widgets/styles/circular_count_down_painter.dart';
 
@@ -154,9 +156,8 @@ class _TigModeScreenState extends ConsumerState<TigModeScreen> {
     return null;
   }
 
-  Future<String> _getUserId() async {
-    final SharedPreferences pref = await SharedPreferences.getInstance();
-    return pref.getString('userId') ?? '';
+  String _getUserId() {
+    return SharedPreferenceManager().getPref<String>(PrefsType.userId) ?? "";
   }
 
   @override
@@ -309,11 +310,13 @@ class _TigModeScreenState extends ConsumerState<TigModeScreen> {
             ElevatedButton(
               onPressed: () async {
                 if (_currentTimeEntry != null) {
-                  final tigUsecase = ref.read(tigUseCaseProvider);
+                  final tigProvider = ref.read(tigUseCaseProvider);
+                  final container = ProviderContainer();
                   final userId = await _getUserId();
                   _currentTimeEntry!.isSucceed = true;
-                  await tigUsecase.saveTigData(userId, _tig);
-                  await HomeWidgetManager().updateWidgetData();
+                  await tigProvider.saveTigData(userId, _tig);
+                  await HomeWidgetManager().updateWidgetData(container);
+                  container.dispose();
                   _moveToNextEntry();
                 }
               },

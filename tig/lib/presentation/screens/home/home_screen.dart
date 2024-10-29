@@ -6,7 +6,9 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tig/ads/admob_service.dart';
 import 'package:tig/core/manager/home_widget_manager.dart';
+import 'package:tig/core/manager/shared_preference_manager.dart';
 import 'package:tig/core/routes/app_route.dart';
+import 'package:tig/data/models/priority_entry.dart';
 import 'package:tig/data/models/tig.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tig/presentation/providers/tig/tig_provider.dart';
@@ -102,18 +104,17 @@ class _HomeScreen extends ConsumerState<HomeScreen>
     });
   }
 
-  Future<void> _loadTags() async {
-    final SharedPreferences pref = await SharedPreferences.getInstance();
+  void _loadTags() {
     setState(() {
-      tags = pref.getStringList('tags') ?? [];
+      tags =
+          SharedPreferenceManager().getPref<List<String>>(PrefsType.tags) ?? [];
     });
   }
 
-  Future<void> _loadPreferences() async {
-    final SharedPreferences pref = await SharedPreferences.getInstance();
+  void _loadPreferences() {
     setState(() {
-      _isOnDaily = pref.getBool('isOnDaily') ?? true;
-      _isOnBraindump = pref.getBool('isOnBraindump') ?? true;
+      _isOnDaily = SharedPreferenceManager().getPref<bool>(PrefsType.isOnDaily) ?? true;
+      _isOnBraindump = SharedPreferenceManager().getPref<bool>(PrefsType.isOnBraindump) ?? true;
     });
   }
 
@@ -375,9 +376,11 @@ class _HomeScreen extends ConsumerState<HomeScreen>
                                 SizedBox(
                                   child: ElevatedButton(
                                     onPressed: () async {
+                                      final container = ProviderContainer();
                                       await _saveTigData();
                                       await HomeWidgetManager()
-                                          .updateWidgetData();
+                                          .updateWidgetData(container);
+                                      container.dispose();
                                       _showSavedDialog();
                                     },
                                     child: Text(Intl.message('home_save_desc')),

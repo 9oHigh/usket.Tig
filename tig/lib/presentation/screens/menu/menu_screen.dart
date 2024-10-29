@@ -6,10 +6,10 @@ import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tig/core/manager/shared_preference_manager.dart';
 import 'package:tig/data/models/tig.dart';
 import 'package:tig/presentation/providers/auth/auth_provider.dart';
 import 'package:tig/presentation/providers/tig/tig_provider.dart';
-import 'package:tig/presentation/widgets/buttons/menu_button.dart';
 import '../../../core/routes/app_route.dart';
 
 class MenuScreen extends ConsumerStatefulWidget {
@@ -23,14 +23,13 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
   final PageController _pageController = PageController();
   int _currentSubscribePage = 0;
 
-  late DateTime _currentDate;
+  final DateTime _currentDate = DateTime.now();
   late String _userId;
   List<Tig> _monthlyTigs = [];
 
   @override
   void initState() {
     super.initState();
-    _currentDate = DateTime.now();
     _userId = FirebaseAuth.instance.currentUser?.uid ?? 'defaultUserId';
     _fetchMonthlyTigs();
   }
@@ -45,26 +44,6 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
     });
   }
 
-  Future<void> _deleteUser() async {
-    try {
-      final authUsecase = ref.read(authUseCaseProvider);
-      await authUsecase.deleteUser();
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setBool("isLoggedIn", false);
-      _goToAuthScreen();
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(Intl.message('menu_delete_user_failure'))),
-      );
-    }
-  }
-
-  Future<void> _logoutUser() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool("isLoggedIn", false);
-    _goToAuthScreen();
-  }
-
   Future<void> _sendEmail() async {
     final Email email = Email(
       subject: Intl.message('menu_email_subject'),
@@ -74,6 +53,25 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
     );
 
     await FlutterEmailSender.send(email);
+  }
+
+  Future<void> _logoutUser() async {
+    await SharedPreferenceManager().setPref<bool>(PrefsType.isLoggedIn, false);
+    _goToAuthScreen();
+  }
+
+  Future<void> _deleteUser() async {
+    try {
+      final authUsecase = ref.read(authUseCaseProvider);
+      await authUsecase.deleteUser();
+      await SharedPreferenceManager()
+          .setPref<bool>(PrefsType.isLoggedIn, false);
+      _goToAuthScreen();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(Intl.message('menu_delete_user_failure'))),
+      );
+    }
   }
 
   String _getMonthName(int month, String language) {
@@ -396,6 +394,8 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
     );
   }
 
+  /*
+  인앱결제 출시 때, 적용하기.
   Widget _buildPageIndicator(int index) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return AnimatedContainer(
@@ -411,6 +411,7 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
       ),
     );
   }
+  */
 
   Widget _buildActionButtons() {
     return SizedBox(
@@ -418,25 +419,27 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          MenuButton(
-              text: Intl.message('menu_contact_us'), onPressed: _sendEmail),
+          ElevatedButton(
+            onPressed: _sendEmail,
+            child: Text(Intl.message('menu_contact_us')),
+          ),
           const SizedBox(height: 8),
-          MenuButton(
-            text: Intl.message('menu_withdrawal_text'),
+          ElevatedButton(
             onPressed: () => _showDialog(
               title: Intl.message('menu_withdrawal_title'),
               content: Intl.message('menu_withdrawal_content'),
               onConfirm: _deleteUser,
             ),
+            child: Text(Intl.message('menu_withdrawal_text')),
           ),
           const SizedBox(height: 8),
-          MenuButton(
-            text: Intl.message('menu_logout_text'),
+          ElevatedButton(
             onPressed: () => _showDialog(
               title: Intl.message('menu_logout_title'),
               content: Intl.message('menu_logout_content'),
               onConfirm: _logoutUser,
             ),
+            child: Text(Intl.message('menu_logout_text')),
           ),
         ],
       ),
