@@ -2,32 +2,24 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:tig/core/manager/shared_preference_manager.dart';
-import 'package:tig/presentation/providers/auth/auth_provider.dart';
+import 'package:tig/presentation/screens/auth/provider/auth_notifier_provider.dart';
 import 'package:tig/presentation/screens/home/home_screen.dart';
 
 class AuthScreen extends ConsumerStatefulWidget {
   const AuthScreen({super.key});
 
   @override
-  _AuthScreenState createState() => _AuthScreenState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _AuthScreenState();
 }
 
 class _AuthScreenState extends ConsumerState<AuthScreen>
     with TickerProviderStateMixin {
   late List<AnimationController> _controllers;
-  bool _isAnimationCompleted = false;
-  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _controllers = List.generate(
-        3,
-        (index) => AnimationController(
-              vsync: this,
-              duration: const Duration(milliseconds: 800),
-            ));
+    _initializeControllers();
     _startAnimations();
   }
 
@@ -39,88 +31,51 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
     super.dispose();
   }
 
+  void _initializeControllers() {
+    _controllers = List.generate(
+        3,
+        (index) => AnimationController(
+            vsync: this,
+            duration: const Duration(
+              milliseconds: 800,
+            )));
+  }
+
   void _startAnimations() async {
     await Future.delayed(const Duration(milliseconds: 750));
     for (var controller in _controllers) {
       controller.forward();
       await Future.delayed(const Duration(milliseconds: 750));
     }
-    _isAnimationCompleted = true;
+    ref.read(authNotifierProvider.notifier).setAnimationCompleted(true);
   }
 
-  Future<void> _signInWithGoogle(authProvider) async {
-    if (!_isAnimationCompleted) return;
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    final messenger = ScaffoldMessenger.of(context);
-    final navigator = Navigator.of(context);
-
-    try {
-      await authProvider.signInWithGoogle();
-      await SharedPreferenceManager().setPref<bool>(PrefsType.isLoggedIn, true);
-      messenger.showSnackBar(
-        SnackBar(content: Text(Intl.message('auth_google_login_success'))),
-      );
-      navigator.pushReplacement(CupertinoPageRoute(
-        builder: (context) => const HomeScreen(),
-      ));
-    } catch (e) {
-      messenger.showSnackBar(
-        SnackBar(
-            content: Text(Intl.message('auth_google_login_failure',
-                args: [e.toString()]))),
-      );
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
+  void _pushHomeScreen() {
+    Navigator.of(context).pushReplacement(CupertinoPageRoute(
+      builder: (context) => const HomeScreen(),
+    ));
   }
 
-  Future<void> _signInWithKakao(authProvider) async {
-    if (!_isAnimationCompleted) return;
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    final messenger = ScaffoldMessenger.of(context);
-    final navigator = Navigator.of(context);
-
-    try {
-      await authProvider.signInWithKakao();
-      await SharedPreferenceManager().setPref<bool>(PrefsType.isLoggedIn, true);
-      messenger.showSnackBar(
-        SnackBar(content: Text(Intl.message('auth_kakao_login_success'))),
-      );
-      navigator.pushReplacement(CupertinoPageRoute(
-        builder: (context) => const HomeScreen(),
-      ));
-    } catch (e) {
-      messenger.showSnackBar(
-        SnackBar(
-            content: Text(Intl.message('auth_kakao_login_failure',
-                args: [e.toString()]))),
-      );
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = ref.watch(authUseCaseProvider);
+    final authProvider = ref.watch(authNotifierProvider);
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final Locale locale = Localizations.localeOf(context);
-    String imagePath = locale.languageCode.toString().toLowerCase();
-    if (!['ko', 'ja', 'zh', 'es', 'de', 'en', 'pt'].contains(imagePath)) {
-      imagePath = 'en';
-    }
+    final String imagePath = ['ko', 'ja', 'zh', 'es', 'de', 'en', 'pt']
+            .contains(locale.languageCode.toLowerCase())
+        ? locale.languageCode.toLowerCase()
+        : 'en';
+
+    Future.microtask(() {
+      if (authProvider.message.isNotEmpty) _showSnackBar(authProvider.message);
+      if (authProvider.isLoggedIn) _pushHomeScreen();
+    });
 
     return Scaffold(
       body: Padding(
@@ -150,15 +105,17 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
                           children: [
                             TextSpan(
                               text: Intl.message('auth_elon_musk'),
-                              style: _getTextStyle(context, isBold: true),
+                              style: _getTextStyle(context, isDarkMode,
+                                  isBold: true),
                             ),
                             TextSpan(
                               text: Intl.message('auth_pick_best'),
-                              style: _getTextStyle(context),
+                              style: _getTextStyle(context, isDarkMode),
                             ),
                             TextSpan(
                               text: Intl.message('auth_palnner'),
-                              style: _getTextStyle(context, isBold: true),
+                              style: _getTextStyle(context, isDarkMode,
+                                  isBold: true),
                             ),
                           ],
                         ),
@@ -169,13 +126,13 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
                 const SizedBox(
                   height: 4,
                 ),
-                _buildAnimatedText(
-                    Intl.message('auth_for_time_box_planner'), _controllers[1]),
+                _buildAnimatedText(Intl.message('auth_for_time_box_planner'),
+                    _controllers[1], isDarkMode),
                 const SizedBox(
                   height: 4,
                 ),
-                _buildAnimatedText(
-                    Intl.message('auth_with_timebox_planner'), _controllers[2]),
+                _buildAnimatedText(Intl.message('auth_with_timebox_planner'),
+                    _controllers[2], isDarkMode),
               ],
             ),
             const SizedBox(height: 16),
@@ -184,11 +141,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
             SizedBox(
               width: MediaQuery.of(context).size.width,
               height: 120,
-              child: _isLoading
-                  ? const Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  : _buildAuthButtons(authProvider, imagePath),
+              child: authProvider.isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _buildAuthButtons(imagePath),
             ),
           ],
         ),
@@ -196,13 +151,12 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
     );
   }
 
-  TextStyle _getTextStyle(BuildContext context, {bool isBold = false}) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+  TextStyle _getTextStyle(BuildContext context, bool isDarkMode,
+      {bool isBold = false}) {
     final Locale locale = Localizations.localeOf(context);
-    String fontName = "PaperlogyRegular";
-    if (locale.languageCode == 'zh') {
-      fontName = "CangJiGaoDeGuoMiaoHei";
-    }
+    String fontName = locale.languageCode == 'zh'
+        ? "CangJiGaoDeGuoMiaoHei"
+        : "PaperlogyRegular";
     return TextStyle(
       fontSize: 12,
       fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
@@ -210,17 +164,19 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
     ).copyWith(fontFamily: fontName);
   }
 
-  Widget _buildAuthButtons(authProvider, String imagePath) {
+  Widget _buildAuthButtons(String imagePath) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         _buildAuthButton(
-          onTap: () => _signInWithGoogle(authProvider),
+          onTap: () async =>
+              await ref.read(authNotifierProvider.notifier).signInWithGoogle(),
           imagePath: "assets/images/login_button/google_login_$imagePath.png",
         ),
         const SizedBox(height: 4),
         _buildAuthButton(
-          onTap: () => _signInWithKakao(authProvider),
+          onTap: () async =>
+              await ref.read(authNotifierProvider.notifier).signInWithKakao(),
           imagePath: "assets/images/login_button/kakao_login_$imagePath.png",
         ),
       ],
@@ -239,13 +195,14 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
     );
   }
 
-  Widget _buildAnimatedText(String text, AnimationController controller) {
+  Widget _buildAnimatedText(
+      String text, AnimationController controller, bool isDarkMode) {
     return AnimatedBuilder(
       animation: controller,
       builder: (context, child) {
         return Opacity(
           opacity: controller.value,
-          child: Text(text, style: _getTextStyle(context)),
+          child: Text(text, style: _getTextStyle(context, isDarkMode)),
         );
       },
     );
