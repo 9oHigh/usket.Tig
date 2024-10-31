@@ -5,7 +5,9 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:intl/intl.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
+import 'package:tig/core/di/injector.dart';
 import 'package:tig/core/manager/shared_preference_manager.dart';
 import 'package:tig/core/routes/app_navigator.dart';
 import 'package:tig/generated/l10n.dart';
@@ -23,6 +25,9 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await SharedPreferenceManager().initialize();
   await HomeWidget.registerInteractivityCallback(backgroundCallback);
+  provideDataSources();
+  provideRepositories();
+  provideUseCases();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   KakaoSdk.init(nativeAppKey: dotenv.get("KAKAO_NATIVE_APP_KEY"));
   runApp(
@@ -46,7 +51,7 @@ class TigApp extends StatefulWidget {
 class _TigAppState extends State<TigApp> {
   BannerAd? _bannerAd;
   final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
-  late bool _loginStatus;
+  late Future<bool> _loginStatus;
 
   @override
   void initState() {
@@ -64,7 +69,7 @@ class _TigAppState extends State<TigApp> {
     super.dispose();
   }
 
-  bool _checkLoginStatus() {
+  Future<bool> _checkLoginStatus() async {
     bool isLoggedIn =
         SharedPreferenceManager().getPref<bool>(PrefsType.isLoggedIn) ?? false;
     final user = FirebaseAuth.instance.currentUser;
@@ -106,45 +111,22 @@ class _TigAppState extends State<TigApp> {
     )..load();
   }
 
-  void _rebuildOnLocaleChange() => setState(() {});
-
   @override
   Widget build(BuildContext context) {
     Locale locale = WidgetsBinding.instance.platformDispatcher.locale;
-    WidgetsBinding.instance.platformDispatcher.onLocaleChanged =
-        _rebuildOnLocaleChange;
-    FontLocale fontLocale;
-    switch (locale.languageCode) {
-      case 'de':
-        fontLocale = FontLocale.de;
-        break;
-      case 'en':
-        fontLocale = FontLocale.en;
-        break;
-      case 'es':
-        fontLocale = FontLocale.es;
-        break;
-      case 'ja':
-        fontLocale = FontLocale.ja;
-        break;
-      case 'ko':
-        fontLocale = FontLocale.ko;
-        break;
-      case 'pt':
-        fontLocale = FontLocale.pt;
-        break;
-      case 'zh':
-        if (locale.countryCode == 'CN') {
-          fontLocale = FontLocale.zh_CN;
-        } else if (locale.countryCode == 'TW') {
-          fontLocale = FontLocale.zh_TW;
-        } else {
-          fontLocale = FontLocale.zh_CN;
-        }
-        break;
-      default:
-        fontLocale = FontLocale.en;
-    }
+    FontLocale fontLocale = {
+          'de': FontLocale.de,
+          'en': FontLocale.en,
+          'es': FontLocale.es,
+          'ja': FontLocale.ja,
+          'ko': FontLocale.ko,
+          'pt': FontLocale.pt,
+          'zh_CN': FontLocale.zh_CN,
+          'zh_TW': FontLocale.zh_TW,
+        }[locale.languageCode == 'zh'
+            ? 'zh_${locale.countryCode ?? 'CN'}'
+            : locale.languageCode] ??
+        FontLocale.en;
     return MaterialApp(
       localizationsDelegates: const [
         S.delegate,
@@ -163,13 +145,30 @@ class _TigAppState extends State<TigApp> {
       theme: buildLightTheme(fontLocale),
       darkTheme: buildDarkTheme(fontLocale),
       themeMode: ThemeMode.system,
-      home: _loginStatus
-          ? const Center(child: CircularProgressIndicator())
-          : AppNavigator(
+      home: FutureBuilder<bool>(
+        future: _loginStatus,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                Intl.message(
+                  'main_restart',
+                  args: [(snapshot.error.toString())],
+                ),
+              ),
+            );
+          } else {
+            final isLoggedIn = snapshot.data ?? false;
+            return AppNavigator(
               navigatorKey: _navigatorKey,
               bannerAd: _bannerAd,
-              isLoggedIn: _loginStatus,
-            ),
+              isLoggedIn: isLoggedIn,
+            );
+          }
+        },
+      ),
     );
   }
 }
