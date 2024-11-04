@@ -59,7 +59,7 @@ class _TigAppState extends State<TigApp> {
     _loginStatus = _checkLoginStatus();
     _initGoogleMobileAds();
     _removeSplash();
-    _setHomeArrangeStatus();
+    _setOptionStatus();
     _createBannerAd();
   }
 
@@ -85,7 +85,7 @@ class _TigAppState extends State<TigApp> {
     FlutterNativeSplash.remove();
   }
 
-  void _setHomeArrangeStatus() {
+  void _setOptionStatus() {
     final bool? isOnDaily =
         SharedPreferenceManager().getPref<bool>(PrefsType.isOnDaily);
     final bool? isOnBraindump =

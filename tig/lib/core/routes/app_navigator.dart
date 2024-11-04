@@ -5,7 +5,7 @@ import 'package:tig/ads/admob_banner.dart';
 import 'package:tig/core/routes/app_route.dart';
 import 'package:tig/data/models/tig.dart';
 import 'package:tig/presentation/screens/auth/auth_screen.dart';
-import 'package:tig/presentation/screens/home/home_arrange_screen.dart';
+import 'package:tig/presentation/screens/option/option_screen.dart';
 import 'package:tig/presentation/screens/home/home_screen.dart';
 import 'package:tig/presentation/screens/menu/menu_screen.dart';
 import 'package:tig/presentation/screens/tag/tag_screen.dart';
@@ -55,9 +55,9 @@ class AppNavigator extends StatelessWidget {
                   builder: (_) => const HomeScreen(),
                   settings: settings,
                 );
-              case AppRoute.arrange:
+              case AppRoute.option:
                 return CupertinoPageRoute(
-                  builder: (_) => const HomeArrangeScreen(),
+                  builder: (_) => const OptionScreen(),
                   settings: settings,
                 );
               case AppRoute.tigMode:

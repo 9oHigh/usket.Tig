@@ -1,28 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:tig/core/manager/shared_preference_manager.dart';
 
-enum ArrangeType { isOnDaily, isOnBraindump }
+enum OptionType { isOnDaily, isOnBraindump }
 
-extension on ArrangeType {
-  String get arrangeName {
-    switch (this) {
-      case ArrangeType.isOnDaily:
-        return 'isOnDaily';
-      case ArrangeType.isOnBraindump:
-        return 'isOnBraindump';
-    }
-  }
-}
-
-class HomeArrangeScreen extends StatefulWidget {
-  const HomeArrangeScreen({super.key});
+class OptionScreen extends ConsumerStatefulWidget {
+  const OptionScreen({super.key});
 
   @override
-  State<StatefulWidget> createState() => _HomeArrangeScreen();
+  ConsumerState<ConsumerStatefulWidget> createState() => _OptionScreen();
 }
 
-class _HomeArrangeScreen extends State<HomeArrangeScreen> {
+class _OptionScreen extends ConsumerState<OptionScreen> {
   bool _isOnDaily = true;
   bool _isOnBraindump = true;
 
@@ -37,7 +27,8 @@ class _HomeArrangeScreen extends State<HomeArrangeScreen> {
       _isOnDaily =
           SharedPreferenceManager().getPref<bool>(PrefsType.isOnDaily) ?? false;
       _isOnBraindump =
-          SharedPreferenceManager().getPref<bool>(PrefsType.isOnBraindump) ?? false;
+          SharedPreferenceManager().getPref<bool>(PrefsType.isOnBraindump) ??
+              false;
     });
   }
 

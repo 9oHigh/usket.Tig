@@ -458,7 +458,7 @@ class _HomeScreen extends ConsumerState<HomeScreen>
         ),
         IconButton(
           onPressed: () {
-            Navigator.of(context).pushNamed(AppRoute.arrange).then((_) {
+            Navigator.of(context).pushNamed(AppRoute.option).then((_) {
               _loadPreferences();
             });
           },
