@@ -14,9 +14,8 @@ class TagState extends Equatable {
     String? errorMessage,
   }) {
     return TagState(
-      tags: tags ?? this.tags,
-      errorMessage: errorMessage ?? this.errorMessage,
-    );
+        tags: tags ?? this.tags,
+        errorMessage: errorMessage ?? this.errorMessage);
   }
 
   @override

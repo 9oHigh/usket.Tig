@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:tig/core/manager/shared_preference_manager.dart';
+import 'package:tig/presentation/screens/option/provider/option_notifier_provider.dart';
+import 'package:tig/presentation/screens/option/provider/state/option_notifier.dart';
+import 'package:tig/presentation/screens/option/provider/state/option_state.dart';
 
 enum OptionType { isOnDaily, isOnBraindump }
 
@@ -13,36 +15,17 @@ class OptionScreen extends ConsumerStatefulWidget {
 }
 
 class _OptionScreen extends ConsumerState<OptionScreen> {
-  bool _isOnDaily = true;
-  bool _isOnBraindump = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _initailizeOptions();
-  }
-
-  void _initailizeOptions() async {
-    setState(() {
-      _isOnDaily =
-          SharedPreferenceManager().getPref<bool>(PrefsType.isOnDaily) ?? false;
-      _isOnBraindump =
-          SharedPreferenceManager().getPref<bool>(PrefsType.isOnBraindump) ??
-              false;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    final OptionState optionState = ref.watch(optionNotifierProvider);
+    final OptionNotifier optionNotifier =
+        ref.read(optionNotifierProvider.notifier);
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          Intl.message('home_arrange_title'),
-        ),
+        title: Text(Intl.message('home_arrange_title')),
         leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
           icon: const Icon(Icons.arrow_back_ios_new),
         ),
       ),
@@ -54,22 +37,16 @@ class _OptionScreen extends ConsumerState<OptionScreen> {
             children: [
               Row(
                 children: [
-                  Text(
-                    'Daily Priority',
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
+                  Text('Daily Priority',
+                      style: Theme.of(context).textTheme.bodyLarge),
                   Expanded(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         Switch(
-                          value: _isOnDaily,
+                          value: optionState.isOnDaily,
                           onChanged: (value) async {
-                            await SharedPreferenceManager()
-                                .setPref<bool>(PrefsType.isOnDaily, value);
-                            setState(() {
-                              _isOnDaily = value;
-                            });
+                            await optionNotifier.changeDailyOption(value);
                           },
                         ),
                       ],
@@ -79,22 +56,16 @@ class _OptionScreen extends ConsumerState<OptionScreen> {
               ),
               Row(
                 children: [
-                  Text(
-                    'Braindump',
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
+                  Text('Braindump',
+                      style: Theme.of(context).textTheme.bodyLarge),
                   Expanded(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         Switch(
-                          value: _isOnBraindump,
+                          value: optionState.isOnBraindump,
                           onChanged: (value) async {
-                            await SharedPreferenceManager()
-                                .setPref<bool>(PrefsType.isOnBraindump, value);
-                            setState(() {
-                              _isOnBraindump = value;
-                            });
+                            await optionNotifier.changeBraindumpOption(value);
                           },
                         ),
                       ],
