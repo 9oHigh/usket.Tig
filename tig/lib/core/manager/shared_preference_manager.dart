@@ -41,17 +41,14 @@ class SharedPreferenceManager {
     }
   }
 
-  setPref<T>(PrefsType type, T pref) async {
+  Future<bool> setPref<T>(PrefsType type, T pref) async {
     switch (type) {
       case PrefsType.userId:
-        await _prefs.setString(type.prefsName, pref as String);
-        break;
+        return await _prefs.setString(type.prefsName, pref as String);
       case PrefsType.tags:
-        await _prefs.setStringList(type.prefsName, pref as List<String>);
-        break;
+        return await _prefs.setStringList(type.prefsName, pref as List<String>);
       default:
-        await _prefs.setBool(type.prefsName, pref as bool);
-        break;
+        return await _prefs.setBool(type.prefsName, pref as bool);
     }
   }
 
