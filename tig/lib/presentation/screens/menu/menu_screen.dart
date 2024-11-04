@@ -17,11 +17,6 @@ class MenuScreen extends ConsumerStatefulWidget {
 }
 
 class _MenuScreenState extends ConsumerState<MenuScreen> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
   String _getCurrentLanguageCode(BuildContext context) {
     return Localizations.localeOf(context).languageCode;
   }
@@ -220,7 +215,8 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
                         imageFilter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: _buildSubscriptionSection(menuState, menuNotifier),
+                          child: _buildSubscriptionSection(
+                              menuState, menuNotifier),
                         ),
                       ),
                     ),
@@ -309,7 +305,8 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
     );
   }
 
-  Widget _buildSubscriptionSection(MenuState menuState, MenuNotifier menuNotifier) {
+  Widget _buildSubscriptionSection(
+      MenuState menuState, MenuNotifier menuNotifier) {
     return Column(
       children: [
         Row(
