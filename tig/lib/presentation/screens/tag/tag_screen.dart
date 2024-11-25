@@ -1,45 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tig/presentation/screens/tag/provider/state/tag_state.dart';
+import 'package:tig/presentation/screens/tag/provider/tag_notifier_provider.dart';
+import 'provider/state/tag_notifier.dart';
 
-class TagScreen extends StatefulWidget {
+class TagScreen extends ConsumerStatefulWidget {
   const TagScreen({super.key});
 
   @override
-  State<StatefulWidget> createState() => _TagScreenState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _TagScreenState();
 }
 
-class _TagScreenState extends State<TagScreen> {
-  List<String> tags = [];
-  String? errorMessage;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadTags();
-  }
-
-  Future<void> _loadTags() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    setState(() {
-      tags = pref.getStringList('tags') ?? [];
-    });
-  }
-
-  Future<void> _saveTags() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    await pref.setStringList('tags', tags);
-  }
-
-  void _addTag() {
-    final tagController = TextEditingController();
-    final focusNode = FocusNode();
+class _TagScreenState extends ConsumerState<TagScreen> {
+  void _showAddTagDialog() {
+    final TextEditingController tagController = TextEditingController();
+    final FocusNode focusNode = FocusNode();
 
     showDialog(
       context: context,
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setStateDialog) {
+            final TagState tagState = ref.watch(tagNotifierProvider);
+            final TagNotifier tagNotifier =
+                ref.read(tagNotifierProvider.notifier);
+            final String errorMessage = tagState.errorMessage;
+            final List<String> tags = tagState.tags;
             WidgetsBinding.instance.addPostFrameCallback((_) {
               focusNode.requestFocus();
             });
@@ -56,7 +43,7 @@ class _TagScreenState extends State<TagScreen> {
                       hintText: Intl.message('tag_add_input'),
                     ),
                   ),
-                  if (errorMessage != null)
+                  if (errorMessage.isNotEmpty)
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
                       child: Row(
@@ -64,7 +51,7 @@ class _TagScreenState extends State<TagScreen> {
                         children: [
                           Expanded(
                             child: Text(
-                              errorMessage!,
+                              errorMessage,
                               style: const TextStyle(
                                 color: Colors.red,
                                 fontSize: 12,
@@ -81,9 +68,7 @@ class _TagScreenState extends State<TagScreen> {
               actions: [
                 TextButton(
                   onPressed: () {
-                    setStateDialog(() {
-                      errorMessage = null;
-                    });
+                    tagNotifier.resetErrorMessage();
                     Navigator.of(context).pop();
                   },
                   child: Text(Intl.message('cancel')),
@@ -92,22 +77,16 @@ class _TagScreenState extends State<TagScreen> {
                   onPressed: () {
                     if (tagController.text.isNotEmpty &&
                         !tags.contains(tagController.text)) {
-                      setState(() {
-                        tags.add(tagController.text);
-                        _saveTags();
-                      });
-                      errorMessage = null;
+                      tagNotifier.addTag(tagController.text);
                       Navigator.of(context).pop();
                     } else {
                       if (tagController.text.isEmpty) {
-                        setStateDialog(() {
-                          errorMessage = Intl.message('tag_empty');
-                        });
+                        tagNotifier.setErrorMessage(Intl.message('tag_empty'));
                       } else {
-                        setStateDialog(() {
-                          errorMessage = Intl.message('tag_duplicated');
-                        });
+                        tagNotifier
+                            .setErrorMessage(Intl.message('tag_duplicated'));
                       }
+                      setStateDialog(() {});
                     }
                   },
                   child: Text(Intl.message('ok')),
@@ -122,43 +101,35 @@ class _TagScreenState extends State<TagScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final TagState tagState = ref.watch(tagNotifierProvider);
+    final TagNotifier tagNotifier = ref.read(tagNotifierProvider.notifier);
+    final List<String> tags = tagState.tags;
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
           icon: const Icon(Icons.arrow_back_ios_new),
         ),
         title: Text(
           Intl.message('tag_title'),
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         actions: [
           IconButton(
-            onPressed: _addTag,
-            icon: const Icon(
-              Icons.add,
-            ),
+            onPressed: () => _showAddTagDialog(),
+            icon: const Icon(Icons.add),
           ),
         ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: ReorderableListView.builder(
-          onReorder: (int oldIndex, int newIndex) {
-            if (oldIndex < newIndex) {
-              newIndex -= 1;
-            }
-            setState(() {
-              final item = tags.removeAt(oldIndex);
-              tags.insert(newIndex, item);
-            });
-            _saveTags();
-          },
           itemCount: tags.length,
+          onReorder: (int oldIndex, int newIndex) {
+            if (oldIndex < newIndex) newIndex -= 1;
+            tagNotifier.relocateTag(oldIndex, newIndex);
+          },
           proxyDecorator:
               (Widget child, int index, Animation<double> animation) {
             final isDarkMode = Theme.of(context).brightness == Brightness.dark;
@@ -167,6 +138,7 @@ class _TagScreenState extends State<TagScreen> {
               color: isDarkMode
                   ? Colors.black.withAlpha(200)
                   : Colors.white.withAlpha(200),
+              borderRadius: BorderRadius.circular(8),
               child: child,
             );
           },
@@ -175,12 +147,15 @@ class _TagScreenState extends State<TagScreen> {
               key: Key(tags[index]),
               direction: DismissDirection.endToStart,
               background: Container(
-                color: Colors.red,
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 alignment: Alignment.centerRight,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  color: const Color.fromARGB(255, 216, 118, 111),
+                ),
                 child: const Icon(Icons.delete, color: Colors.white),
               ),
-              confirmDismiss: (direction) async {
+              confirmDismiss: (direction) {
                 return showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
@@ -188,28 +163,23 @@ class _TagScreenState extends State<TagScreen> {
                     content: Text(Intl.message('tag_delete_content')),
                     actions: [
                       TextButton(
-                        onPressed: () => Navigator.of(context).pop(false),
-                        child: Text(Intl.message('cancel')),
-                      ),
+                          onPressed: () => Navigator.of(context).pop(false),
+                          child: Text(Intl.message('cancel'))),
                       TextButton(
-                        onPressed: () => Navigator.of(context).pop(true),
-                        child: Text(Intl.message('delete')),
-                      ),
+                          onPressed: () => Navigator.of(context).pop(true),
+                          child: Text(Intl.message('delete'))),
                     ],
                   ),
                 );
               },
               onDismissed: (direction) {
+                tagNotifier.removeTag(index);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(Intl.message('tag_delete_completed',
                         args: [(tags[index].toString())])),
                   ),
                 );
-                setState(() {
-                  tags.removeAt(index);
-                  _saveTags();
-                });
               },
               child: ListTile(
                 title: Text(tags[index]),

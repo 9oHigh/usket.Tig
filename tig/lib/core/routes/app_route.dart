@@ -1,6 +1,6 @@
 class AppRoute {
   static const String home = '/home';
-  static const String arrange = '/arrange';
+  static const String option = '/option';
   static const String auth = '/auth';
   static const String tigMode = '/tigMode';
   static const String menu = '/menu';
@@ -12,8 +12,8 @@ class AppRoute {
         return auth;
       case '/home':
         return home;
-      case '/arrange':
-        return arrange;
+      case '/option':
+        return option;
       case '/tigMode':
         return tigMode;
       case '/menu':

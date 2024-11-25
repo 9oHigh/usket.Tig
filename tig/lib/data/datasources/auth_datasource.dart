@@ -3,15 +3,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:tig/core/manager/shared_preference_manager.dart';
 import 'package:tig/domain/repositories/auth_repository.dart';
 import 'package:tig/data/models/user.dart';
 
 class AuthDatasource implements AuthRepository {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
   final kakao.UserApi _kakaoSignIn = kakao.UserApi.instance;
 
   @override
@@ -88,10 +88,10 @@ class AuthDatasource implements AuthRepository {
   Future<void> _handleSignInResult({User? user}) async {
     user ??= _firebaseAuth.currentUser;
     if (user != null) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String storedUserId = prefs.getString("userId") ?? "";
+      String storedUserId =
+          SharedPreferenceManager().getPref<String>(PrefsType.userId) ?? "";
       if (user.uid != storedUserId) {
-        await prefs.setString("userId", user.uid);
+        await SharedPreferenceManager().setPref<String>(PrefsType.userId, user.uid);
         await _registerUser(user);
       }
     }
@@ -115,21 +115,26 @@ class AuthDatasource implements AuthRepository {
   }
 
   @override
-  Future<UserModel?> getUser(String uid) async {
+  Future<UserModel?> getUser() async {
+    String uid =
+        SharedPreferenceManager().getPref<String>(PrefsType.userId) ?? "";
     final userRef = _firestore.collection('users').doc(uid);
     final doc = await userRef.get();
+
+    await userRef.update({'lastLogin': DateTime.now()});
+
     return doc.exists ? UserModel.fromMap(doc.data()!) : null;
   }
 
   @override
   Future<void> deleteUser() async {
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String uid = prefs.getString("userId") ?? "";
+      String uid =
+          SharedPreferenceManager().getPref<String>(PrefsType.userId) ?? "";
       User? user = _firebaseAuth.currentUser;
       if (user != null && user.uid == uid) {
         await _firestore.collection('users').doc(uid).delete();
-        await prefs.remove("userId");
+        await SharedPreferenceManager().removePref(PrefsType.userId);
         await user.delete();
       }
     } catch (e) {

@@ -7,12 +7,10 @@ class TigDatasource {
   Future<Tig?> getTigData(String userId, DateTime date) async {
     try {
       final userDoc = await _firestore.collection('users').doc(userId).get();
-
       if (userDoc.exists && userDoc.data() != null) {
         final userData = userDoc.data()!;
         if (userData.containsKey('tigs')) {
           final List<dynamic> tigsData = userData['tigs'];
-
           final Tig matchedTig =
               tigsData.map((tigData) => Tig.fromMap(tigData)).firstWhere(
                     (tig) =>
@@ -41,7 +39,6 @@ class TigDatasource {
               .map((tigData) => Tig.fromMap(tigData))
               .where((tig) => tig.date.year == year && tig.date.month == month)
               .toList();
-
           return matchedTigs;
         }
       }
@@ -57,8 +54,7 @@ class TigDatasource {
 
       if (userDoc.exists && userDoc.data() != null) {
         final userData = userDoc.data()!;
-        List<dynamic> tigsData = userData['tigs'] ?? [];
-
+        final List<dynamic> tigsData = userData['tigs'] ?? [];
         final existingTigIndex = tigsData.indexWhere((existingTigData) {
           final existingTig = Tig.fromMap(existingTigData);
           return existingTig.date.year == tig.date.year &&
@@ -74,9 +70,10 @@ class TigDatasource {
           tigsData.add(tig.toMap());
         }
 
-        await _firestore.collection('users').doc(userId).update({
-          'tigs': tigsData,
-        });
+        await _firestore
+            .collection('users')
+            .doc(userId)
+            .update({'tigs': tigsData});
       } else {
         return;
       }

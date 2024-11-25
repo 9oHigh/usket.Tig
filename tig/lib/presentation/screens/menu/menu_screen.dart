@@ -1,85 +1,32 @@
 import 'dart:ui';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tig/data/models/tig.dart';
-import 'package:tig/presentation/providers/auth/auth_provider.dart';
-import 'package:tig/presentation/providers/tig/tig_provider.dart';
-import 'package:tig/presentation/widgets/buttons/menu_button.dart';
+import 'package:tig/presentation/screens/menu/provider/menu_notifier_provider.dart';
+import 'package:tig/presentation/screens/menu/provider/state/menu_notifier.dart';
+import 'package:tig/presentation/screens/menu/provider/state/menu_state.dart';
 import '../../../core/routes/app_route.dart';
 
 class MenuScreen extends ConsumerStatefulWidget {
   const MenuScreen({super.key});
 
   @override
-  ConsumerState<MenuScreen> createState() => _MenuScreenState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _MenuScreenState();
 }
 
 class _MenuScreenState extends ConsumerState<MenuScreen> {
-  final PageController _pageController = PageController();
-  int _currentSubscribePage = 0;
-
-  late DateTime _currentDate;
-  late String _userId;
-  List<Tig> _monthlyTigs = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _currentDate = DateTime.now();
-    _userId = FirebaseAuth.instance.currentUser?.uid ?? 'defaultUserId';
-    _fetchMonthlyTigs();
-  }
-
-  Future<void> _fetchMonthlyTigs() async {
-    final tigUsecase = ref.read(tigUseCaseProvider);
-    final monthlyTigs = await tigUsecase.getTigsForMonth(
-        _userId, _currentDate.year, _currentDate.month);
-
-    setState(() {
-      _monthlyTigs = monthlyTigs;
-    });
-  }
-
-  Future<void> _deleteUser() async {
-    try {
-      final authUsecase = ref.read(authUseCaseProvider);
-      await authUsecase.deleteUser();
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setBool("isLoggedIn", false);
-      _goToAuthScreen();
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(Intl.message('menu_delete_user_failure'))),
-      );
-    }
-  }
-
-  Future<void> _logoutUser() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool("isLoggedIn", false);
-    _goToAuthScreen();
-  }
-
-  Future<void> _sendEmail() async {
-    final Email email = Email(
-      subject: Intl.message('menu_email_subject'),
-      body: Intl.message('menu_email_body'),
-      recipients: ['usket@icloud.com'],
-      isHTML: false,
-    );
-
-    await FlutterEmailSender.send(email);
+  String _getCurrentLanguageCode(BuildContext context) {
+    return Localizations.localeOf(context).languageCode;
   }
 
   String _getMonthName(int month, String language) {
     switch (language) {
       case 'ko':
         return '$month월 Tigs';
+      case 'ja':
+        return '$month月のTigs';
       case 'en':
         return '${[
           '',
@@ -147,28 +94,22 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
       case 'zh':
         return '${[
           '',
-          '一月',
-          '二月',
-          '三月',
-          '四月',
-          '五月',
-          '六月',
-          '七月',
-          '八月',
-          '九月',
-          '十月',
-          '十一月',
-          '十二月'
-        ][month]} Tigs';
-      case 'ja':
-        return '$month月のTigs';
+          '一',
+          '二',
+          '三',
+          '四',
+          '五',
+          '六',
+          '七',
+          '八',
+          '九',
+          '十',
+          '十一',
+          '十二'
+        ][month]}月 Tigs';
       default:
-        return '$month month Tigs';
+        return "$month's Tigs";
     }
-  }
-
-  String _getCurrentLanguageCode(BuildContext context) {
-    return Localizations.localeOf(context).languageCode;
   }
 
   void _showDialog(
@@ -202,14 +143,6 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
     );
   }
 
-  void _goToAuthScreen() {
-    Navigator.pushNamedAndRemoveUntil(
-      context,
-      AppRoute.auth,
-      (Route<dynamic> route) => false,
-    );
-  }
-
   Color _getColorForGrade(int grade) {
     switch (grade) {
       case 0:
@@ -227,9 +160,31 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
     }
   }
 
+  void _goToAuthScreen() {
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      AppRoute.auth,
+      (Route<dynamic> route) => false,
+    );
+  }
+
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final menuState = ref.watch(menuNotifierProvider);
+    final menuNotifier = ref.read(menuNotifierProvider.notifier);
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    Future.microtask(() {
+      if (menuState.message.isNotEmpty) _showSnackBar(menuState.message);
+      if (menuState.isLoggedOutOrDelete) _goToAuthScreen();
+    });
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -248,7 +203,7 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
           child: Column(
             children: [
               const SizedBox(height: 16),
-              _buildMonthlyTigsSection(),
+              _buildMonthlyTigsSection(menuState),
               const SizedBox(height: 8),
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
@@ -260,7 +215,8 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
                         imageFilter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: _buildSubscriptionSection(),
+                          child: _buildSubscriptionSection(
+                              menuState, menuNotifier),
                         ),
                       ),
                     ),
@@ -282,7 +238,7 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-              _buildActionButtons(),
+              _buildActionButtons(menuNotifier),
             ],
           ),
         ),
@@ -290,12 +246,18 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
     );
   }
 
-  Widget _buildMonthlyTigsSection() {
+  Widget _buildMonthlyTigsSection(MenuState menuState) {
+    final DateTime currentDate = menuState.currentDate;
+    final List<Tig> monthlyTigs = menuState.monthlyTigs;
+    final nextMonth = DateTime(currentDate.year, currentDate.month + 1, 1);
+    final lastDay = nextMonth.subtract(const Duration(days: 1)).day;
+    final langCode = _getCurrentLanguageCode(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          _getMonthName(_currentDate.month, _getCurrentLanguageCode(context)),
+          _getMonthName(currentDate.month, langCode),
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
@@ -308,38 +270,43 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
               crossAxisSpacing: 2,
               mainAxisSpacing: 2,
             ),
-            itemCount:
-                DateTime(_currentDate.year, _currentDate.month + 1, 0).day,
-            itemBuilder: (context, index) => _buildDayTile(index + 1),
+            itemCount: lastDay,
+            itemBuilder: (context, index) {
+              final tigForDay = monthlyTigs.firstWhere(
+                (tig) => tig.date.day == index + 1,
+                orElse: () => Tig(
+                    date: DateTime(
+                        currentDate.year, currentDate.month, index + 1),
+                    timeTable: []),
+              );
+              return _buildDayTile(tigForDay, index + 1);
+            },
           ),
         ),
       ],
     );
   }
 
-  Widget _buildDayTile(int day) {
-    final tigForDay = _monthlyTigs.firstWhere(
-      (tig) => tig.date.day == day,
-      orElse: () => Tig(
-          date: DateTime(_currentDate.year, _currentDate.month, day),
-          timeTable: []),
-    );
+  Widget _buildDayTile(Tig tig, int day) {
     return Container(
       decoration: BoxDecoration(
-        color: _getColorForGrade(tigForDay.grade),
+        color: _getColorForGrade(tig.grade),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Center(
         child: Text(
           day.toString(),
-          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-              color: tigForDay.grade > 0 ? Colors.white : Colors.black),
+          style: Theme.of(context)
+              .textTheme
+              .bodyMedium!
+              .copyWith(color: tig.grade > 0 ? Colors.white : Colors.black),
         ),
       ),
     );
   }
 
-  Widget _buildSubscriptionSection() {
+  Widget _buildSubscriptionSection(
+      MenuState menuState, MenuNotifier menuNotifier) {
     return Column(
       children: [
         Row(
@@ -359,9 +326,8 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
         SizedBox(
           height: 100,
           child: PageView(
-            controller: _pageController,
-            onPageChanged: (value) =>
-                setState(() => _currentSubscribePage = value),
+            controller: menuState.pageController,
+            onPageChanged: (value) => menuNotifier.updateSubscribePage(value),
             children: [
               Center(
                 child: Text(
@@ -396,6 +362,8 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
     );
   }
 
+  /*
+  인앱결제 출시 때, 적용하기.
   Widget _buildPageIndicator(int index) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return AnimatedContainer(
@@ -411,32 +379,35 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
       ),
     );
   }
+  */
 
-  Widget _buildActionButtons() {
+  Widget _buildActionButtons(MenuNotifier menuNotifier) {
     return SizedBox(
       width: MediaQuery.of(context).size.width,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          MenuButton(
-              text: Intl.message('menu_contact_us'), onPressed: _sendEmail),
+          ElevatedButton(
+            onPressed: () => menuNotifier.sendEmail(),
+            child: Text(Intl.message('menu_contact_us')),
+          ),
           const SizedBox(height: 8),
-          MenuButton(
-            text: Intl.message('menu_withdrawal_text'),
+          ElevatedButton(
             onPressed: () => _showDialog(
               title: Intl.message('menu_withdrawal_title'),
               content: Intl.message('menu_withdrawal_content'),
-              onConfirm: _deleteUser,
+              onConfirm: menuNotifier.deleteUser,
             ),
+            child: Text(Intl.message('menu_withdrawal_text')),
           ),
           const SizedBox(height: 8),
-          MenuButton(
-            text: Intl.message('menu_logout_text'),
+          ElevatedButton(
             onPressed: () => _showDialog(
               title: Intl.message('menu_logout_title'),
               content: Intl.message('menu_logout_content'),
-              onConfirm: _logoutUser,
+              onConfirm: menuNotifier.logout,
             ),
+            child: Text(Intl.message('menu_logout_text')),
           ),
         ],
       ),
