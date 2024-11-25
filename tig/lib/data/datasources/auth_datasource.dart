@@ -91,7 +91,7 @@ class AuthDatasource implements AuthRepository {
       String storedUserId =
           SharedPreferenceManager().getPref<String>(PrefsType.userId) ?? "";
       if (user.uid != storedUserId) {
-        await SharedPreferenceManager().setPref(PrefsType.userId, user.uid);
+        await SharedPreferenceManager().setPref<String>(PrefsType.userId, user.uid);
         await _registerUser(user);
       }
     }
