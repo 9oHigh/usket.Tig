@@ -23,6 +23,26 @@ class Tig {
   })  : dayTopPriorities = dayTopPriorities ?? _generateDefaultPriorities(),
         timeTable = timeTable ?? _generateTimeTable(startHour, endHour);
 
+  Tig copyWith({
+    DateTime? date,
+    List<PriorityEntry>? dayTopPriorities,
+    String? brainDump,
+    List<TimeEntry>? timeTable,
+    double? startHour,
+    double? endHour,
+    int? grade,
+  }) {
+    return Tig(
+      date: date ?? this.date,
+      dayTopPriorities: dayTopPriorities ?? this.dayTopPriorities,
+      brainDump: brainDump ?? this.brainDump,
+      timeTable: timeTable ?? this.timeTable,
+      startHour: startHour ?? this.startHour,
+      endHour: endHour ?? this.endHour,
+      grade: grade ?? this.grade,
+    );
+  }
+
   static List<PriorityEntry> _generateDefaultPriorities() {
     return [
       PriorityEntry(priority: '', isSucceed: false),
