@@ -15,7 +15,7 @@ class TigModeScreen extends ConsumerStatefulWidget {
   const TigModeScreen({super.key, required this.tig});
 
   @override
-  _TigModeScreenState createState() => _TigModeScreenState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _TigModeScreenState();
 }
 
 class _TigModeScreenState extends ConsumerState<TigModeScreen> {
@@ -311,7 +311,7 @@ class _TigModeScreenState extends ConsumerState<TigModeScreen> {
                 if (_currentTimeEntry != null) {
                   final tigProvider = ref.read(tigUseCaseProvider);
                   final container = ProviderContainer();
-                  final userId = await _getUserId();
+                  final userId = _getUserId();
                   _currentTimeEntry!.isSucceed = true;
                   await tigProvider.saveTigData(userId, _tig);
                   await HomeWidgetManager().updateWidgetData(container);

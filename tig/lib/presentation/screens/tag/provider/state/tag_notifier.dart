@@ -15,7 +15,8 @@ class TagNotifier extends StateNotifier<TagState> {
   }
 
   Future<void> saveTags() async {
-    await SharedPreferenceManager().setPref(PrefsType.tags, state.tags);
+    await SharedPreferenceManager()
+        .setPref<List<String>>(PrefsType.tags, state.tags);
   }
 
   Future<void> addTag(String newTag) async {

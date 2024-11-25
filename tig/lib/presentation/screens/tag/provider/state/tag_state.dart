@@ -19,5 +19,5 @@ class TagState extends Equatable {
   }
 
   @override
-  List<String?> get props => [errorMessage];
+  List<Object?> get props => [tags, errorMessage];
 }

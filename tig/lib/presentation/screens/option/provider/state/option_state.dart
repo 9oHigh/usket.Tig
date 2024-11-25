@@ -19,5 +19,5 @@ class OptionState extends Equatable {
   }
 
   @override
-  List<String?> get props => [isOnDaily.toString(), isOnBraindump.toString()];
+  List<Object?> get props => [isOnDaily, isOnBraindump];
 }

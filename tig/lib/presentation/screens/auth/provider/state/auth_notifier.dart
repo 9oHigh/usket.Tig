@@ -8,7 +8,7 @@ import 'package:tig/presentation/screens/auth/provider/state/auth_state.dart';
 class AuthNotifier extends StateNotifier<AuthState> {
   final AuthUseCase _authUseCase = injector.get<AuthUseCase>();
 
-  AuthNotifier() : super(const AuthState.initial());
+  AuthNotifier() : super(const AuthState());
 
   Future<void> signInWithGoogle() async {
     if (!state.isAnimationCompleted) return;

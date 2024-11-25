@@ -13,13 +13,6 @@ class AuthState extends Equatable {
     this.isLoggedIn = false,
   });
 
-  const AuthState.initial({
-    this.isAnimationCompleted = false,
-    this.isLoading = false,
-    this.message = "",
-    this.isLoggedIn = false,
-  });
-
   AuthState copyWith({
     bool? isAnimationCompleted,
     bool? isLoading,
