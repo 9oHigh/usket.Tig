@@ -475,11 +475,12 @@ class _HomeScreen extends ConsumerState<HomeScreen>
             const Text("Daily Priority Top3",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             IconButton(
-              icon: Icon(isDailySectionExpanded
-                  ? Icons.expand_less
-                  : Icons.expand_more),
-              onPressed: () => isDailySectionExpanded = !isDailySectionExpanded,
-            ),
+                icon: Icon(isDailySectionExpanded
+                    ? Icons.expand_less
+                    : Icons.expand_more),
+                onPressed: () => setState(() {
+                      isDailySectionExpanded = !isDailySectionExpanded;
+                    })),
           ],
         ),
         AnimatedSize(
