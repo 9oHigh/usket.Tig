@@ -2,7 +2,7 @@
 <br>
 <!--프로젝트 대문 이미지 및 배지-->
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/7514e8b9-f0ac-49ba-b36e-3d87bb0a029f" alt="Project Title" width="300">
+  <img src="https://github.com/user-attachments/assets/7514e8b9-f0ac-49ba-b36e-3d87bb0a029f" alt="Project Title" width="600">
   <br><br>
   <img src="https://img.shields.io/badge/Google Play에서 만나기 🚀-000000?style=for-the-badge&logo=googleplay&logoColor=white">
 </div>
