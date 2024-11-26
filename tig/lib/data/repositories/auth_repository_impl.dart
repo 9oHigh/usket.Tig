@@ -17,7 +17,7 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<void> signInWithKakao() => _authDataSource.signInWithKakao();
 
   @override
-  Future<UserModel?> getUser(String uid) => _authDataSource.getUser(uid);
+  Future<UserModel?> getUser() => _authDataSource.getUser();
 
   @override
   Future<void> deleteUser() => _authDataSource.deleteUser();

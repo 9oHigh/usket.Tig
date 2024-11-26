@@ -4,6 +4,6 @@ abstract class AuthRepository {
   Future<void> signInWithGoogle();
   Future<void> signInWithApple();
   Future<void> signInWithKakao();
-  Future<UserModel?> getUser(String uid);
+  Future<UserModel?> getUser();
   Future<void> deleteUser();
 }

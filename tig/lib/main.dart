@@ -7,14 +7,15 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tig/core/helpers/helpers.dart';
+import 'package:tig/core/di/injector.dart';
+import 'package:tig/core/manager/shared_preference_manager.dart';
 import 'package:tig/core/routes/app_navigator.dart';
 import 'package:tig/generated/l10n.dart';
 import 'package:tig/ads/admob_service.dart';
 import 'package:tig/core/theme/app_theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:tig/presentation/widgets/styles/fixed_scroll_behavior.dart';
 import 'firebase_options.dart';
 import 'package:home_widget/home_widget.dart';
 
@@ -22,7 +23,11 @@ void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await SharedPreferenceManager().initialize();
   await HomeWidget.registerInteractivityCallback(backgroundCallback);
+  provideDataSources();
+  provideRepositories();
+  provideUseCases();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   KakaoSdk.init(nativeAppKey: dotenv.get("KAKAO_NATIVE_APP_KEY"));
   runApp(
@@ -54,7 +59,7 @@ class _TigAppState extends State<TigApp> {
     _loginStatus = _checkLoginStatus();
     _initGoogleMobileAds();
     _removeSplash();
-    _setHomeArrangeStatus();
+    _setOptionStatus();
     _createBannerAd();
   }
 
@@ -65,8 +70,8 @@ class _TigAppState extends State<TigApp> {
   }
 
   Future<bool> _checkLoginStatus() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    bool isLoggedIn = pref.getBool("isLoggedIn") ?? false;
+    bool isLoggedIn =
+        SharedPreferenceManager().getPref<bool>(PrefsType.isLoggedIn) ?? false;
     final user = FirebaseAuth.instance.currentUser;
     return user != null && isLoggedIn;
   }
@@ -80,13 +85,14 @@ class _TigAppState extends State<TigApp> {
     FlutterNativeSplash.remove();
   }
 
-  void _setHomeArrangeStatus() async {
-    final SharedPreferences pref = await SharedPreferences.getInstance();
-    final bool? isOnDaily = pref.getBool("isOnDaily");
-    final bool? isOnBraindump = pref.getBool("isOnBraindump");
+  void _setOptionStatus() {
+    final bool? isOnDaily =
+        SharedPreferenceManager().getPref<bool>(PrefsType.isOnDaily);
+    final bool? isOnBraindump =
+        SharedPreferenceManager().getPref<bool>(PrefsType.isOnBraindump);
     if (isOnDaily == null && isOnBraindump == null) {
-      pref.setBool("isOnDaily", true);
-      pref.setBool("isOnBraindump", true);
+      SharedPreferenceManager().setPref<bool>(PrefsType.isOnDaily, true);
+      SharedPreferenceManager().setPref<bool>(PrefsType.isOnBraindump, true);
     }
   }
 
@@ -105,45 +111,22 @@ class _TigAppState extends State<TigApp> {
     )..load();
   }
 
-  void _rebuildOnLocaleChange() => setState(() {});
-
   @override
   Widget build(BuildContext context) {
     Locale locale = WidgetsBinding.instance.platformDispatcher.locale;
-    WidgetsBinding.instance.platformDispatcher.onLocaleChanged =
-        _rebuildOnLocaleChange;
-    FontLocale fontLocale;
-    switch (locale.languageCode) {
-      case 'de':
-        fontLocale = FontLocale.de;
-        break;
-      case 'en':
-        fontLocale = FontLocale.en;
-        break;
-      case 'es':
-        fontLocale = FontLocale.es;
-        break;
-      case 'ja':
-        fontLocale = FontLocale.ja;
-        break;
-      case 'ko':
-        fontLocale = FontLocale.ko;
-        break;
-      case 'pt':
-        fontLocale = FontLocale.pt;
-        break;
-      case 'zh':
-        if (locale.countryCode == 'CN') {
-          fontLocale = FontLocale.zh_CN;
-        } else if (locale.countryCode == 'TW') {
-          fontLocale = FontLocale.zh_TW;
-        } else {
-          fontLocale = FontLocale.zh_CN;
-        }
-        break;
-      default:
-        fontLocale = FontLocale.en;
-    }
+    FontLocale fontLocale = {
+          'de': FontLocale.de,
+          'en': FontLocale.en,
+          'es': FontLocale.es,
+          'ja': FontLocale.ja,
+          'ko': FontLocale.ko,
+          'pt': FontLocale.pt,
+          'zh_CN': FontLocale.zh_CN,
+          'zh_TW': FontLocale.zh_TW,
+        }[locale.languageCode == 'zh'
+            ? 'zh_${locale.countryCode ?? 'CN'}'
+            : locale.languageCode] ??
+        FontLocale.en;
     return MaterialApp(
       localizationsDelegates: const [
         S.delegate,
@@ -154,7 +137,7 @@ class _TigAppState extends State<TigApp> {
       supportedLocales: S.delegate.supportedLocales,
       builder: (context, child) {
         return ScrollConfiguration(
-          behavior: Helpers.fixedScrollBehavior,
+          behavior: FixedScrollBehavior(),
           child: child!,
         );
       },
@@ -178,7 +161,7 @@ class _TigAppState extends State<TigApp> {
             );
           } else {
             final isLoggedIn = snapshot.data ?? false;
-            return AppScreenNavigator(
+            return AppNavigator(
               navigatorKey: _navigatorKey,
               bannerAd: _bannerAd,
               isLoggedIn: isLoggedIn,

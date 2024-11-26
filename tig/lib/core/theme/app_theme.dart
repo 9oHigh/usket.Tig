@@ -5,46 +5,31 @@ enum FontLocale { de, en, es, ja, ko, pt, zh_CN, zh_TW }
 extension on FontLocale {
   String get extraBoldFontName {
     switch (this) {
-      case FontLocale.de:
-      case FontLocale.en:
-      case FontLocale.es:
-      case FontLocale.ja:
-      case FontLocale.ko:
-      case FontLocale.pt:
-        return "PaperlogyExtraBold";
       case FontLocale.zh_CN:
       case FontLocale.zh_TW:
         return "MaoKenShiJinHei";
+      default:
+        return "PaperlogyExtraBold";
     }
   }
 
   String get semiBoldFontName {
     switch (this) {
-      case FontLocale.de:
-      case FontLocale.en:
-      case FontLocale.es:
-      case FontLocale.ja:
-      case FontLocale.ko:
-      case FontLocale.pt:
-        return "PaperlogySemiBold";
       case FontLocale.zh_CN:
       case FontLocale.zh_TW:
         return "MaoKenShiJinHei";
+      default:
+        return "PaperlogySemiBold";
     }
   }
 
   String get regularFontName {
     switch (this) {
-      case FontLocale.de:
-      case FontLocale.en:
-      case FontLocale.es:
-      case FontLocale.ja:
-      case FontLocale.ko:
-      case FontLocale.pt:
-        return "PaperlogyRegular";
       case FontLocale.zh_CN:
       case FontLocale.zh_TW:
         return "CangJiGaoDeGuoMiaoHei";
+      default:
+        return "PaperlogyRegular";
     }
   }
 }
@@ -277,8 +262,8 @@ ThemeData buildDarkTheme(FontLocale locale) {
       ),
       datePickerTheme: DatePickerThemeData(
         backgroundColor: Colors.black,
-        headerBackgroundColor: Colors.red,
-        headerForegroundColor: Colors.white,
+        headerBackgroundColor: Colors.white,
+        headerForegroundColor: Colors.black,
         yearStyle: TextStyle(
           color: Colors.white,
           fontFamily: extraBoldFontName,
@@ -296,7 +281,7 @@ ThemeData buildDarkTheme(FontLocale locale) {
         }),
         todayForegroundColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return Colors.white;
+            return Colors.black;
           }
           return Colors.white;
         }),
