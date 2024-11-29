@@ -7,17 +7,28 @@
   <a href="https://play.google.com/store/apps/details?id=com.usket.tig" target="_blank">
     <img src="https://img.shields.io/badge/Google Play에서 만나기 🚀-000000?style=for-the-badge&logo=googleplay&logoColor=white" alt="Google Play Badge">
   </a>
+  <br><br>
+  <div align=center style="display: flex; justify-content: center; align-items: center;flex-direction: column;">
+    <div>
+      <img src='https://img.shields.io/badge/Flutter-02569B?&logo=flutter&logoColor=white'>
+      <img src='https://img.shields.io/badge/dart-%230175C2.svg?&logoColor=white'>
+    </div>
+    <div align="center">
+        <img src="https://img.shields.io/badge/-개발 기간-000000?logoColor=black"/>
+        <img src="https://img.shields.io/badge/2024.09.08 ~ 2024.10.20-F5F5F5?style=flat&labelColor=FFF5F5"/>
+    </div>
 </div>
-<br>
+</div>
 
 <!--목차-->
-## 목차
+## Table of Contents
 - [TimeBox Planner (타임박스 플래너)](#timebox-planner-타임박스-플래너)
-  - [목차](#목차)
+  - [Table of Contents](#table-of-contents)
   - [About the Project](#about-the-project)
   - [Structure](#structure)
   - [Technologies](#technologies)
   - [트러블 슈팅, 성과](#트러블-슈팅-성과)
+
 
 ## About the Project
 - Notion에서 타임 박스 플래너 템플릿을 사용하다가, 앱으로 만들어보면 어떨까 생각해 프로젝트를 진행하게 되었습니다.
@@ -35,6 +46,7 @@
 - 기간
   - 2024.9.8~2024.10.20
   - 약한 달 정도의 기간을 가지고 개발했습니다.
+
 
 ## Structure
     ```
@@ -61,6 +73,7 @@
     │   ├── main.dart
     ```
 
+
 ## Technologies
 - **Google Signin**과 **Kakao Signin**를 통해 로그인을 진행합니다.
   - Google Signin의 경우, Firebase의 Authentication이 적용되므로 별도의 코드가 필요하지 않았습니다.
@@ -77,6 +90,7 @@
   - presentation: 받아온 데이터를 화면에 표시합니다. 이때, riverpod의 상태 관리를 통해 화면을 갱신하는 시점을 제어합니다.
 - **다국어 적용** (중국어 간체자와 번체자를 포함해 8개 국어 적용)
   - [devstory님의 블로그](https://blog.devstory.co.kr/post/flutter-i18n-01/)를 참고해 구축했습니다. 감사합니다.
+
 
 ## 트러블 슈팅, 성과
 - Riverpod에 대한 이해도를 높이는 데 중점을 두고 프로젝트를 진행했습니다.
