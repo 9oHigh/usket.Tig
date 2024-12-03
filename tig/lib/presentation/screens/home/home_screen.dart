@@ -77,7 +77,11 @@ class _HomeScreen extends ConsumerState<HomeScreen>
   }
 
   void _moveToNextTextField() {
-    if (_focusedNodeIndex! > _dailyPriorityControllers.length - 1) return;
+    if (_focusedNodeIndex! >= _dailyPriorityControllers.length - 1) {
+      FocusManager.instance.primaryFocus?.unfocus();
+      return;
+    }
+
     _focusedNodeIndex = _focusedNodeIndex! + 1;
     FocusScope.of(context)
         .requestFocus(_activityFocusNodes[_focusedNodeIndex!]);
