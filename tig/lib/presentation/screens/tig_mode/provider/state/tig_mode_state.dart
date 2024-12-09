@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:equatable/equatable.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:tig/data/models/tig.dart';
 import 'package:tig/data/models/time_entry.dart';
 
@@ -14,6 +15,8 @@ class TigModeState extends Equatable {
   final bool isWaiting;
   final int remainSeconds;
 
+  final AudioPlayer audioPlayer;
+
   const TigModeState({
     this.tig,
     this.timeEntry,
@@ -22,6 +25,7 @@ class TigModeState extends Equatable {
     required this.endTime,
     this.isWaiting = false,
     this.remainSeconds = 100,
+    required this.audioPlayer,
   });
 
   TigModeState copyWith({
@@ -32,6 +36,7 @@ class TigModeState extends Equatable {
     DateTime? endTime,
     bool? isWaiting,
     int? remainSeconds,
+    AudioPlayer? audioPlayer,
   }) {
     return TigModeState(
       tig: tig ?? this.tig,
@@ -41,6 +46,7 @@ class TigModeState extends Equatable {
       endTime: endTime ?? this.endTime,
       isWaiting: isWaiting ?? this.isWaiting,
       remainSeconds: remainSeconds ?? this.remainSeconds,
+      audioPlayer: audioPlayer ?? this.audioPlayer,
     );
   }
 
@@ -53,5 +59,6 @@ class TigModeState extends Equatable {
         endTime,
         isWaiting,
         remainSeconds,
+        audioPlayer,
       ];
 }
