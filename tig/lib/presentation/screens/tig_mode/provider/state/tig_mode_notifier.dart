@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:tig/core/di/injector.dart';
 import 'package:tig/core/manager/home_widget_manager.dart';
 import 'package:tig/core/manager/shared_preference_manager.dart';
@@ -15,11 +16,27 @@ class TigModeNotifier extends StateNotifier<TigModeState> {
   final TigUsecase _tigUsecase = injector.get<TigUsecase>();
 
   TigModeNotifier()
-      : super(TigModeState(startTime: DateTime.now(), endTime: DateTime.now()));
+      : super(TigModeState(
+            startTime: DateTime.now(),
+            endTime: DateTime.now(),
+            audioPlayer: AudioPlayer()));
 
   void initialize(Tig tig) {
     state = state.copyWith(tig: tig);
+    _initializeAudio();
     _initializeTimer();
+  }
+
+  Future<void> _initializeAudio() async {
+    try {
+      await state.audioPlayer.setAsset("assets/sounds/time_up.mp3");
+    } catch (_) {
+      return;
+    }
+  }
+
+  void _startAudio() {
+    state.audioPlayer.play();
   }
 
   void _initializeTimer() {
@@ -92,6 +109,9 @@ class TigModeNotifier extends StateNotifier<TigModeState> {
       const Duration(seconds: 1),
       (timer) {
         if (state.remainSeconds > 0) {
+          if (state.remainSeconds == 10) {
+            _startAudio();
+          }
           state = state.copyWith(remainSeconds: state.remainSeconds - 1);
         } else {
           moveToNextEntry();
