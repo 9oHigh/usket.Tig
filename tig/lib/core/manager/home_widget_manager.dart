@@ -3,8 +3,9 @@ import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:home_widget/home_widget.dart';
+import 'package:tig/core/di/injector.dart';
 import 'package:tig/data/models/tig.dart';
-import 'package:tig/presentation/providers/tig/tig_provider.dart';
+import 'package:tig/domain/usecases/tig_usecase.dart';
 
 class HomeWidgetManager {
   HomeWidgetManager._privateConstructor();
@@ -15,7 +16,7 @@ class HomeWidgetManager {
   factory HomeWidgetManager() => _instance;
 
   Future<void> updateWidgetData(ProviderContainer container) async {
-    final tigUsecase = container.read(tigUseCaseProvider);
+    final tigUsecase = injector.get<TigUsecase>();
     final userId = _getUserId();
     final currentDate = DateTime.now();
 
