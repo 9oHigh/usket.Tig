@@ -35,8 +35,20 @@ class TigModeNotifier extends StateNotifier<TigModeState> {
     }
   }
 
-  void _startAudio() {
-    state.audioPlayer.play();
+  void _startAudio() async {
+    try {
+      if (state.audioPlayer.playerState.processingState ==
+          ProcessingState.completed) {
+        await state.audioPlayer.seek(Duration.zero);
+      }
+      state.audioPlayer.play();
+    } catch (_) {
+      return;
+    }
+  }
+
+  void stopAudio() {
+    state.audioPlayer.dispose();
   }
 
   void _initializeTimer() {

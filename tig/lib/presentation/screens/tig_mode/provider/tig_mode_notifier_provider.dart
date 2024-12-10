@@ -7,6 +7,7 @@ final tigModeNotifierProvider =
   final TigModeNotifier tigModeNotifier = TigModeNotifier();
   ref.onDispose(() {
     tigModeNotifier.cancelTimer();
+    tigModeNotifier.stopAudio();
   });
   return tigModeNotifier;
 });
