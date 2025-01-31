@@ -58,3 +58,6 @@ key.properties
 # Ignore l10n
 lib/generated
 lib/l10n
+
+# scripts
+delete_build_cache.sh
