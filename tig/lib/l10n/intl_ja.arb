@@ -63,5 +63,7 @@
   "tig_mode_end_time": "終了時間：{endTime}",
   "tig_mode_waiting": "待機中",
   "tig_mode_remain_time": "残り時間",
-  "tig_mode_count_down": "{minute}分 : {second}秒"
+  "tig_mode_count_down": "{minute}分 : {second}秒",
+  "option_explain_twelve": "12時間形式で表示します。 (1:00 PM ... 12:00 PM)",
+  "option_explain_twentyFour": "24時間形式で表示します。 (13:00 ... 24:00)"
 }

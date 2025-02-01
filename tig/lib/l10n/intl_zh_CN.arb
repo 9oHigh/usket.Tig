@@ -63,5 +63,7 @@
   "tig_mode_end_time": "结束时间：{endTime}",
   "tig_mode_waiting": "等待中",
   "tig_mode_remain_time": "剩余时间",
-  "tig_mode_count_down": "{minute} : {second}"
+  "tig_mode_count_down": "{minute} : {second}",
+  "option_explain_twelve": "以12小时制显示。(1:00 PM ... 12:00 PM)",
+  "option_explain_twentyFour": "以24小时制显示。(13:00 ... 24:00)"
 }
