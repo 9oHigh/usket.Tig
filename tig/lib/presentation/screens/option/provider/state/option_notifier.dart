@@ -12,7 +12,13 @@ class OptionNotifier extends StateNotifier<OptionState> {
         SharedPreferenceManager().getPref<bool>(PrefsType.isOnDaily) ?? false;
     bool isOnBraindump =
         SharedPreferenceManager().getPref(PrefsType.isOnBraindump) ?? false;
-    state = state.copyWith(isOnDaily: isOnDaily, isOnBraindump: isOnBraindump);
+    TimeSystem timeSystem =
+        SharedPreferenceManager().getPref(PrefsType.isTwelvetimeSystem) ??
+            TimeSystem.twentyFour;
+    state = state.copyWith(
+        isOnDaily: isOnDaily,
+        isOnBraindump: isOnBraindump,
+        timeSystem: timeSystem);
   }
 
   Future<void> changeDailyOption(bool option) async {
@@ -21,7 +27,14 @@ class OptionNotifier extends StateNotifier<OptionState> {
   }
 
   Future<void> changeBraindumpOption(bool option) async {
-    await SharedPreferenceManager().setPref<bool>(PrefsType.isOnBraindump, option);
+    await SharedPreferenceManager()
+        .setPref<bool>(PrefsType.isOnBraindump, option);
     state = state.copyWith(isOnBraindump: option);
+  }
+
+  void updateTimeSystem(TimeSystem timeSystem) async {
+    await SharedPreferenceManager()
+        .setPref<TimeSystem>(PrefsType.isTwelvetimeSystem, timeSystem);
+    state = state.copyWith(timeSystem: timeSystem);
   }
 }

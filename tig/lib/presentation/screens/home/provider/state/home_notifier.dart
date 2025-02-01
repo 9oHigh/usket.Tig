@@ -5,6 +5,7 @@ import 'package:tig/core/manager/shared_preference_manager.dart';
 import 'package:tig/data/models/tig.dart';
 import 'package:tig/domain/usecases/tig_usecase.dart';
 import 'package:tig/presentation/screens/home/provider/state/home_state.dart';
+import 'package:tig/presentation/screens/option/provider/state/option_state.dart';
 
 class HomeNotifier extends StateNotifier<HomeState> {
   final TigUsecase _tigUsecase = injector.get<TigUsecase>();
@@ -28,7 +29,10 @@ class HomeNotifier extends StateNotifier<HomeState> {
         SharedPreferenceManager().getPref<bool>(PrefsType.isOnDaily) ?? true;
     final bool isOnBraindump =
         SharedPreferenceManager().getPref(PrefsType.isOnBraindump) ?? true;
-    state = state.copyWith(isOnDaily: isOnDaily, isOnBraindump: isOnBraindump);
+    TimeSystem timeSystem =
+        SharedPreferenceManager().getPref(PrefsType.isTwelvetimeSystem) ??
+            TimeSystem.twentyFour;
+    state = state.copyWith(isOnDaily: isOnDaily, isOnBraindump: isOnBraindump, isTwelvetimeSystem: timeSystem == TimeSystem.twelve);
   }
 
   Future<void> loadTags() async {

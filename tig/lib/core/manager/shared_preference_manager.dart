@@ -1,10 +1,12 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tig/presentation/screens/option/provider/state/option_state.dart';
 
 enum PrefsType {
   isLoggedIn,
   userId,
   isOnDaily,
   isOnBraindump,
+  isTwelvetimeSystem,
   tags,
 }
 
@@ -36,6 +38,9 @@ class SharedPreferenceManager {
         return _prefs.getStringList(type.prefsName) as T?;
       case PrefsType.userId:
         return _prefs.getString(type.prefsName) as T?;
+      case PrefsType.isTwelvetimeSystem:
+        int? index = _prefs.getInt(type.prefsName);
+        return index != null ? TimeSystem.values[index] as T? : null;
       default:
         return _prefs.getBool(type.prefsName) as T?;
     }
@@ -47,6 +52,8 @@ class SharedPreferenceManager {
         return await _prefs.setString(type.prefsName, pref as String);
       case PrefsType.tags:
         return await _prefs.setStringList(type.prefsName, pref as List<String>);
+      case PrefsType.isTwelvetimeSystem:
+        return await _prefs.setInt(type.prefsName, (pref as TimeSystem).index);
       default:
         return await _prefs.setBool(type.prefsName, pref as bool);
     }
