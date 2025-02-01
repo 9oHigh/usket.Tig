@@ -18,17 +18,20 @@ class S {
   static S? _current;
 
   static S get current {
-    assert(_current != null,
-        'No instance of S was loaded. Try to initialize the S delegate before accessing S.current.');
+    assert(
+      _current != null,
+      'No instance of S was loaded. Try to initialize the S delegate before accessing S.current.',
+    );
     return _current!;
   }
 
   static const AppLocalizationDelegate delegate = AppLocalizationDelegate();
 
   static Future<S> load(Locale locale) {
-    final name = (locale.countryCode?.isEmpty ?? false)
-        ? locale.languageCode
-        : locale.toString();
+    final name =
+        (locale.countryCode?.isEmpty ?? false)
+            ? locale.languageCode
+            : locale.toString();
     final localeName = Intl.canonicalizedLocale(name);
     return initializeMessages(localeName).then((_) {
       Intl.defaultLocale = localeName;
@@ -41,8 +44,10 @@ class S {
 
   static S of(BuildContext context) {
     final instance = S.maybeOf(context);
-    assert(instance != null,
-        'No instance of S present in the widget tree. Did you add S.delegate in localizationsDelegates?');
+    assert(
+      instance != null,
+      'No instance of S present in the widget tree. Did you add S.delegate in localizationsDelegates?',
+    );
     return instance!;
   }
 
@@ -52,102 +57,52 @@ class S {
 
   /// `OK`
   String get ok {
-    return Intl.message(
-      'OK',
-      name: 'ok',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('OK', name: 'ok', desc: '', args: []);
   }
 
   /// `Cancel`
   String get cancel {
-    return Intl.message(
-      'Cancel',
-      name: 'cancel',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Cancel', name: 'cancel', desc: '', args: []);
   }
 
   /// `End time`
   String get end_time {
-    return Intl.message(
-      'End time',
-      name: 'end_time',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('End time', name: 'end_time', desc: '', args: []);
   }
 
   /// `Success`
   String get success {
-    return Intl.message(
-      'Success',
-      name: 'success',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Success', name: 'success', desc: '', args: []);
   }
 
   /// `Tig Mode`
   String get tig_mode {
-    return Intl.message(
-      'Tig Mode',
-      name: 'tig_mode',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Tig Mode', name: 'tig_mode', desc: '', args: []);
   }
 
   /// `Settings`
   String get setting {
-    return Intl.message(
-      'Settings',
-      name: 'setting',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Settings', name: 'setting', desc: '', args: []);
   }
 
   /// `Delete`
   String get delete {
-    return Intl.message(
-      'Delete',
-      name: 'delete',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Delete', name: 'delete', desc: '', args: []);
   }
 
   /// `Exit`
   String get exit {
-    return Intl.message(
-      'Exit',
-      name: 'exit',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Exit', name: 'exit', desc: '', args: []);
   }
 
   /// `End`
   String get end {
-    return Intl.message(
-      'End',
-      name: 'end',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('End', name: 'end', desc: '', args: []);
   }
 
   /// `Next`
   String get next {
-    return Intl.message(
-      'Next',
-      name: 'next',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Next', name: 'next', desc: '', args: []);
   }
 
   /// `Please restart the app.\nERROR: {error}`
@@ -242,12 +197,7 @@ class S {
 
   /// `planner.`
   String get auth_palnner {
-    return Intl.message(
-      'planner.',
-      name: 'auth_palnner',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('planner.', name: 'auth_palnner', desc: '', args: []);
   }
 
   /// `To achieve your goals,`
@@ -302,12 +252,7 @@ class S {
 
   /// `Save`
   String get home_save_desc {
-    return Intl.message(
-      'Save',
-      name: 'home_save_desc',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Save', name: 'home_save_desc', desc: '', args: []);
   }
 
   /// `Preparing data for Tig Mode.\nYou will see an ad while it is being prepared.\nPlease wait 🙏`
@@ -522,12 +467,7 @@ class S {
 
   /// `Logout`
   String get menu_logout_text {
-    return Intl.message(
-      'Logout',
-      name: 'menu_logout_text',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Logout', name: 'menu_logout_text', desc: '', args: []);
   }
 
   /// `Logout Guide`
@@ -552,22 +492,12 @@ class S {
 
   /// `Tags`
   String get tag_title {
-    return Intl.message(
-      'Tags',
-      name: 'tag_title',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Tags', name: 'tag_title', desc: '', args: []);
   }
 
   /// `Add tag`
   String get tag_add {
-    return Intl.message(
-      'Add tag',
-      name: 'tag_add',
-      desc: '',
-      args: [],
-    );
+    return Intl.message('Add tag', name: 'tag_add', desc: '', args: []);
   }
 
   /// `Enter a tag`
@@ -687,6 +617,26 @@ class S {
       name: 'tig_mode_count_down',
       desc: '',
       args: [minute, second],
+    );
+  }
+
+  /// `Displayed in 12-hour format.\n(1:00 PM ... 12:00 PM)`
+  String get option_explain_twelve {
+    return Intl.message(
+      'Displayed in 12-hour format.\n(1:00 PM ... 12:00 PM)',
+      name: 'option_explain_twelve',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Displayed in 24-hour format.\n(13:00 ... 24:00)`
+  String get option_explain_twentyFour {
+    return Intl.message(
+      'Displayed in 24-hour format.\n(13:00 ... 24:00)',
+      name: 'option_explain_twentyFour',
+      desc: '',
+      args: [],
     );
   }
 }

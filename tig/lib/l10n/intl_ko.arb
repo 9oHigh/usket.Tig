@@ -63,5 +63,7 @@
     "tig_mode_end_time": "종료 시간: {endTime}",
     "tig_mode_waiting": "대기 중",
     "tig_mode_remain_time": "남은 시간",
-    "tig_mode_count_down": "{minute}분 : {second}초"
+    "tig_mode_count_down": "{minute}분 : {second}초",
+    "option_explain_twelve": "12시간 기준으로 표시합니다. (1:00 PM ... 12:00 PM)",
+    "option_explain_twentyFour": "24시간 기준으로 표시합니다. (13:00 ... 24:00)"
 }
