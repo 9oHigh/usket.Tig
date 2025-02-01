@@ -620,20 +620,20 @@ class S {
     );
   }
 
-  /// `Displayed in 12-hour format. (1:00 PM ... 12:00 PM)`
+  /// `Displayed in 12-hour format.\n(1:00 PM ... 12:00 PM)`
   String get option_explain_twelve {
     return Intl.message(
-      'Displayed in 12-hour format. (1:00 PM ... 12:00 PM)',
+      'Displayed in 12-hour format.\n(1:00 PM ... 12:00 PM)',
       name: 'option_explain_twelve',
       desc: '',
       args: [],
     );
   }
 
-  /// `Displayed in 24-hour format. (13:00 ... 24:00)`
+  /// `Displayed in 24-hour format.\n(13:00 ... 24:00)`
   String get option_explain_twentyFour {
     return Intl.message(
-      'Displayed in 24-hour format. (13:00 ... 24:00)',
+      'Displayed in 24-hour format.\n(13:00 ... 24:00)',
       name: 'option_explain_twentyFour',
       desc: '',
       args: [],

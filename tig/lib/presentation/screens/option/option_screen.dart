@@ -115,28 +115,30 @@ class _OptionScreen extends ConsumerState<OptionScreen> {
               ],
             ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      optionState.timeSystem == TimeSystem.twentyFour
-                          ? Text(
-                              Intl.message("option_explain_twentyFour"),
-                              style: const TextStyle(
-                                  fontSize: 11,
-                                  color: Color.fromARGB(255, 118, 118, 118)),
-                            )
-                          : Text(
-                              Intl.message("option_explain_twelve"),
-                              style: const TextStyle(
-                                  fontSize: 11,
-                                  color: Color.fromARGB(255, 118, 118, 118)),
-                            ),
-                    ],
-                  ),
-                ),
+                optionState.timeSystem == TimeSystem.twentyFour
+                    ? Expanded(
+                        child: Text(
+                          textAlign: TextAlign.end,
+                          Intl.message("option_explain_twentyFour"),
+                          maxLines: 3,
+                          overflow: TextOverflow.visible,
+                          style: const TextStyle(
+                              fontSize: 11,
+                              color: Color.fromARGB(255, 118, 118, 118)),
+                        ),
+                      )
+                    : Expanded(
+                        child: Text(
+                          textAlign: TextAlign.end,
+                          Intl.message("option_explain_twelve"),
+                          maxLines: 3,
+                          overflow: TextOverflow.visible,
+                          style: const TextStyle(
+                              fontSize: 11,
+                              color: Color.fromARGB(255, 118, 118, 118)),
+                        ),
+                      ),
               ],
             ),
           ],
