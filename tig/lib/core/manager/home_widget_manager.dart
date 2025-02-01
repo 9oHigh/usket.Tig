@@ -22,7 +22,6 @@ class HomeWidgetManager {
 
     final monthlyTigs = await tigUsecase.getTigsForMonth(
         userId, currentDate.year, currentDate.month);
-
     await _saveMonthlyData(monthlyTigs, currentDate);
     await _saveTodayData(monthlyTigs, currentDate);
     await _updateWidgets();

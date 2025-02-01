@@ -537,6 +537,17 @@ class _HomeScreen extends ConsumerState<HomeScreen>
     );
   }
 
+  String getFormattedTime(int hour, int minute, bool isTwelveHour) {
+    if (!isTwelveHour) {
+      return "${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}";
+    }
+
+    final period = hour >= 12 ? "PM" : "AM";
+    final formattedHour = (hour % 12 == 0) ? 12 : hour % 12;
+
+    return "${formattedHour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')} $period";
+  }
+
   Widget _buildTimeTable() {
     final homeState = ref.watch(homeNotifierProvider);
     final homeNotifier = ref.read(homeNotifierProvider.notifier);
@@ -553,14 +564,15 @@ class _HomeScreen extends ConsumerState<HomeScreen>
             ? tig.timeTable[index].isSucceed
             : false;
         final String activity = tig.timeTable[index].activity;
+        final timeText =
+            getFormattedTime(hour, minute, homeState.isTwelvetimeSystem);
 
         _dailyPriorityControllers[index].text = activity;
 
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-                "${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}"),
+            Text(timeText),
             const SizedBox(width: 12),
             Expanded(
               child: TextField(

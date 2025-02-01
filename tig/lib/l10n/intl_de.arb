@@ -63,5 +63,7 @@
   "tig_mode_end_time": "Endzeit: {endTime}",
   "tig_mode_waiting": "Warten",
   "tig_mode_remain_time": "Verbleibende Zeit",
-  "tig_mode_count_down": "{minute} : {second}"
+  "tig_mode_count_down": "{minute} : {second}",
+  "option_explain_twelve": "Im 12-Stunden-Format anzeigen. (1:00 PM ... 12:00 PM)",
+  "option_explain_twentyFour": "Im 24-Stunden-Format anzeigen. (13:00 ... 24:00)"
 }
