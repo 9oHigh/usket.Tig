@@ -23,7 +23,7 @@ class HomeState extends Equatable {
     this.tags = const [],
     this.tig,
   });
-
+  
   HomeState copyWith({
     bool? isDayExpanded,
     bool? isAtBottom,

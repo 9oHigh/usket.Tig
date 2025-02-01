@@ -144,10 +144,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "next": MessageLookupByLibrary.simpleMessage("Siguiente"),
     "ok": MessageLookupByLibrary.simpleMessage("Aceptar"),
     "option_explain_twelve": MessageLookupByLibrary.simpleMessage(
-      "Se muestra en formato de 12 horas. (1:00 PM ... 12:00 PM)",
+      "Se muestra en formato de 12 horas.\n(1:00 PM ... 12:00 PM)",
     ),
     "option_explain_twentyFour": MessageLookupByLibrary.simpleMessage(
-      "Se muestra en formato de 24 horas. (13:00 ... 24:00)",
+      "Se muestra en formato de 24 horas.\n(13:00 ... 24:00)",
     ),
     "setting": MessageLookupByLibrary.simpleMessage("Configuración"),
     "success": MessageLookupByLibrary.simpleMessage("Éxito"),
