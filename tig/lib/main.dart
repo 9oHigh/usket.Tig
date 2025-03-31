@@ -121,6 +121,7 @@ class _TigAppState extends State<TigApp> {
           'ja': FontLocale.ja,
           'ko': FontLocale.ko,
           'pt': FontLocale.pt,
+          'fr': FontLocale.fr,
           'zh_CN': FontLocale.zh_CN,
           'zh_TW': FontLocale.zh_TW,
         }[locale.languageCode == 'zh'
@@ -135,12 +136,10 @@ class _TigAppState extends State<TigApp> {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: S.delegate.supportedLocales,
-      builder: (context, child) {
-        return ScrollConfiguration(
-          behavior: FixedScrollBehavior(),
-          child: child!,
-        );
-      },
+      builder: (context, child) => ScrollConfiguration(
+        behavior: FixedScrollBehavior(),
+        child: child!,
+      ),
       debugShowCheckedModeBanner: false,
       theme: buildLightTheme(fontLocale),
       darkTheme: buildDarkTheme(fontLocale),

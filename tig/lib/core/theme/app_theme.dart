@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum FontLocale { de, en, es, ja, ko, pt, zh_CN, zh_TW }
+enum FontLocale { de, en, es, ja, ko, pt, fr, zh_CN, zh_TW }
 
 extension on FontLocale {
   String get extraBoldFontName {
