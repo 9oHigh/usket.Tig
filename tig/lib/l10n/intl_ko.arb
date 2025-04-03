@@ -29,6 +29,7 @@
     "home_tig_mode_prepare": "티그 모드를 위해 데이터를 준비 중입니다.\n준비되는 동안 광고가 표시됩니다.\n잠시만 기다려 주세요 🙏",
     "home_braindump_placeholder": "지금 떠오르는 모든 생각들을 적어보세요!",
     "home_activity_placeholder": "할 일을 적어 주세요.",
+    "home_swipe_date": "변경된 날짜는 {date} 입니다.",
     "menu_email_subject": "문의드립니다.",
     "menu_email_body": "아래 내용을 함께 보내주시면 큰 도움이 됩니다.\n사용 중인 기기:\n오류 또는 개선 사항:\n\n추가 문의 사항이 있으시면 편하게 작성해 주세요 :)",
     "menu_delete_user_failure": "오류가 발생했습니다.\n잠시 후 다시 시도해 주세요.",

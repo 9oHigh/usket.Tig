@@ -24,19 +24,21 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m1(error) => "カカオログイン失敗\nERROR：${error}";
 
-  static String m2(error) => "アプリを再起動してください。\nERROR：${error}";
+  static String m2(date) => "変更された日付は ${date} です。";
 
-  static String m3(month) => "${month}月のTigs";
+  static String m3(error) => "アプリを再起動してください。\nERROR：${error}";
 
-  static String m4(price) => "${price} / 月";
+  static String m4(month) => "${month}月のTigs";
 
-  static String m5(item) => "${item}が削除されました。";
+  static String m5(price) => "${price} / 月";
 
-  static String m6(minute, second) => "${minute}分 : ${second}秒";
+  static String m6(item) => "${item}が削除されました。";
 
-  static String m7(endTime) => "終了時間：${endTime}";
+  static String m7(minute, second) => "${minute}分 : ${second}秒";
 
-  static String m8(startTime) => "開始時間：${startTime}";
+  static String m8(endTime) => "終了時間：${endTime}";
+
+  static String m9(startTime) => "開始時間：${startTime}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -76,10 +78,11 @@ class MessageLookup extends MessageLookupByLibrary {
       "保存が完了しました。",
     ),
     "home_save_desc": MessageLookupByLibrary.simpleMessage("保存する"),
+    "home_swipe_date": m2,
     "home_tig_mode_prepare": MessageLookupByLibrary.simpleMessage(
       "ティグモードのためにデータを準備しています。\n準備中に広告が表示されます。\nしばらくお待ちください。🙏",
     ),
-    "main_restart": m2,
+    "main_restart": m3,
     "menu_contact_us": MessageLookupByLibrary.simpleMessage("お問い合わせ"),
     "menu_delete_user_failure": MessageLookupByLibrary.simpleMessage(
       "エラーが発生しました。\nしばらくしてからもう一度お試しください。",
@@ -91,8 +94,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "menu_logout_content": MessageLookupByLibrary.simpleMessage("ログアウトしますか？"),
     "menu_logout_text": MessageLookupByLibrary.simpleMessage("ログアウト"),
     "menu_logout_title": MessageLookupByLibrary.simpleMessage("ログアウトガイド"),
-    "menu_month_tigs": m3,
-    "menu_price_per_month": m4,
+    "menu_month_tigs": m4,
+    "menu_price_per_month": m5,
     "menu_subscribe": MessageLookupByLibrary.simpleMessage("購読する"),
     "menu_subscribe_cancel": MessageLookupByLibrary.simpleMessage("購読をキャンセルする"),
     "menu_subscribe_get1": MessageLookupByLibrary.simpleMessage(
@@ -131,7 +134,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "success": MessageLookupByLibrary.simpleMessage("成功"),
     "tag_add": MessageLookupByLibrary.simpleMessage("タグを追加"),
     "tag_add_input": MessageLookupByLibrary.simpleMessage("追加するタグを入力してください。"),
-    "tag_delete_completed": m5,
+    "tag_delete_completed": m6,
     "tag_delete_content": MessageLookupByLibrary.simpleMessage(
       "このタグを削除してもよろしいですか？",
     ),
@@ -140,13 +143,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "tag_empty": MessageLookupByLibrary.simpleMessage("追加するタグを入力してください。"),
     "tag_title": MessageLookupByLibrary.simpleMessage("タグ"),
     "tig_mode": MessageLookupByLibrary.simpleMessage("ティグモード"),
-    "tig_mode_count_down": m6,
+    "tig_mode_count_down": m7,
     "tig_mode_empty_tig": MessageLookupByLibrary.simpleMessage(
       "現時点ではティグは存在しません。\nTigを登録して再起動してください😊",
     ),
-    "tig_mode_end_time": m7,
+    "tig_mode_end_time": m8,
     "tig_mode_remain_time": MessageLookupByLibrary.simpleMessage("残り時間"),
-    "tig_mode_start_time": m8,
+    "tig_mode_start_time": m9,
     "tig_mode_waiting": MessageLookupByLibrary.simpleMessage("待機中"),
   };
 }

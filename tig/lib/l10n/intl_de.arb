@@ -29,6 +29,7 @@
   "home_tig_mode_prepare": "Daten für den Tig-Modus werden vorbereitet.\nWährend der Vorbereitung wird eine Anzeige gezeigt.\nBitte warten Sie 🙏",
   "home_braindump_placeholder": "Schreiben Sie alle Gedanken auf, die Ihnen gerade durch den Kopf gehen!",
   "home_activity_placeholder": "Geben Sie eine Aktivität ein",
+  "home_swipe_date": "Das geänderte Datum ist {date}.",
   "menu_email_subject": "Ich habe eine Frage",
   "menu_email_body": "Es wäre hilfreich, wenn Sie uns Folgendes mitteilen könnten:\nVerwendetes Gerät:\nProblem oder Verbesserungsvorschlag:\n\nFügen Sie gerne weitere Fragen hinzu :)",
   "menu_delete_user_failure": "Ein Fehler ist aufgetreten.\nBitte versuchen Sie es später erneut.",

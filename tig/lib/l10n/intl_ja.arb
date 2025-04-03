@@ -29,6 +29,7 @@
   "home_tig_mode_prepare": "ティグモードのためにデータを準備しています。\n準備中に広告が表示されます。\nしばらくお待ちください。🙏",
   "home_braindump_placeholder": "今思い浮かぶすべての考えを書いてください！",
   "home_activity_placeholder": "やるべきことを書いてください。",
+  "home_swipe_date": "変更された日付は {date} です。",
   "menu_email_subject": "お問い合わせ",
   "menu_email_body": "以下の情報をお送りいただけると助かります。\n使用中のデバイス：\nエラーまたは改善点：\n\n他にご質問があれば、お気軽にご記入ください。:)",
   "menu_delete_user_failure": "エラーが発生しました。\nしばらくしてからもう一度お試しください。",
