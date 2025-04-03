@@ -285,6 +285,16 @@ class S {
     );
   }
 
+  /// `The changed date is {date}.`
+  String home_swipe_date(Object date) {
+    return Intl.message(
+      'The changed date is $date.',
+      name: 'home_swipe_date',
+      desc: '',
+      args: [date],
+    );
+  }
+
   /// `I have a question`
   String get menu_email_subject {
     return Intl.message(

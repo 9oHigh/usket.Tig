@@ -24,19 +24,21 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m1(error) => "Kakao 登入失敗\n錯誤：${error}";
 
-  static String m2(error) => "請重新啟動應用程式。\n錯誤：${error}";
+  static String m2(date) => "更改的日期是 ${date}。";
 
-  static String m3(month) => "${month}月提格";
+  static String m3(error) => "請重新啟動應用程式。\n錯誤：${error}";
 
-  static String m4(price) => "${price} / 月";
+  static String m4(month) => "${month}月提格";
 
-  static String m5(item) => "${item} 已刪除。";
+  static String m5(price) => "${price} / 月";
 
-  static String m6(minute, second) => "${minute} : ${second}";
+  static String m6(item) => "${item} 已刪除。";
 
-  static String m7(endTime) => "結束時間：${endTime}";
+  static String m7(minute, second) => "${minute} : ${second}";
 
-  static String m8(startTime) => "開始時間：${startTime}";
+  static String m8(endTime) => "結束時間：${endTime}";
+
+  static String m9(startTime) => "開始時間：${startTime}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -74,10 +76,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "home_save_completed": MessageLookupByLibrary.simpleMessage("儲存完成"),
     "home_save_completed_desc": MessageLookupByLibrary.simpleMessage("儲存已完成。"),
     "home_save_desc": MessageLookupByLibrary.simpleMessage("儲存"),
+    "home_swipe_date": m2,
     "home_tig_mode_prepare": MessageLookupByLibrary.simpleMessage(
       "正在為提格模式準備資料。\n準備過程中會顯示廣告。\n請稍等 🙏",
     ),
-    "main_restart": m2,
+    "main_restart": m3,
     "menu_contact_us": MessageLookupByLibrary.simpleMessage("聯絡我們"),
     "menu_delete_user_failure": MessageLookupByLibrary.simpleMessage(
       "發生錯誤。\n請稍後重試。",
@@ -89,8 +92,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "menu_logout_content": MessageLookupByLibrary.simpleMessage("您確定要退出嗎？"),
     "menu_logout_text": MessageLookupByLibrary.simpleMessage("註銷"),
     "menu_logout_title": MessageLookupByLibrary.simpleMessage("註銷說明"),
-    "menu_month_tigs": m3,
-    "menu_price_per_month": m4,
+    "menu_month_tigs": m4,
+    "menu_price_per_month": m5,
     "menu_subscribe": MessageLookupByLibrary.simpleMessage("訂閱"),
     "menu_subscribe_cancel": MessageLookupByLibrary.simpleMessage("取消訂閱"),
     "menu_subscribe_get1": MessageLookupByLibrary.simpleMessage(
@@ -129,20 +132,20 @@ class MessageLookup extends MessageLookupByLibrary {
     "success": MessageLookupByLibrary.simpleMessage("成功"),
     "tag_add": MessageLookupByLibrary.simpleMessage("添加標籤"),
     "tag_add_input": MessageLookupByLibrary.simpleMessage("請輸入要新增的標籤。"),
-    "tag_delete_completed": m5,
+    "tag_delete_completed": m6,
     "tag_delete_content": MessageLookupByLibrary.simpleMessage("您確定要刪除此標籤嗎？"),
     "tag_delete_title": MessageLookupByLibrary.simpleMessage("刪除說明"),
     "tag_duplicated": MessageLookupByLibrary.simpleMessage("不能添加相同的標籤。"),
     "tag_empty": MessageLookupByLibrary.simpleMessage("請輸入要新增的標籤。"),
     "tag_title": MessageLookupByLibrary.simpleMessage("標籤"),
     "tig_mode": MessageLookupByLibrary.simpleMessage("提格模式"),
-    "tig_mode_count_down": m6,
+    "tig_mode_count_down": m7,
     "tig_mode_empty_tig": MessageLookupByLibrary.simpleMessage(
       "目前沒有提格。\n請註冊提格並重新啟動😊",
     ),
-    "tig_mode_end_time": m7,
+    "tig_mode_end_time": m8,
     "tig_mode_remain_time": MessageLookupByLibrary.simpleMessage("剩餘時間"),
-    "tig_mode_start_time": m8,
+    "tig_mode_start_time": m9,
     "tig_mode_waiting": MessageLookupByLibrary.simpleMessage("等待中"),
   };
 }
