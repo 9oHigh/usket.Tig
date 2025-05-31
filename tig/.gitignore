@@ -61,3 +61,7 @@ lib/l10n
 
 # scripts
 delete_build_cache.sh
+
+# Freezed and generated files
+*.freezed.dart
+*.g.dart
