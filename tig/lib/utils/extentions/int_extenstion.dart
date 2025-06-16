@@ -1,4 +1,4 @@
-extension IntExtensions on int {
+extension IntX on int {
   int? takeIf(bool Function(int value) condition) =>
       condition(this) ? this : null;
 }

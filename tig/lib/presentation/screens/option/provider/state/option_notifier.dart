@@ -4,16 +4,16 @@ import 'package:tig/presentation/screens/option/provider/state/option_state.dart
 
 class OptionNotifier extends StateNotifier<OptionState> {
   OptionNotifier() : super(const OptionState()) {
-    _initailizeOptions();
+    _initializeOptions();
   }
 
-  void _initailizeOptions() {
+  void _initializeOptions() {
     bool isOnDaily =
         SharedPreferenceManager().getPref<bool>(PrefsType.isOnDaily) ?? false;
     bool isOnBraindump =
         SharedPreferenceManager().getPref(PrefsType.isOnBraindump) ?? false;
     TimeSystem timeSystem =
-        SharedPreferenceManager().getPref(PrefsType.isTwelvetimeSystem) ??
+        SharedPreferenceManager().getPref(PrefsType.isTwelveTimeSystem) ??
             TimeSystem.twentyFour;
     state = state.copyWith(
         isOnDaily: isOnDaily,
@@ -34,7 +34,7 @@ class OptionNotifier extends StateNotifier<OptionState> {
 
   void updateTimeSystem(TimeSystem timeSystem) async {
     await SharedPreferenceManager()
-        .setPref<TimeSystem>(PrefsType.isTwelvetimeSystem, timeSystem);
+        .setPref<TimeSystem>(PrefsType.isTwelveTimeSystem, timeSystem);
     state = state.copyWith(timeSystem: timeSystem);
   }
 }
