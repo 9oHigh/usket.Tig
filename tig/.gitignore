@@ -33,7 +33,7 @@ migrate_working_dir/
 .pub/
 /build/
 
-# Symbolication related
+# Symbolization related
 app.*.symbols
 
 # Obfuscation related
@@ -44,7 +44,7 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# Enviroment variables
+# Environment variables
 *.env
 
 # Ignore the 'android and ios' folder
@@ -62,7 +62,7 @@ lib/generated
 lib/l10n
 
 # scripts
-delete_build_cache.sh
+scripts/*
 
 # Freezed and generated files
 *.freezed.dart
