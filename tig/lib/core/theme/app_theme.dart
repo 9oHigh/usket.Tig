@@ -33,7 +33,7 @@ extension on FontLocale {
     }
   }
 }
-
+ 
 ThemeData buildLightTheme(FontLocale locale) {
   final String extraBoldFontName = locale.extraBoldFontName;
   final String semiBoldFontName = locale.semiBoldFontName;

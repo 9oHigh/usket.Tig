@@ -99,10 +99,9 @@ class _TigAppState extends State<TigApp> {
   void _createBannerAd() {
     FlutterView view = WidgetsBinding.instance.platformDispatcher.views.first;
     Size size = view.physicalSize / view.devicePixelRatio;
-    AdSize adSize = AdSize(
-      width: size.width.truncate(),
-      height: AdSize.fullBanner.height,
-    );
+    AdSize adSize =
+        AdSize(width: size.width.truncate(), height: AdSize.fullBanner.height);
+
     _bannerAd = BannerAd(
       size: adSize,
       adUnitId: AdMobService.bannerAdUnitId ?? '',

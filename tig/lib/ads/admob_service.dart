@@ -4,7 +4,6 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AdMobService {
-
   static InterstitialAd? _interstitialAd;
   static bool _adLoaded = false;
 
@@ -60,8 +59,8 @@ class AdMobService {
     );
   }
 
-  static void _showInterstitialAd(VoidCallback onAdClosed, VoidCallback loaded) {
-    
+  static void _showInterstitialAd(
+      VoidCallback onAdClosed, VoidCallback loaded) {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 
     _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(

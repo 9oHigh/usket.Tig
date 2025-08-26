@@ -30,9 +30,12 @@ class HomeNotifier extends StateNotifier<HomeState> {
     final bool isOnBraindump =
         SharedPreferenceManager().getPref(PrefsType.isOnBraindump) ?? true;
     TimeSystem timeSystem =
-        SharedPreferenceManager().getPref(PrefsType.isTwelvetimeSystem) ??
+        SharedPreferenceManager().getPref(PrefsType.isTwelveTimeSystem) ??
             TimeSystem.twentyFour;
-    state = state.copyWith(isOnDaily: isOnDaily, isOnBraindump: isOnBraindump, isTwelvetimeSystem: timeSystem == TimeSystem.twelve);
+    state = state.copyWith(
+        isOnDaily: isOnDaily,
+        isOnBraindump: isOnBraindump,
+        isTwelveTimeSystem: timeSystem == TimeSystem.twelve);
   }
 
   Future<void> loadTags() async {
@@ -77,8 +80,8 @@ class HomeNotifier extends StateNotifier<HomeState> {
     state = state.copyWith();
   }
 
-  void updateActivityIsSucceed(int index, bool isSucced) {
-    state.tig?.timeTable[index].isSucceed = isSucced;
+  void updateActivityIsSucceed(int index, bool isSucceed) {
+    state.tig?.timeTable[index].isSucceed = isSucceed;
     state = state.copyWith();
   }
 }
