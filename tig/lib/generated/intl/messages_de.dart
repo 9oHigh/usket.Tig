@@ -25,19 +25,21 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m1(error) => "Kakao-Anmeldung fehlgeschlagen\nFEHLER: ${error}";
 
-  static String m2(error) => "Bitte starten Sie die App neu.\nFEHLER: ${error}";
+  static String m2(date) => "Das geänderte Datum ist ${date}.";
 
-  static String m3(month) => "${month} Tigs";
+  static String m3(error) => "Bitte starten Sie die App neu.\nFEHLER: ${error}";
 
-  static String m4(price) => "${price} / Monat";
+  static String m4(month) => "${month} Tigs";
 
-  static String m5(item) => "${item} wurde gelöscht.";
+  static String m5(price) => "${price} / Monat";
 
-  static String m6(minute, second) => "${minute} : ${second}";
+  static String m6(item) => "${item} wurde gelöscht.";
 
-  static String m7(endTime) => "Endzeit: ${endTime}";
+  static String m7(minute, second) => "${minute} : ${second}";
 
-  static String m8(startTime) => "Startzeit: ${startTime}";
+  static String m8(endTime) => "Endzeit: ${endTime}";
+
+  static String m9(startTime) => "Startzeit: ${startTime}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -83,10 +85,11 @@ class MessageLookup extends MessageLookupByLibrary {
       "Ihre Daten wurden erfolgreich gespeichert.",
     ),
     "home_save_desc": MessageLookupByLibrary.simpleMessage("Speichern"),
+    "home_swipe_date": m2,
     "home_tig_mode_prepare": MessageLookupByLibrary.simpleMessage(
       "Daten für den Tig-Modus werden vorbereitet.\nWährend der Vorbereitung wird eine Anzeige gezeigt.\nBitte warten Sie 🙏",
     ),
-    "main_restart": m2,
+    "main_restart": m3,
     "menu_contact_us": MessageLookupByLibrary.simpleMessage(
       "Kontaktieren Sie uns",
     ),
@@ -106,8 +109,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "menu_logout_title": MessageLookupByLibrary.simpleMessage(
       "Abmeldeanleitung",
     ),
-    "menu_month_tigs": m3,
-    "menu_price_per_month": m4,
+    "menu_month_tigs": m4,
+    "menu_price_per_month": m5,
     "menu_subscribe": MessageLookupByLibrary.simpleMessage("Abonnieren"),
     "menu_subscribe_cancel": MessageLookupByLibrary.simpleMessage(
       "Abo kündigen",
@@ -156,7 +159,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "tag_add_input": MessageLookupByLibrary.simpleMessage(
       "Geben Sie ein Tag ein",
     ),
-    "tag_delete_completed": m5,
+    "tag_delete_completed": m6,
     "tag_delete_content": MessageLookupByLibrary.simpleMessage(
       "Sind Sie sicher, dass Sie dieses Tag löschen möchten?",
     ),
@@ -171,15 +174,15 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "tag_title": MessageLookupByLibrary.simpleMessage("Tags"),
     "tig_mode": MessageLookupByLibrary.simpleMessage("Tig-Modus"),
-    "tig_mode_count_down": m6,
+    "tig_mode_count_down": m7,
     "tig_mode_empty_tig": MessageLookupByLibrary.simpleMessage(
       "Zurzeit gibt es keine Tigs.\nVersuchen Sie, eines hinzuzufügen, und starten Sie erneut 😊",
     ),
-    "tig_mode_end_time": m7,
+    "tig_mode_end_time": m8,
     "tig_mode_remain_time": MessageLookupByLibrary.simpleMessage(
       "Verbleibende Zeit",
     ),
-    "tig_mode_start_time": m8,
+    "tig_mode_start_time": m9,
     "tig_mode_waiting": MessageLookupByLibrary.simpleMessage("Warten"),
   };
 }

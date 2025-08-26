@@ -6,11 +6,9 @@ enum PrefsType {
   userId,
   isOnDaily,
   isOnBraindump,
-  isTwelvetimeSystem,
-  tags,
-}
+  isTwelveTimeSystem,
+  tags;
 
-extension on PrefsType {
   String get prefsName {
     return toString();
   }
@@ -38,7 +36,7 @@ class SharedPreferenceManager {
         return _prefs.getStringList(type.prefsName) as T?;
       case PrefsType.userId:
         return _prefs.getString(type.prefsName) as T?;
-      case PrefsType.isTwelvetimeSystem:
+      case PrefsType.isTwelveTimeSystem:
         int? index = _prefs.getInt(type.prefsName);
         return index != null ? TimeSystem.values[index] as T? : null;
       default:
@@ -52,14 +50,14 @@ class SharedPreferenceManager {
         return await _prefs.setString(type.prefsName, pref as String);
       case PrefsType.tags:
         return await _prefs.setStringList(type.prefsName, pref as List<String>);
-      case PrefsType.isTwelvetimeSystem:
+      case PrefsType.isTwelveTimeSystem:
         return await _prefs.setInt(type.prefsName, (pref as TimeSystem).index);
       default:
         return await _prefs.setBool(type.prefsName, pref as bool);
     }
   }
 
-  removePref(PrefsType type) async {
-    await _prefs.remove(type.prefsName);
+  Future<bool> removePref(PrefsType type) async {
+    return await _prefs.remove(type.prefsName);
   }
 }

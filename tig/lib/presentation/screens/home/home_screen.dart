@@ -21,8 +21,9 @@ class _HomeScreen extends ConsumerState<HomeScreen>
   late ScrollController _scrollController;
   final TextEditingController _brainDumpController = TextEditingController();
   List<TextEditingController> _dailyPriorityControllers = [];
+  Timer? _dateSwiperDebounceTimer;
 
-  List<FocusNode> _dailyPrioritysNodes = [];
+  List<FocusNode> _dailyPriorityNodes = [];
   final FocusNode _braindumpNode = FocusNode();
   List<FocusNode> _activityFocusNodes = [];
   int? _focusedNodeIndex;
@@ -53,7 +54,7 @@ class _HomeScreen extends ConsumerState<HomeScreen>
   }
 
   void _initializeFocusNodes() {
-    _dailyPrioritysNodes = List.generate(3, (index) => FocusNode());
+    _dailyPriorityNodes = List.generate(3, (index) => FocusNode());
     _activityFocusNodes = List.generate(35, (index) {
       return FocusNode()
         ..addListener(() => _focusedNodeIndex =
@@ -136,7 +137,41 @@ class _HomeScreen extends ConsumerState<HomeScreen>
     );
   }
 
-  TextStyle _getLocaledTextStyle(BuildContext context) {
+  void _showCurrentDate(BuildContext context, DateTime currentDate) {
+    final formattedDate =
+        "${currentDate.year}-${currentDate.month}-${currentDate.day}";
+
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(Intl.message("home_swipe_date", args: [formattedDate])),
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.fixed,
+      ),
+    );
+  }
+
+  void _onHorizontalDragUpdateWithDebounce(DragUpdateDetails details) {
+    final homeState = ref.watch(homeNotifierProvider);
+    final homeNotifier = ref.read(homeNotifierProvider.notifier);
+    _dateSwiperDebounceTimer?.cancel();
+    _dateSwiperDebounceTimer = Timer(const Duration(milliseconds: 300), () {
+      if (details.delta.dx > 0) {
+        final prevDate =
+            homeState.currentDateTime.subtract(const Duration(days: 1));
+        homeNotifier.setDateTime(prevDate);
+        _showCurrentDate(context, prevDate);
+      } else if (details.delta.dx < 0) {
+        final nextDate = homeState.currentDateTime.add(const Duration(days: 1));
+        homeNotifier.setDateTime(nextDate);
+        _showCurrentDate(context, nextDate);
+      }
+    });
+  }
+
+  TextStyle _getLocaleTextStyle(BuildContext context) {
     Locale currentLocale = Localizations.localeOf(context);
     Localizations.localeOf(context);
 
@@ -160,197 +195,204 @@ class _HomeScreen extends ConsumerState<HomeScreen>
     final homeNotifier = ref.read(homeNotifierProvider.notifier);
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    return homeState.tig == null
-        ? Center(
-            child: CircularProgressIndicator(
-            color: isDarkMode ? Colors.white : Colors.black,
-          ))
-        : Stack(
-            children: [
-              Scaffold(
-                resizeToAvoidBottomInset: true,
-                appBar: AppBar(
-                  title: const Text(
-                    'TimeBox Planner',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  actions: [
-                    IconButton(
-                      onPressed: () =>
-                          Navigator.pushNamed(context, AppRoute.menu),
-                      icon: const Icon(Icons.menu),
+    return GestureDetector(
+      // 드래그 방향 감지
+      onHorizontalDragUpdate: _onHorizontalDragUpdateWithDebounce,
+      child: homeState.tig == null
+          ? Center(
+              child: CircularProgressIndicator(
+              color: isDarkMode ? Colors.white : Colors.black,
+            ))
+          : Stack(
+              children: [
+                Scaffold(
+                  resizeToAvoidBottomInset: true,
+                  appBar: AppBar(
+                    title: const Text(
+                      'TimeBox Planner',
+                      style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                  ],
-                ),
-                floatingActionButton:
-                    KeyboardVisibilityBuilder(builder: (context, isVisible) {
-                  return isVisible
-                      ? const SizedBox.shrink()
-                      : _buildFloatingActionButton();
-                }),
-                bottomSheet: KeyboardVisibilityBuilder(
-                  builder: (context, isVisible) {
-                    final FocusNode currentFocusNode =
-                        FocusManager.instance.primaryFocus!;
-                    final bool isActivityFocuseNode =
-                        _activityFocusNodes.contains(currentFocusNode);
-                    return (isVisible && isActivityFocuseNode)
-                        ? Padding(
-                            padding: EdgeInsets.only(
-                              top: 2.0,
-                              left: 2.0,
-                              right: 2.0,
-                              bottom: MediaQuery.of(context).viewInsets.bottom,
-                            ),
-                            child: SizedBox(
-                              width: MediaQuery.of(context).size.width,
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  children: homeState.tags.map((tag) {
-                                    return Padding(
-                                      padding: const EdgeInsets.only(
-                                          right: 2.0, left: 2.0),
-                                      child: TextButton(
-                                        onPressed: () {
-                                          _insertTextAtCursor(
-                                              tag, homeState.tig!);
-                                          _moveToNextTextField();
-                                        },
-                                        child: Text(tag),
-                                      ),
-                                    );
-                                  }).toList(),
-                                ),
-                              ),
-                            ),
-                          )
-                        : const SizedBox.shrink();
-                  },
-                ),
-                body: LayoutBuilder(
-                  builder: (context, constraints) {
-                    return KeyboardVisibilityBuilder(
-                        builder: (context, isVisible) {
+                    actions: [
+                      IconButton(
+                        onPressed: () =>
+                            Navigator.pushNamed(context, AppRoute.menu),
+                        icon: const Icon(Icons.menu),
+                      ),
+                    ],
+                  ),
+                  floatingActionButton:
+                      KeyboardVisibilityBuilder(builder: (context, isVisible) {
+                    return isVisible
+                        ? const SizedBox.shrink()
+                        : _buildFloatingActionButton();
+                  }),
+                  bottomSheet: KeyboardVisibilityBuilder(
+                    builder: (context, isVisible) {
                       final FocusNode currentFocusNode =
                           FocusManager.instance.primaryFocus!;
-                      final bool isActivityFocuseNode =
+                      final bool isActivityFocusNode =
                           _activityFocusNodes.contains(currentFocusNode);
-                      final bool isOnDaily = homeState.isOnDaily;
-                      final bool isOnBraindump = homeState.isOnBraindump;
-
-                      return Padding(
-                        padding: EdgeInsets.only(
-                            bottom: isVisible && isActivityFocuseNode
-                                ? MediaQuery.of(context).viewInsets.bottom + 20
-                                : 0),
-                        child: Column(
-                          children: [
-                            Expanded(
-                              child: ListView(
-                                keyboardDismissBehavior:
-                                    ScrollViewKeyboardDismissBehavior.onDrag,
-                                controller: _scrollController,
-                                padding: const EdgeInsets.all(16.0),
-                                children: [
-                                  _buildDateSelector(),
-                                  if (isOnDaily) ...[
-                                    const SizedBox(height: 16.0),
-                                    _buildExpandableSection()
-                                  ],
-                                  if (isOnBraindump) ...[
-                                    const SizedBox(height: 16.0),
-                                    _buildBrainDump()
-                                  ],
-                                  const SizedBox(height: 16.0),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(Intl.message('end_time')),
-                                      Text(Intl.message('success')),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 8.0),
-                                  _buildTimeTable(),
-                                  const SizedBox(height: 16.0),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      SizedBox(
-                                        child: ElevatedButton(
-                                          onPressed: () async {
-                                            final container =
-                                                ProviderContainer();
-                                            await homeNotifier.saveTig();
-                                            await HomeWidgetManager()
-                                                .updateWidgetData(container);
-                                            container.dispose();
-                                            _showSavedDialog();
-                                          },
-                                          child: Text(
-                                              Intl.message('home_save_desc')),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        child: ElevatedButton.icon(
-                                          icon: const ImageIcon(
-                                            AssetImage(
-                                                "assets/images/play.png"),
-                                            size: 10,
-                                          ),
-                                          onPressed: () async {
-                                            await homeNotifier.saveTig();
-                                            await _showFullScreenAd();
-                                          },
-                                          label: Text(Intl.message('tig_mode')),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                      return (isVisible && isActivityFocusNode)
+                          ? Padding(
+                              padding: EdgeInsets.only(
+                                top: 2.0,
+                                left: 2.0,
+                                right: 2.0,
+                                bottom:
+                                    MediaQuery.of(context).viewInsets.bottom,
                               ),
+                              child: SizedBox(
+                                width: MediaQuery.of(context).size.width,
+                                child: SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Row(
+                                    children: homeState.tags.map((tag) {
+                                      return Padding(
+                                        padding: const EdgeInsets.only(
+                                            right: 2.0, left: 2.0),
+                                        child: TextButton(
+                                          onPressed: () {
+                                            _insertTextAtCursor(
+                                                tag, homeState.tig!);
+                                            _moveToNextTextField();
+                                          },
+                                          child: Text(tag),
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
+                              ),
+                            )
+                          : const SizedBox.shrink();
+                    },
+                  ),
+                  body: LayoutBuilder(
+                    builder: (context, constraints) {
+                      return KeyboardVisibilityBuilder(
+                          builder: (context, isVisible) {
+                        final FocusNode currentFocusNode =
+                            FocusManager.instance.primaryFocus!;
+                        final bool isActivityFocusNode =
+                            _activityFocusNodes.contains(currentFocusNode);
+                        final bool isOnDaily = homeState.isOnDaily;
+                        final bool isOnBraindump = homeState.isOnBraindump;
+
+                        return Padding(
+                          padding: EdgeInsets.only(
+                              bottom: isVisible && isActivityFocusNode
+                                  ? MediaQuery.of(context).viewInsets.bottom +
+                                      20
+                                  : 0),
+                          child: Column(
+                            children: [
+                              Expanded(
+                                child: ListView(
+                                  keyboardDismissBehavior:
+                                      ScrollViewKeyboardDismissBehavior.onDrag,
+                                  controller: _scrollController,
+                                  padding: const EdgeInsets.all(16.0),
+                                  children: [
+                                    _buildDateSelector(),
+                                    if (isOnDaily) ...[
+                                      const SizedBox(height: 16.0),
+                                      _buildExpandableSection()
+                                    ],
+                                    if (isOnBraindump) ...[
+                                      const SizedBox(height: 16.0),
+                                      _buildBrainDump()
+                                    ],
+                                    const SizedBox(height: 16.0),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(Intl.message('end_time')),
+                                        Text(Intl.message('success')),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8.0),
+                                    _buildTimeTable(),
+                                    const SizedBox(height: 16.0),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        SizedBox(
+                                          child: ElevatedButton(
+                                            onPressed: () async {
+                                              final container =
+                                                  ProviderContainer();
+                                              await homeNotifier.saveTig();
+                                              await HomeWidgetManager()
+                                                  .updateWidgetData(container);
+                                              container.dispose();
+                                              _showSavedDialog();
+                                            },
+                                            child: Text(
+                                                Intl.message('home_save_desc')),
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          child: ElevatedButton.icon(
+                                            icon: const ImageIcon(
+                                              AssetImage(
+                                                  "assets/images/play.png"),
+                                              size: 10,
+                                            ),
+                                            onPressed: () async {
+                                              await homeNotifier.saveTig();
+                                              await _showFullScreenAd();
+                                            },
+                                            label:
+                                                Text(Intl.message('tig_mode')),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      });
+                    },
+                  ),
+                ),
+                if (homeState.isAdLoading) ...[
+                  AbsorbPointer(
+                    absorbing: true,
+                    child: Container(
+                      color: Colors.black54,
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              Intl.message('home_tig_mode_prepare'),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            const CircularProgressIndicator(
+                              color: Colors.white,
                             ),
                           ],
                         ),
-                      );
-                    });
-                  },
-                ),
-              ),
-              if (homeState.isAdLoading) ...[
-                AbsorbPointer(
-                  absorbing: true,
-                  child: Container(
-                    color: Colors.black54,
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            Intl.message('home_tig_mode_prepare'),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          const CircularProgressIndicator(
-                            color: Colors.white,
-                          ),
-                        ],
                       ),
                     ),
                   ),
-                ),
+                ],
               ],
-            ],
-          );
+            ),
+    );
   }
 
   Widget _buildDateSelector() {
@@ -417,10 +459,10 @@ class _HomeScreen extends ConsumerState<HomeScreen>
             onChanged: (text) => homeNotifier.updateBraindump(text),
             onTapOutside: (event) =>
                 FocusManager.instance.primaryFocus?.unfocus(),
-            style: _getLocaledTextStyle(context).copyWith(color: Colors.black),
+            style: _getLocaleTextStyle(context).copyWith(color: Colors.black),
             decoration: InputDecoration(
               hintText: Intl.message('home_braindump_placeholder'),
-              hintStyle: _getLocaledTextStyle(context),
+              hintStyle: _getLocaleTextStyle(context),
               border: InputBorder.none,
               enabledBorder: InputBorder.none,
               focusedBorder: InputBorder.none,
@@ -514,7 +556,7 @@ class _HomeScreen extends ConsumerState<HomeScreen>
                           const SizedBox(width: 4),
                           Expanded(
                             child: TextField(
-                              focusNode: _dailyPrioritysNodes[index],
+                              focusNode: _dailyPriorityNodes[index],
                               minLines: 1,
                               maxLines: 2,
                               controller: TextEditingController(
@@ -565,7 +607,7 @@ class _HomeScreen extends ConsumerState<HomeScreen>
             : false;
         final String activity = tig.timeTable[index].activity;
         final timeText =
-            getFormattedTime(hour, minute, homeState.isTwelvetimeSystem);
+            getFormattedTime(hour, minute, homeState.isTwelveTimeSystem);
 
         _dailyPriorityControllers[index].text = activity;
 

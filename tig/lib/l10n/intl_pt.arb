@@ -29,6 +29,7 @@
   "home_tig_mode_prepare": "Os dados estão sendo preparados para o modo TIG.\nAnúncios aparecerão enquanto a preparação está ocorrendo.\nAguarde um momento 🙏",
   "home_braindump_placeholder": "Anote todos os pensamentos que vierem à mente agora!",
   "home_activity_placeholder": "Escreva sua lista",
+  "home_swipe_date": "A data alterada é {date}.",
   "menu_email_subject": "Eu gostaria de perguntar.",
   "menu_email_body": "Seria de grande ajuda se você nos enviasse as seguintes informações.\nDispositivo em uso:\nErros ou melhorias:\n\nSe você tiver alguma outra dúvida, sinta-se à vontade para escrever:)",
   "menu_delete_user_failure": "Ocorreu um erro.\nTente novamente mais tarde.",

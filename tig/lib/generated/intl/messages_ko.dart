@@ -24,19 +24,21 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m1(error) => "카카오 로그인에 실패했습니다.\n오류: ${error}";
 
-  static String m2(error) => "앱을 다시 시작해 주세요.\n오류: ${error}";
+  static String m2(date) => "변경된 날짜는 ${date} 입니다.";
 
-  static String m3(month) => "${month}월 Tigs";
+  static String m3(error) => "앱을 다시 시작해 주세요.\n오류: ${error}";
 
-  static String m4(price) => "${price} / 월";
+  static String m4(month) => "${month}월 Tigs";
 
-  static String m5(item) => "${item}가 삭제되었습니다.";
+  static String m5(price) => "${price} / 월";
 
-  static String m6(minute, second) => "${minute}분 : ${second}초";
+  static String m6(item) => "${item}가 삭제되었습니다.";
 
-  static String m7(endTime) => "종료 시간: ${endTime}";
+  static String m7(minute, second) => "${minute}분 : ${second}초";
 
-  static String m8(startTime) => "시작 시간: ${startTime}";
+  static String m8(endTime) => "종료 시간: ${endTime}";
+
+  static String m9(startTime) => "시작 시간: ${startTime}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -76,10 +78,11 @@ class MessageLookup extends MessageLookupByLibrary {
       "티그들이 정상적으로 저장되었습니다.",
     ),
     "home_save_desc": MessageLookupByLibrary.simpleMessage("저장하기"),
+    "home_swipe_date": m2,
     "home_tig_mode_prepare": MessageLookupByLibrary.simpleMessage(
       "티그 모드를 위해 데이터를 준비 중입니다.\n준비되는 동안 광고가 표시됩니다.\n잠시만 기다려 주세요 🙏",
     ),
-    "main_restart": m2,
+    "main_restart": m3,
     "menu_contact_us": MessageLookupByLibrary.simpleMessage("문의하기"),
     "menu_delete_user_failure": MessageLookupByLibrary.simpleMessage(
       "오류가 발생했습니다.\n잠시 후 다시 시도해 주세요.",
@@ -91,8 +94,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "menu_logout_content": MessageLookupByLibrary.simpleMessage("로그아웃 하시겠습니까?"),
     "menu_logout_text": MessageLookupByLibrary.simpleMessage("로그아웃"),
     "menu_logout_title": MessageLookupByLibrary.simpleMessage("로그아웃 안내"),
-    "menu_month_tigs": m3,
-    "menu_price_per_month": m4,
+    "menu_month_tigs": m4,
+    "menu_price_per_month": m5,
     "menu_subscribe": MessageLookupByLibrary.simpleMessage("구독하기"),
     "menu_subscribe_cancel": MessageLookupByLibrary.simpleMessage("구독 취소하기"),
     "menu_subscribe_get1": MessageLookupByLibrary.simpleMessage(
@@ -131,7 +134,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "success": MessageLookupByLibrary.simpleMessage("성공"),
     "tag_add": MessageLookupByLibrary.simpleMessage("태그 추가"),
     "tag_add_input": MessageLookupByLibrary.simpleMessage("추가할 태그를 입력하세요."),
-    "tag_delete_completed": m5,
+    "tag_delete_completed": m6,
     "tag_delete_content": MessageLookupByLibrary.simpleMessage(
       "이 태그를 삭제하시겠습니까?",
     ),
@@ -142,13 +145,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "tag_empty": MessageLookupByLibrary.simpleMessage("추가할 태그를 입력해 주세요."),
     "tag_title": MessageLookupByLibrary.simpleMessage("태그"),
     "tig_mode": MessageLookupByLibrary.simpleMessage("티그 모드"),
-    "tig_mode_count_down": m6,
+    "tig_mode_count_down": m7,
     "tig_mode_empty_tig": MessageLookupByLibrary.simpleMessage(
       "현재 시간에는 티그가 존재하지 않습니다.\n티그를 등록하고 다시 시작해 주세요😊",
     ),
-    "tig_mode_end_time": m7,
+    "tig_mode_end_time": m8,
     "tig_mode_remain_time": MessageLookupByLibrary.simpleMessage("남은 시간"),
-    "tig_mode_start_time": m8,
+    "tig_mode_start_time": m9,
     "tig_mode_waiting": MessageLookupByLibrary.simpleMessage("대기 중"),
   };
 }

@@ -33,7 +33,7 @@ extension on FontLocale {
     }
   }
 }
-
+ 
 ThemeData buildLightTheme(FontLocale locale) {
   final String extraBoldFontName = locale.extraBoldFontName;
   final String semiBoldFontName = locale.semiBoldFontName;
@@ -223,6 +223,22 @@ ThemeData buildLightTheme(FontLocale locale) {
         }),
         shape: WidgetStateProperty.all(
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+      ),
+    ),
+    snackBarTheme: SnackBarThemeData(
+      backgroundColor: Colors.black,
+      contentTextStyle: TextStyle(
+        color: Colors.white,
+        fontFamily: regularFontName,
+        fontSize: 14,
+      ),
+      actionTextColor: Colors.black,
+      behavior: SnackBarBehavior.fixed,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(16),
+          topRight: Radius.circular(16),
         ),
       ),
     ),
@@ -423,6 +439,22 @@ ThemeData buildDarkTheme(FontLocale locale) {
         }),
         shape: WidgetStateProperty.all(
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+      ),
+    ),
+    snackBarTheme: SnackBarThemeData(
+      backgroundColor: Colors.white,
+      contentTextStyle: TextStyle(
+        color: Colors.black,
+        fontFamily: regularFontName,
+        fontSize: 14,
+      ),
+      actionTextColor: Colors.white,
+      behavior: SnackBarBehavior.fixed,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(16),
+          topRight: Radius.circular(16),
         ),
       ),
     ),
