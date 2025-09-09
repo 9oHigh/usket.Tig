@@ -28,3 +28,6 @@ doc/api/
 
 # Ignore key properties
 key.properties
+
+# Gemini generated files
+gemini.md

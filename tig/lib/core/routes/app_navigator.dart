@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:tig/ads/admob_banner.dart';
+import 'package:tig/core/ads/admob_banner.dart';
 import 'package:tig/core/routes/app_route.dart';
 import 'package:tig/data/models/tig.dart';
 import 'package:tig/presentation/screens/auth/auth_screen.dart';

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:intl/intl.dart';
-import 'package:tig/ads/admob_service.dart';
+import 'package:tig/core/ads/admob_service.dart';
 import 'package:tig/core/manager/home_widget_manager.dart';
 import 'package:tig/core/routes/app_route.dart';
 import 'package:tig/data/models/tig.dart';

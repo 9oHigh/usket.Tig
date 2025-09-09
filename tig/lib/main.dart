@@ -11,7 +11,7 @@ import 'package:tig/core/di/injector.dart';
 import 'package:tig/core/manager/shared_preference_manager.dart';
 import 'package:tig/core/routes/app_navigator.dart';
 import 'package:tig/generated/l10n.dart';
-import 'package:tig/ads/admob_service.dart';
+import 'package:tig/core/ads/admob_service.dart';
 import 'package:tig/core/theme/app_theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
