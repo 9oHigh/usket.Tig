@@ -33,7 +33,7 @@ extension on FontLocale {
     }
   }
 }
- 
+
 ThemeData buildLightTheme(FontLocale locale) {
   final String extraBoldFontName = locale.extraBoldFontName;
   final String semiBoldFontName = locale.semiBoldFontName;
@@ -179,7 +179,7 @@ ThemeData buildLightTheme(FontLocale locale) {
         color: Colors.red,
       ),
     ),
-    dialogTheme: DialogTheme(
+    dialogTheme: DialogThemeData(
       backgroundColor: Colors.white,
       alignment: Alignment.center,
       titleTextStyle: TextStyle(
@@ -392,7 +392,7 @@ ThemeData buildDarkTheme(FontLocale locale) {
         color: Colors.red,
       ),
     ),
-    dialogTheme: DialogTheme(
+    dialogTheme: DialogThemeData(
       shape: const RoundedRectangleBorder(
           side: BorderSide(color: Colors.white),
           borderRadius: BorderRadius.all(Radius.circular(8))),

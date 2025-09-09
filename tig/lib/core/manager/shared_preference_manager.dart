@@ -1,5 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tig/presentation/screens/option/provider/state/option_state.dart';
+import 'package:tig/presentation/page/option/provider/state/option_state.dart';
 
 enum PrefsType {
   isLoggedIn,

@@ -4,12 +4,12 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:tig/core/ads/admob_banner.dart';
 import 'package:tig/core/routes/app_route.dart';
 import 'package:tig/data/models/tig.dart';
-import 'package:tig/presentation/screens/auth/auth_screen.dart';
-import 'package:tig/presentation/screens/option/option_screen.dart';
-import 'package:tig/presentation/screens/home/home_screen.dart';
-import 'package:tig/presentation/screens/menu/menu_screen.dart';
-import 'package:tig/presentation/screens/tag/tag_screen.dart';
-import 'package:tig/presentation/screens/tig_mode/tig_mode_screen.dart';
+import 'package:tig/presentation/page/auth/auth_screen.dart';
+import 'package:tig/presentation/page/option/option_screen.dart';
+import 'package:tig/presentation/page/home/home_screen.dart';
+import 'package:tig/presentation/page/menu/menu_screen.dart';
+import 'package:tig/presentation/page/tag/tag_screen.dart';
+import 'package:tig/presentation/page/tig_mode/tig_mode_screen.dart';
 
 class AppNavigator extends StatelessWidget {
   final GlobalKey<NavigatorState> _navigatorKey;

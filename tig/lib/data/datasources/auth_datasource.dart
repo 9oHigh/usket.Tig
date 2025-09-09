@@ -5,16 +5,14 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:tig/core/manager/shared_preference_manager.dart';
-import 'package:tig/domain/repositories/auth_repository.dart';
 import 'package:tig/data/models/user.dart';
 
-class AuthDatasource implements AuthRepository {
+class AuthDatasource {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final kakao.UserApi _kakaoSignIn = kakao.UserApi.instance;
 
-  @override
   Future<void> signInWithGoogle() async {
     final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
     if (googleUser != null) {
@@ -28,7 +26,6 @@ class AuthDatasource implements AuthRepository {
     }
   }
 
-  @override
   Future<void> signInWithApple() async {
     final credential = await SignInWithApple.getAppleIDCredential(
       scopes: [
@@ -43,7 +40,6 @@ class AuthDatasource implements AuthRepository {
     await _signInWithCredential(authCredential);
   }
 
-  @override
   Future<void> signInWithKakao() async {
     kakao.User? kakaoUser;
     try {
@@ -91,7 +87,8 @@ class AuthDatasource implements AuthRepository {
       String storedUserId =
           SharedPreferenceManager().getPref<String>(PrefsType.userId) ?? "";
       if (user.uid != storedUserId) {
-        await SharedPreferenceManager().setPref<String>(PrefsType.userId, user.uid);
+        await SharedPreferenceManager()
+            .setPref<String>(PrefsType.userId, user.uid);
         await _registerUser(user);
       }
     }
@@ -114,7 +111,6 @@ class AuthDatasource implements AuthRepository {
     }
   }
 
-  @override
   Future<UserModel?> getUser() async {
     String uid =
         SharedPreferenceManager().getPref<String>(PrefsType.userId) ?? "";
@@ -126,7 +122,6 @@ class AuthDatasource implements AuthRepository {
     return doc.exists ? UserModel.fromMap(doc.data()!) : null;
   }
 
-  @override
   Future<void> deleteUser() async {
     try {
       String uid =
