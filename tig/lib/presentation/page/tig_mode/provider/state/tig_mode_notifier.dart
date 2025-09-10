@@ -9,8 +9,8 @@ import 'package:tig/core/manager/shared_preference_manager.dart';
 import 'package:tig/data/models/tig.dart';
 import 'package:tig/domain/usecases/tig_usecase.dart';
 import 'package:tig/presentation/page/tig_mode/provider/state/tig_mode_state.dart';
-import 'package:tig/utils/extentions/int_extenstion.dart';
-import 'package:tig/utils/extentions/nullable_extension.dart';
+import 'package:tig/core/utils/extentions/e_int.dart';
+import 'package:tig/core/utils/extentions/e_nullable.dart';
 
 class TigModeNotifier extends StateNotifier<TigModeState> {
   final TigUsecase _tigUsecase = injector.get<TigUsecase>();
